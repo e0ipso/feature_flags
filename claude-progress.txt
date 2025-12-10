@@ -3844,3 +3844,196 @@ NOTES:
 
 TIME SPENT: ~2 hours
 QUALITY: High - Thorough testing, bug documentation, working test verification
+
+===============================================================================
+SESSION 23 - December 10, 2025
+===============================================================================
+
+OBJECTIVE: Fix critical algorithms-not-saving bug discovered in Session 22
+
+STARTING STATUS: 65/176 tests passing (36.9%)
+ENDING STATUS: 65/176 tests passing (36.9%)
+SESSION PROGRESS: Critical bug fixed, infrastructure ready for algorithm tests
+
+ACCOMPLISHMENTS:
+===============================================================================
+
+1. ✅ **Fixed Critical Bug: Algorithms Not Saving via Admin UI**
+
+   **Investigation:**
+   - Reproduced AJAX error: "Oops, something went wrong"
+   - Checked Drupal logs: "TypeError: Cannot assign string to property FeatureFlag::$algorithms of type array"
+   - Added debug logging to identify form state structure
+   - Discovered tabledrag wraps algorithm data in 'content' key
+
+   **Root Causes Identified:**
+   a) EntityForm::copyFormValuesToEntity() automatically copies ALL form values directly to entity
+      - This included the complex 'algorithms' array
+      - Caused type error when assigning to typed property before save() could process it
+   
+   b) Tabledrag form element structure:
+      ```
+      $algorithms[0] = [
+        'content' => [
+          'plugin_id' => 'percentage_rollout',
+          'uuid' => '...',
+          'configuration' => [...],
+          'conditions_section' => [...]
+        ],
+        'weight' => 0
+      ]
+      ```
+      - save() method expected flat structure: $algorithm['plugin_id']
+      - Actually nested: $algorithm['content']['plugin_id']
+
+   **Solution Implemented:**
+   a) Override copyFormValuesToEntity() to exclude 'algorithms' and 'variants':
+      ```php
+      protected function copyFormValuesToEntity(...) {
+        $values = $form_state->getValues();
+        unset($values['algorithms']);
+        unset($values['variants']);
+        foreach ($values as $key => $value) {
+          $entity->set($key, $value);
+        }
+      }
+      ```
+
+   b) Update save() to handle tabledrag structure:
+      ```php
+      foreach ($algorithms as $delta => $algorithm) {
+        $algorithm_data = $algorithm['content'] ?? $algorithm;
+        $plugin_id = $algorithm_data['plugin_id'] ?? NULL;
+        // ... process using $algorithm_data
+      }
+      ```
+
+2. ✅ **Verification Testing (End-to-End)**
+
+   **Tests Performed:**
+   - Navigate to edit feature flag form
+   - Click "Add algorithm" button → ✅ No AJAX errors
+   - Configure 50/50 percentage split
+   - Save form → ✅ Success message displayed
+   - Check configuration via drush → ✅ Algorithm persisted correctly
+   - Check list view → ✅ Algorithm count shows "1"
+   - Reload edit form → ✅ Algorithm loads with correct values (50/50)
+
+   **Configuration Verified:**
+   ```yaml
+   algorithms:
+     - uuid: ed4c794b-b340-40cd-b9f7-956b6859812f
+       plugin_id: percentage_rollout
+       configuration:
+         percentages:
+           c22d2be1-609c-413d-8f78-9f9e0d2f35e5: 50
+           53e17878-cf5c-4c20-b225-417ff38212ae: 50
+       conditions: {}
+       weight: 0
+   ```
+
+3. ✅ **Documentation Updated**
+   - Updated BUG_ALGORITHMS_NOT_SAVING.md with solution details
+   - Marked bug as RESOLVED
+   - Documented both root causes and fixes
+
+FILES MODIFIED:
+===============================================================================
+
+- `src/Form/FeatureFlagForm.php`:
+  * Added copyFormValuesToEntity() override (lines 745-758)
+  * Updated save() to handle tabledrag 'content' structure (line 783)
+
+- `BUG_ALGORITHMS_NOT_SAVING.md`:
+  * Added solution documentation
+  * Marked status as RESOLVED
+
+TECHNICAL DETAILS:
+===============================================================================
+
+### The Two-Part Fix
+
+**Part 1: Prevent Premature Entity Assignment**
+
+Drupal's EntityForm::buildEntity() calls copyFormValuesToEntity() which does:
+```php
+foreach ($form_state->getValues() as $key => $value) {
+  $entity->set($key, $value);
+}
+```
+
+This happened BEFORE our save() method could process the algorithms. The raw
+form array structure was incompatible with the typed property definition.
+
+By overriding copyFormValuesToEntity(), we exclude 'algorithms' and 'variants'
+from automatic copying, allowing save() to handle them with proper processing.
+
+**Part 2: Handle Tabledrag Structure**
+
+Tabledrag form elements wrap actual data in a 'content' key for drag-and-drop
+functionality. The form state structure is:
+
+```
+[0] => [
+  'content' => [actual algorithm data],
+  'weight' => [drag order]
+]
+```
+
+The save() method now unwraps this with: `$algorithm['content'] ?? $algorithm`
+This handles both the tabledrag structure AND provides backwards compatibility
+if the structure ever changes.
+
+IMPACT:
+===============================================================================
+
+**Before Fix:**
+- ❌ Cannot add algorithms via UI (AJAX error)
+- ❌ Cannot save algorithms via UI (silent failure)  
+- ❌ Admins blocked from using module properly
+- ❌ All algorithm-related tests blocked
+
+**After Fix:**
+- ✅ AJAX "Add algorithm" works perfectly
+- ✅ Algorithms save and persist correctly
+- ✅ Full admin workflow functional
+- ✅ Ready to test all algorithm features
+- ✅ Module is now usable by end users
+
+NEXT STEPS:
+===============================================================================
+
+**Priority 1: Test Algorithm Features**
+Now that algorithms can be saved, verify tests:
+- Test #9: Add algorithm button functionality
+- Test #10: Configure percentage rollout
+- Test #11: Multiple algorithms with ordering
+- Test #29-31: Tabledrag reordering
+- Test #61-64: Condition operators (OR, NOT)
+- Test #65-68: Multiple conditions per algorithm
+
+**Priority 2: Continue Frontend Tests**
+- Percentage rollout with persistence enabled
+- Debug mode logging
+- Context-based resolution
+- localStorage caching
+
+**Priority 3: Advanced Features**
+- Algorithm conditions (User ID, User Tier)
+- Complex multi-algorithm scenarios
+- Edge cases and error handling
+
+NOTES:
+===============================================================================
+
+- Bug was blocking ~20% of remaining tests
+- Fix required understanding Drupal's EntityForm internals
+- Tabledrag structure was unexpected but makes sense for drag-and-drop UI
+- Debug logging was crucial for identifying the 'content' wrapper
+- Clean session: found bug, fixed bug, verified fix, committed
+
+TIME SPENT: ~2.5 hours
+QUALITY: High - Thorough investigation, complete fix, comprehensive testing
+
+COMMIT: 7aa6265 - Fix critical bug: Algorithms now save correctly via admin UI
+
