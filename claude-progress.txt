@@ -2643,3 +2643,21 @@ operations and form validation tests.
 ===============================================================================
 End of Session 14 Progress Report
 ===============================================================================
+
+===============================================================================
+SESSION 14 - ADDITIONAL NOTES
+===============================================================================
+
+ISSUE DISCOVERED (Not Fixed This Session):
+===============================================================================
+
+Test #30: Removing an algorithm works via AJAX
+- Status: ❌ FAILING
+- Issue: "Remove algorithm" button does not actually remove the algorithm
+- Evidence: After clicking second Remove button, still have 2 algorithms and 2 Remove buttons
+- Next session should investigate the AJAX callback for remove functionality
+- Likely issue in FeatureFlagForm AJAX callback or form rebuild
+
+This issue should be prioritized in the next session.
+
+===============================================================================
