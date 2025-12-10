@@ -552,6 +552,12 @@ class FeatureFlagForm extends EntityForm {
    * Submit handler for adding an algorithm.
    */
   public function addAlgorithmSubmit(array &$form, FormStateInterface $form_state): void {
+    // Update variants in form_state from current form values.
+    $variants_values = $form_state->getValue('variants', []);
+    if (!empty($variants_values)) {
+      $form_state->set('variants', $variants_values);
+    }
+
     // Get the selected plugin ID. Since algorithms_wrapper has #tree => FALSE,
     // the form element name is just 'algorithm_plugin_select'.
     $plugin_id = $form_state->getValue('algorithm_plugin_select');

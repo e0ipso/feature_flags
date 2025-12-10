@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Drupal\feature_flags\Plugin\DecisionAlgorithm;
 
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\Core\Form\SubformState;
 
 /**
  * Percentage rollout decision algorithm.
@@ -117,29 +116,6 @@ class PercentageRollout extends DecisionAlgorithmPluginBase {
     return [
       'percentages' => $this->configuration['percentages'],
     ];
-  }
-
-  /**
-   * Gets variants from the parent form state.
-   *
-   * @param \Drupal\Core\Form\FormStateInterface $form_state
-   *   The form state.
-   *
-   * @return array
-   *   An array of variant definitions.
-   */
-  protected function getVariantsFromFormState(FormStateInterface $form_state): array {
-    // Try to get the complete form state if we're in a subform.
-    if ($form_state instanceof SubformState) {
-      $complete_form_state = $form_state->getCompleteFormState();
-      $variants = $complete_form_state->getValue('variants', []);
-    }
-    else {
-      $variants = $form_state->getValue('variants', []);
-    }
-
-    // Filter out empty variants.
-    return array_filter($variants, fn($v) => !empty($v['label']));
   }
 
 }
