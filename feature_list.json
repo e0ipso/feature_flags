@@ -205,7 +205,7 @@
       "Step 5: Verify algorithm type selector shows available plugins",
       "Step 6: Verify 'Add algorithm' button is present"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",

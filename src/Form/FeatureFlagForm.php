@@ -586,8 +586,15 @@ class FeatureFlagForm extends EntityForm {
 
     $algorithms = $form_state->get('algorithms');
     unset($algorithms[$delta]);
+    // Re-index the array to avoid gaps.
     $algorithms = array_values($algorithms);
     $form_state->set('algorithms', $algorithms);
+
+    // Clear the user input for the algorithms to force form rebuild.
+    $user_input = $form_state->getUserInput();
+    unset($user_input['algorithms']);
+    $form_state->setUserInput($user_input);
+
     $form_state->setRebuild();
   }
 
