@@ -439,7 +439,7 @@
       "Step 5: Fix JSON to valid format: '\"valid\"'",
       "Step 6: Verify form submits successfully"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
