@@ -1,0 +1,187 @@
+<?php
+
+/**
+ * @file
+ * Primary module file for Feature Flags module.
+ *
+ * Provides client-side feature flag management with decision algorithms
+ * and conditions for personalized user experiences.
+ */
+
+use Drupal\Core\Routing\RouteMatchInterface;
+
+/**
+ * Implements hook_help().
+ */
+function feature_flags_help(string $route_name, RouteMatchInterface $route_match): string {
+  switch ($route_name) {
+    case 'help.page.feature_flags':
+      $output = '<h2>' . t('About') . '</h2>';
+      $output .= '<p>' . t('The Feature Flags module enables site administrators to create feature flags with multiple variants, configure decision algorithms with conditions, and resolve variants client-side via JavaScript. This allows for personalized experiences even behind caching layers.') . '</p>';
+      $output .= '<h2>' . t('Uses') . '</h2>';
+      $output .= '<dl>';
+      $output .= '<dt>' . t('Managing feature flags') . '</dt>';
+      $output .= '<dd>' . t('Create and manage feature flags at <a href=":url">Configuration → Services → Feature Flags</a>.', [':url' => '/admin/config/services/feature-flags/list']) . '</dd>';
+      $output .= '<dt>' . t('Configuring variants') . '</dt>';
+      $output .= '<dd>' . t('Each feature flag can have multiple variants with JSON-encoded values. Use the CodeMirror JSON editor for syntax validation.') . '</dd>';
+      $output .= '<dt>' . t('Setting up algorithms') . '</dt>';
+      $output .= '<dd>' . t('Add decision algorithms (like Percentage Rollout) to determine which variant users receive. Apply conditions to algorithms for targeted rollouts.') . '</dd>';
+      $output .= '<dt>' . t('Client-side resolution') . '</dt>';
+      $output .= '<dd>' . t('Feature flags are resolved in JavaScript using <code>Drupal.featureFlags.resolve()</code>. This works seamlessly with page caching.') . '</dd>';
+      $output .= '</dl>';
+      return $output;
+
+    case 'entity.feature_flag.collection':
+      return '<p>' . t('Feature flags allow you to control feature rollouts and run A/B tests without deploying code. Create flags with multiple variants and configure algorithms to determine which variant each user receives.') . '</p>';
+  }
+
+  return '';
+}
+
+/**
+ * Implements hook_page_attachments().
+ *
+ * Attaches enabled feature flags and their settings to every page.
+ */
+function feature_flags_page_attachments(array &$attachments): void {
+  // Load module settings.
+  $config = \Drupal::config('feature_flags.settings');
+  $debug = $config->get('debug') ?? FALSE;
+  $persist = $config->get('persist_decisions') ?? FALSE;
+
+  // Load all enabled feature flags.
+  $entity_type_manager = \Drupal::entityTypeManager();
+  $storage = $entity_type_manager->getStorage('feature_flag');
+  $flags = $storage->loadByProperties(['status' => TRUE]);
+
+  if (empty($flags)) {
+    // No enabled flags, no need to attach libraries.
+    return;
+  }
+
+  // Build settings array.
+  $settings = [
+    'settings' => [
+      'debug' => $debug,
+      'persist' => $persist,
+    ],
+    'flags' => [],
+    'libraries' => [
+      'algorithms' => [],
+      'conditions' => [],
+    ],
+  ];
+
+  // Track which plugin libraries we need to load.
+  $algorithm_libraries = [];
+  $condition_libraries = [];
+
+  /** @var \Drupal\feature_flags\Entity\FeatureFlagInterface $flag */
+  foreach ($flags as $flag) {
+    $flag_data = [
+      'id' => $flag->id(),
+      'label' => $flag->label(),
+      'variants' => $flag->get('variants') ?? [],
+      'algorithms' => [],
+    ];
+
+    // Process algorithms.
+    $algorithms = $flag->get('algorithms') ?? [];
+    $plugin_manager_algorithm = \Drupal::service('plugin.manager.feature_flags.decision_algorithm');
+    $plugin_manager_condition = \Drupal::service('plugin.manager.feature_flags.algorithm_condition');
+
+    foreach ($algorithms as $algorithm_data) {
+      $plugin_id = $algorithm_data['plugin_id'] ?? NULL;
+      if (!$plugin_id) {
+        continue;
+      }
+
+      try {
+        /** @var \Drupal\feature_flags\Plugin\DecisionAlgorithm\DecisionAlgorithmInterface $plugin */
+        $plugin = $plugin_manager_algorithm->createInstance($plugin_id, $algorithm_data['configuration'] ?? []);
+        $definition = $plugin_manager_algorithm->getDefinition($plugin_id);
+
+        // Get JS settings from plugin.
+        $js_settings = $plugin->getJavaScriptSettings();
+
+        $algorithm_info = [
+          'uuid' => $algorithm_data['uuid'] ?? NULL,
+          'pluginId' => $plugin_id,
+          'jsClass' => $definition['js_class'] ?? NULL,
+          'configuration' => $js_settings,
+          'conditions' => [],
+        ];
+
+        // Track library for this algorithm.
+        if (!empty($definition['js_library'])) {
+          $algorithm_libraries[$plugin_id] = $definition['js_library'];
+          $settings['libraries']['algorithms'][$plugin_id] = $definition['js_class'];
+        }
+
+        // Process conditions.
+        $conditions = $algorithm_data['conditions'] ?? [];
+        foreach ($conditions as $condition_data) {
+          $condition_plugin_id = $condition_data['plugin_id'] ?? NULL;
+          if (!$condition_plugin_id) {
+            continue;
+          }
+
+          try {
+            /** @var \Drupal\feature_flags\Plugin\AlgorithmCondition\AlgorithmConditionInterface $condition_plugin */
+            $condition_plugin = $plugin_manager_condition->createInstance($condition_plugin_id, $condition_data['configuration'] ?? []);
+            $condition_definition = $plugin_manager_condition->getDefinition($condition_plugin_id);
+
+            $condition_info = [
+              'uuid' => $condition_data['uuid'] ?? NULL,
+              'pluginId' => $condition_plugin_id,
+              'jsClass' => $condition_definition['js_class'] ?? NULL,
+              'operator' => $condition_data['operator'] ?? 'OR',
+              'configuration' => $condition_plugin->getJavaScriptSettings(),
+            ];
+
+            $algorithm_info['conditions'][] = $condition_info;
+
+            // Track library for this condition.
+            if (!empty($condition_definition['js_library'])) {
+              $condition_libraries[$condition_plugin_id] = $condition_definition['js_library'];
+              $settings['libraries']['conditions'][$condition_plugin_id] = $condition_definition['js_class'];
+            }
+          }
+          catch (\Exception $e) {
+            \Drupal::logger('feature_flags')->error('Failed to instantiate condition plugin @plugin_id: @message', [
+              '@plugin_id' => $condition_plugin_id,
+              '@message' => $e->getMessage(),
+            ]);
+          }
+        }
+
+        $flag_data['algorithms'][] = $algorithm_info;
+      }
+      catch (\Exception $e) {
+        \Drupal::logger('feature_flags')->error('Failed to instantiate algorithm plugin @plugin_id: @message', [
+          '@plugin_id' => $plugin_id,
+          '@message' => $e->getMessage(),
+        ]);
+      }
+    }
+
+    $settings['flags'][$flag->id()] = $flag_data;
+  }
+
+  // Attach drupalSettings.
+  $attachments['#attached']['drupalSettings']['featureFlags'] = $settings;
+
+  // Attach base library.
+  $attachments['#attached']['library'][] = 'feature_flags/base';
+  $attachments['#attached']['library'][] = 'feature_flags/feature_flags';
+
+  // Attach algorithm plugin libraries.
+  foreach (array_unique($algorithm_libraries) as $library) {
+    $attachments['#attached']['library'][] = $library;
+  }
+
+  // Attach condition plugin libraries.
+  foreach (array_unique($condition_libraries) as $library) {
+    $attachments['#attached']['library'][] = $library;
+  }
+}

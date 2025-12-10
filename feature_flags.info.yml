@@ -1,0 +1,8 @@
+name: Feature Flags
+type: module
+description: 'Client-side feature flag management with decision algorithms and conditions for personalized experiences.'
+package: Services
+core_version_requirement: ^10.3 || ^11
+
+dependencies:
+  - drupal:system (>= 10.3)

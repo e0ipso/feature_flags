@@ -1,0 +1,4 @@
+administer feature flags:
+  title: 'Administer feature flags'
+  description: 'Create, edit, and delete feature flags and manage module settings.'
+  restrict access: true
