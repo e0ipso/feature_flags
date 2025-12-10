@@ -23,3 +23,9 @@ coverage/
 # Build artifacts
 dist/
 build/
+
+# Core dumps and test files
+core
+test_*.php
+verify_module.php
+test_via_drush.sh

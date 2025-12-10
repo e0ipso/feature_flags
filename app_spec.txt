@@ -1044,7 +1044,7 @@
     </jest>
 
     <browser_testing>
-      <framework>Playwright or Puppeteer (follow autonomous-coding harness pattern)</framework>
+      <framework>Puppeteer with Chromium (follow autonomous-coding harness pattern)</framework>
       <test_scenarios>
         <admin_interface>
           - Navigate to feature flags settings page
