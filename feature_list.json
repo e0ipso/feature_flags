@@ -609,7 +609,7 @@
       "Step 5: Verify settings object contains debug and persist boolean values",
       "Step 6: Verify flags object contains the created feature flag"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -623,7 +623,7 @@
       "Step 6: Verify variants array with uuid, label, value for each variant",
       "Step 7: Verify algorithms array with uuid, pluginId, jsClass, configuration, conditions"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -635,7 +635,7 @@
       "Step 4: Verify algorithms object maps 'percentage_rollout' to 'PercentageRollout'",
       "Step 5: Verify conditions object maps condition plugin IDs to class names"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -659,7 +659,7 @@
       "Step 5: Verify feature_flags/feature_flags library is loaded",
       "Step 6: Verify algorithm libraries are loaded (e.g., feature_flags/algorithm.percentage_rollout)"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -672,7 +672,7 @@
       "Step 5: Verify it returns a FeatureFlagManager instance",
       "Step 6: Verify instance has resolve method"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -685,7 +685,7 @@
       "Step 5: Verify it returns a FeatureFlagResult object",
       "Step 6: Verify result has featureFlag, result, and variant properties"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -697,7 +697,7 @@
       "Step 4: Verify it's a JavaScript object, not a string",
       "Step 5: Verify it contains {enabled: true}"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -710,7 +710,7 @@
       "Step 5: Verify label property exists",
       "Step 6: Verify value property exists (as JSON string)"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -722,7 +722,7 @@
       "Step 4: Verify 'fired' appears in console",
       "Step 5: Verify event.detail has addContext method"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -733,7 +733,7 @@
       "Step 3: Resolve flag",
       "Step 4: Verify condition evaluates using provided user_id context"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -900,7 +900,7 @@
       "Step 5: Verify same variant is returned (from cache)",
       "Step 6: Verify no re-evaluation occurs"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -1797,7 +1797,7 @@
       "Step 4: Verify result property is parsed JSON",
       "Step 5: Verify variant property is full variant object"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -1840,7 +1840,7 @@
       "Step 4: Verify it assigns to Drupal.featureFlags",
       "Step 5: Test on actual page load"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -1875,7 +1875,7 @@
       "Step 4: Verify it attaches necessary libraries",
       "Step 5: Test on actual page"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
