@@ -1,0 +1,2096 @@
+[
+  {
+    "category": "functional",
+    "description": "Module can be installed successfully via Drupal's module installation interface",
+    "steps": [
+      "Step 1: Navigate to /admin/modules",
+      "Step 2: Find feature_flags module in the list",
+      "Step 3: Check the checkbox to enable it",
+      "Step 4: Click 'Install' button",
+      "Step 5: Verify module installs without errors",
+      "Step 6: Verify feature_flags appears in enabled modules list"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Module creates proper menu entries in admin/config/services after installation",
+    "steps": [
+      "Step 1: Navigate to /admin/config/services",
+      "Step 2: Verify 'Feature Flags' menu item appears",
+      "Step 3: Click on 'Feature Flags' link",
+      "Step 4: Verify it navigates to /admin/config/services/feature-flags"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Settings form displays all required fields with proper labels and descriptions",
+    "steps": [
+      "Step 1: Navigate to /admin/config/services/feature-flags",
+      "Step 2: Verify 'Debug mode' checkbox is present",
+      "Step 3: Verify 'Persist decisions' checkbox is present",
+      "Step 4: Verify 'Exclude from configuration export' checkbox is present",
+      "Step 5: Verify each field has proper description text",
+      "Step 6: Verify default values are set correctly (all unchecked)"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Settings form saves values to configuration when submitted",
+    "steps": [
+      "Step 1: Navigate to /admin/config/services/feature-flags",
+      "Step 2: Check 'Debug mode' checkbox",
+      "Step 3: Check 'Persist decisions' checkbox",
+      "Step 4: Click 'Save configuration' button",
+      "Step 5: Verify success message appears",
+      "Step 6: Reload the page",
+      "Step 7: Verify checkboxes remain checked"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Feature Flags list page displays with proper columns and empty state",
+    "steps": [
+      "Step 1: Navigate to /admin/config/services/feature-flags/list",
+      "Step 2: Verify page loads without errors",
+      "Step 3: Verify empty state message 'No feature flags have been created yet.' appears",
+      "Step 4: Verify column headers: Label, Machine name, Status, Variants count, Algorithms count, Operations",
+      "Step 5: Verify 'Add feature flag' action button is present"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Add feature flag form loads with Basic Information tab",
+    "steps": [
+      "Step 1: Navigate to /admin/config/services/feature-flags/add",
+      "Step 2: Verify form loads with vertical tabs",
+      "Step 3: Verify 'Basic Information' tab is visible",
+      "Step 4: Verify Label textfield is present and required",
+      "Step 5: Verify Machine name field is present with auto-generation",
+      "Step 6: Verify Description textarea is present",
+      "Step 7: Verify Enabled checkbox is present and checked by default"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Machine name auto-generates from label on feature flag form",
+    "steps": [
+      "Step 1: Navigate to /admin/config/services/feature-flags/add",
+      "Step 2: Enter 'Test Feature' in Label field",
+      "Step 3: Verify machine name auto-generates to 'test_feature'",
+      "Step 4: Enter 'Another-Test!' in Label field",
+      "Step 5: Verify machine name auto-generates to 'another_test'"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Machine name can be manually edited when unlocked",
+    "steps": [
+      "Step 1: Navigate to /admin/config/services/feature-flags/add",
+      "Step 2: Enter 'Test Feature' in Label field",
+      "Step 3: Click 'Edit' button next to machine name",
+      "Step 4: Change machine name to 'custom_name'",
+      "Step 5: Verify machine name accepts the custom value"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Variants tab displays with minimum 2 variant requirement",
+    "steps": [
+      "Step 1: Navigate to /admin/config/services/feature-flags/add",
+      "Step 2: Click on 'Variants' tab",
+      "Step 3: Verify at least 2 variant fieldsets are displayed initially",
+      "Step 4: Verify each variant has Label textfield",
+      "Step 5: Verify each variant has Value textarea with JSON editor",
+      "Step 6: Verify 'Add variant' button is present",
+      "Step 7: Verify 'Remove' button is present for variants beyond minimum"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Adding a variant creates a new variant fieldset via AJAX",
+    "steps": [
+      "Step 1: Navigate to /admin/config/services/feature-flags/add",
+      "Step 2: Click on 'Variants' tab",
+      "Step 3: Count initial number of variant fieldsets",
+      "Step 4: Click 'Add variant' button",
+      "Step 5: Verify a new variant fieldset appears without page reload",
+      "Step 6: Verify the new fieldset has all required fields"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Removing a variant deletes the fieldset via AJAX (when more than 2 exist)",
+    "steps": [
+      "Step 1: Navigate to /admin/config/services/feature-flags/add",
+      "Step 2: Click on 'Variants' tab",
+      "Step 3: Click 'Add variant' to create a 3rd variant",
+      "Step 4: Click 'Remove' button on the 3rd variant",
+      "Step 5: Verify the variant fieldset is removed without page reload",
+      "Step 6: Verify form still has at least 2 variants"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Cannot remove variants when only 2 remain (minimum requirement)",
+    "steps": [
+      "Step 1: Navigate to /admin/config/services/feature-flags/add",
+      "Step 2: Click on 'Variants' tab",
+      "Step 3: Verify only 2 variants exist initially",
+      "Step 4: Verify 'Remove' buttons are either disabled or not present for first 2 variants"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "CodeMirror JSON editor initializes on variant value textareas",
+    "steps": [
+      "Step 1: Navigate to /admin/config/services/feature-flags/add",
+      "Step 2: Click on 'Variants' tab",
+      "Step 3: Verify CodeMirror editor appears in place of plain textarea",
+      "Step 4: Verify editor has line numbers",
+      "Step 5: Verify editor has JSON syntax highlighting",
+      "Step 6: Verify editor has lint gutter for errors"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "CodeMirror JSON editor validates JSON syntax in real-time",
+    "steps": [
+      "Step 1: Navigate to /admin/config/services/feature-flags/add",
+      "Step 2: Click on 'Variants' tab",
+      "Step 3: Enter invalid JSON: '{invalid' in a variant value editor",
+      "Step 4: Verify error marker appears in lint gutter",
+      "Step 5: Enter valid JSON: '{\"key\": \"value\"}'",
+      "Step 6: Verify error marker disappears"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "CodeMirror editor syncs content back to textarea on form submit",
+    "steps": [
+      "Step 1: Navigate to /admin/config/services/feature-flags/add",
+      "Step 2: Complete basic info with label 'Test Flag'",
+      "Step 3: Click on 'Variants' tab",
+      "Step 4: Enter '{\"enabled\": true}' in first variant value editor",
+      "Step 5: Enter '{\"enabled\": false}' in second variant value editor",
+      "Step 6: Set variant labels",
+      "Step 7: Add at least one algorithm",
+      "Step 8: Submit form",
+      "Step 9: Edit the feature flag",
+      "Step 10: Verify variant values are correctly populated in editors"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Decision Algorithms tab displays with add algorithm section",
+    "steps": [
+      "Step 1: Navigate to /admin/config/services/feature-flags/add",
+      "Step 2: Click on 'Decision Algorithms' tab",
+      "Step 3: Verify tab description text about algorithm evaluation order",
+      "Step 4: Verify 'Add Algorithm' section is present",
+      "Step 5: Verify algorithm type selector shows available plugins",
+      "Step 6: Verify 'Add algorithm' button is present"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Percentage Rollout algorithm appears in algorithm selection",
+    "steps": [
+      "Step 1: Navigate to /admin/config/services/feature-flags/add",
+      "Step 2: Click on 'Decision Algorithms' tab",
+      "Step 3: Expand 'Add Algorithm' section",
+      "Step 4: Verify 'Percentage Rollout' option is available",
+      "Step 5: Verify it has a descriptive label about distributing users"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Adding a Percentage Rollout algorithm creates algorithm details section via AJAX",
+    "steps": [
+      "Step 1: Navigate to /admin/config/services/feature-flags/add",
+      "Step 2: Click on 'Decision Algorithms' tab",
+      "Step 3: Select 'Percentage Rollout' algorithm type",
+      "Step 4: Click 'Add algorithm' button",
+      "Step 5: Verify new algorithm details section appears without page reload",
+      "Step 6: Verify details section is open by default",
+      "Step 7: Verify title shows 'Algorithm: Percentage Rollout'"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Percentage Rollout algorithm configuration form displays percentage inputs for each variant",
+    "steps": [
+      "Step 1: Navigate to /admin/config/services/feature-flags/add",
+      "Step 2: Complete basic info",
+      "Step 3: Add 2 variants in Variants tab",
+      "Step 4: Click on 'Decision Algorithms' tab",
+      "Step 5: Add Percentage Rollout algorithm",
+      "Step 6: Verify configuration section shows both variant labels",
+      "Step 7: Verify each variant has a number input field (0-100)",
+      "Step 8: Verify input fields show percentage symbol or label"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Percentage Rollout validation enforces 100% sum requirement",
+    "steps": [
+      "Step 1: Create feature flag with 2 variants",
+      "Step 2: Add Percentage Rollout algorithm",
+      "Step 3: Set percentages to 50% and 40% (sum = 90%)",
+      "Step 4: Try to submit form",
+      "Step 5: Verify validation error appears",
+      "Step 6: Verify error message indicates percentages must sum to 100%",
+      "Step 7: Change percentages to 50% and 50%",
+      "Step 8: Verify form submits successfully"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Algorithm details section includes Conditions subsection",
+    "steps": [
+      "Step 1: Navigate to /admin/config/services/feature-flags/add",
+      "Step 2: Click on 'Decision Algorithms' tab",
+      "Step 3: Add a Percentage Rollout algorithm",
+      "Step 4: Verify 'Conditions' details section is present",
+      "Step 5: Verify description mentions catch-all behavior when no conditions",
+      "Step 6: Verify 'Add condition' button is present"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Adding a condition to an algorithm creates condition fieldset via AJAX",
+    "steps": [
+      "Step 1: Create feature flag with algorithm",
+      "Step 2: Expand algorithm's Conditions section",
+      "Step 3: Click 'Add condition' button",
+      "Step 4: Verify new condition fieldset appears without page reload",
+      "Step 5: Verify condition type select dropdown is present",
+      "Step 6: Verify operator select dropdown is present"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "User ID condition plugin appears in condition type dropdown",
+    "steps": [
+      "Step 1: Create feature flag with algorithm",
+      "Step 2: Add a condition to the algorithm",
+      "Step 3: Open condition type dropdown",
+      "Step 4: Verify 'User ID' option is available",
+      "Step 5: Verify it has descriptive text about matching user IDs"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "User Tier condition plugin appears in condition type dropdown",
+    "steps": [
+      "Step 1: Create feature flag with algorithm",
+      "Step 2: Add a condition to the algorithm",
+      "Step 3: Open condition type dropdown",
+      "Step 4: Verify 'User Tier' option is available",
+      "Step 5: Verify it has descriptive text about matching user tiers"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Selecting User ID condition displays configuration form with comma-separated textfield",
+    "steps": [
+      "Step 1: Create feature flag with algorithm",
+      "Step 2: Add a condition",
+      "Step 3: Select 'User ID' from condition type dropdown",
+      "Step 4: Verify configuration section appears via AJAX",
+      "Step 5: Verify textfield for entering user IDs is present",
+      "Step 6: Verify description mentions comma-separated format"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Selecting User Tier condition displays configuration form with comma-separated textfield",
+    "steps": [
+      "Step 1: Create feature flag with algorithm",
+      "Step 2: Add a condition",
+      "Step 3: Select 'User Tier' from condition type dropdown",
+      "Step 4: Verify configuration section appears via AJAX",
+      "Step 5: Verify textfield for entering tier values is present",
+      "Step 6: Verify description mentions comma-separated format"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Condition operator dropdown includes AND, OR, NOT options",
+    "steps": [
+      "Step 1: Create feature flag with algorithm",
+      "Step 2: Add a condition",
+      "Step 3: Open operator dropdown",
+      "Step 4: Verify 'AND (all values must match)' option exists",
+      "Step 5: Verify 'OR (any value must match)' option exists",
+      "Step 6: Verify 'NOT (none of the values must match)' option exists",
+      "Step 7: Verify 'OR' is selected by default"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Removing a condition from algorithm works via AJAX",
+    "steps": [
+      "Step 1: Create feature flag with algorithm",
+      "Step 2: Add 2 conditions to the algorithm",
+      "Step 3: Click 'Remove' button on second condition",
+      "Step 4: Verify condition fieldset is removed without page reload",
+      "Step 5: Verify first condition remains"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Multiple algorithms can be added to a single feature flag",
+    "steps": [
+      "Step 1: Create feature flag with basic info and variants",
+      "Step 2: Add first Percentage Rollout algorithm",
+      "Step 3: Add second Percentage Rollout algorithm",
+      "Step 4: Verify both algorithms appear in the list",
+      "Step 5: Verify each has its own configuration section",
+      "Step 6: Verify weight fields for ordering"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Algorithms can be reordered using drag-and-drop",
+    "steps": [
+      "Step 1: Create feature flag with 3 algorithms",
+      "Step 2: Verify drag handles are visible on each algorithm",
+      "Step 3: Drag algorithm 3 to position 1",
+      "Step 4: Verify algorithm order changes visually",
+      "Step 5: Verify weight values update accordingly"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Removing an algorithm works via AJAX",
+    "steps": [
+      "Step 1: Create feature flag with 2 algorithms",
+      "Step 2: Click 'Remove algorithm' button on second algorithm",
+      "Step 3: Verify algorithm details section is removed without page reload",
+      "Step 4: Verify first algorithm remains intact"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Form validates at least one catch-all algorithm (no conditions) is present",
+    "steps": [
+      "Step 1: Create feature flag with complete basic info and variants",
+      "Step 2: Add one algorithm with a User ID condition",
+      "Step 3: Try to submit form",
+      "Step 4: Verify validation error appears",
+      "Step 5: Verify error mentions need for catch-all algorithm",
+      "Step 6: Add second algorithm without conditions",
+      "Step 7: Verify form submits successfully"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Form validates minimum 2 variants requirement",
+    "steps": [
+      "Step 1: Create feature flag with basic info",
+      "Step 2: Remove all but 1 variant (if possible)",
+      "Step 3: Try to submit form",
+      "Step 4: Verify validation error about minimum variants",
+      "Step 5: Add second variant",
+      "Step 6: Verify validation passes"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Form validates variant values contain valid JSON",
+    "steps": [
+      "Step 1: Create feature flag with basic info",
+      "Step 2: Enter invalid JSON in variant value: 'not json'",
+      "Step 3: Try to submit form",
+      "Step 4: Verify validation error about invalid JSON",
+      "Step 5: Fix JSON to valid format: '\"valid\"'",
+      "Step 6: Verify form submits successfully"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Successfully creating a feature flag shows success message and redirects to list",
+    "steps": [
+      "Step 1: Navigate to add feature flag form",
+      "Step 2: Complete all required fields correctly",
+      "Step 3: Submit form",
+      "Step 4: Verify success message appears",
+      "Step 5: Verify redirect to /admin/config/services/feature-flags/list",
+      "Step 6: Verify new feature flag appears in the list"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Feature flag list shows correct data for created feature flags",
+    "steps": [
+      "Step 1: Create a feature flag with label 'Test Flag', 3 variants, 2 algorithms",
+      "Step 2: Navigate to feature flags list",
+      "Step 3: Verify 'Test Flag' appears in Label column",
+      "Step 4: Verify machine name appears in Machine name column",
+      "Step 5: Verify 'Enabled' badge appears in Status column",
+      "Step 6: Verify '3' appears in Variants count column",
+      "Step 7: Verify '2' appears in Algorithms count column"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Feature flag list label links to edit form",
+    "steps": [
+      "Step 1: Create a feature flag",
+      "Step 2: Navigate to feature flags list",
+      "Step 3: Click on the feature flag label",
+      "Step 4: Verify navigation to /admin/config/services/feature-flags/{id}/edit",
+      "Step 5: Verify edit form loads with existing values populated"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Feature flag edit form pre-populates with existing values",
+    "steps": [
+      "Step 1: Create feature flag with specific values",
+      "Step 2: Navigate to edit form for that flag",
+      "Step 3: Verify Label field contains correct value",
+      "Step 4: Verify Machine name is locked and shows correct value",
+      "Step 5: Verify Description contains correct text",
+      "Step 6: Verify Enabled checkbox reflects current status",
+      "Step 7: Click Variants tab and verify all variants are present",
+      "Step 8: Click Algorithms tab and verify all algorithms are present"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Editing a feature flag and saving updates the configuration",
+    "steps": [
+      "Step 1: Create feature flag",
+      "Step 2: Edit the flag and change label to 'Updated Flag'",
+      "Step 3: Save form",
+      "Step 4: Verify success message",
+      "Step 5: Return to list",
+      "Step 6: Verify label shows 'Updated Flag'"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Disabling a feature flag updates its status",
+    "steps": [
+      "Step 1: Create enabled feature flag",
+      "Step 2: Edit the flag",
+      "Step 3: Uncheck 'Enabled' checkbox",
+      "Step 4: Save form",
+      "Step 5: Return to list",
+      "Step 6: Verify Status column shows 'Disabled' badge"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Delete link in operations column navigates to delete confirmation form",
+    "steps": [
+      "Step 1: Create feature flag",
+      "Step 2: Navigate to feature flags list",
+      "Step 3: Click 'Delete' in Operations column",
+      "Step 4: Verify navigation to /admin/config/services/feature-flags/{id}/delete",
+      "Step 5: Verify confirmation form appears with warning message",
+      "Step 6: Verify Cancel and Delete buttons are present"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Confirming delete removes feature flag from system",
+    "steps": [
+      "Step 1: Create feature flag 'Test Flag'",
+      "Step 2: Navigate to delete form",
+      "Step 3: Click 'Delete' button",
+      "Step 4: Verify success message appears",
+      "Step 5: Verify redirect to list page",
+      "Step 6: Verify 'Test Flag' no longer appears in list"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Canceling delete returns to list without removing feature flag",
+    "steps": [
+      "Step 1: Create feature flag",
+      "Step 2: Navigate to delete form",
+      "Step 3: Click 'Cancel' link",
+      "Step 4: Verify redirect to list page",
+      "Step 5: Verify feature flag still appears in list"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Feature flag configuration is saved to config storage",
+    "steps": [
+      "Step 1: Create feature flag with complete configuration",
+      "Step 2: Use Drush to export configuration: drush config:export",
+      "Step 3: Check config/sync directory for feature_flag.{id}.yml file",
+      "Step 4: Verify file contains all feature flag properties",
+      "Step 5: Verify variants array is present with all variants",
+      "Step 6: Verify algorithms array contains all algorithms with conditions"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Feature flags can be excluded from config export when setting enabled",
+    "steps": [
+      "Step 1: Navigate to settings form",
+      "Step 2: Enable 'Exclude from configuration export' setting",
+      "Step 3: Save settings",
+      "Step 4: Create a feature flag",
+      "Step 5: Run drush config:export",
+      "Step 6: Verify feature flag config file is NOT created in config/sync"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Feature flags ARE exported when exclusion setting is disabled",
+    "steps": [
+      "Step 1: Navigate to settings form",
+      "Step 2: Disable 'Exclude from configuration export' setting",
+      "Step 3: Save settings",
+      "Step 4: Create a feature flag",
+      "Step 5: Run drush config:export",
+      "Step 6: Verify feature flag config file IS created in config/sync"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Module attaches feature flag settings to page via hook_page_attachments",
+    "steps": [
+      "Step 1: Create and enable a feature flag",
+      "Step 2: Load any page on the site",
+      "Step 3: View page source",
+      "Step 4: Verify drupalSettings.featureFlags object exists in inline JavaScript",
+      "Step 5: Verify settings object contains debug and persist boolean values",
+      "Step 6: Verify flags object contains the created feature flag"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "drupalSettings includes complete feature flag configuration structure",
+    "steps": [
+      "Step 1: Create feature flag with 2 variants and 1 algorithm",
+      "Step 2: Load a page",
+      "Step 3: Inspect drupalSettings.featureFlags.flags[flag_id]",
+      "Step 4: Verify id property exists",
+      "Step 5: Verify label property exists",
+      "Step 6: Verify variants array with uuid, label, value for each variant",
+      "Step 7: Verify algorithms array with uuid, pluginId, jsClass, configuration, conditions"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "drupalSettings includes algorithm and condition plugin class mappings",
+    "steps": [
+      "Step 1: Create feature flag with Percentage Rollout algorithm",
+      "Step 2: Load a page",
+      "Step 3: Inspect drupalSettings.featureFlags.libraries",
+      "Step 4: Verify algorithms object maps 'percentage_rollout' to 'PercentageRollout'",
+      "Step 5: Verify conditions object maps condition plugin IDs to class names"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Disabled feature flags are not attached to drupalSettings",
+    "steps": [
+      "Step 1: Create a feature flag and set it to disabled",
+      "Step 2: Load a page",
+      "Step 3: Inspect drupalSettings.featureFlags.flags",
+      "Step 4: Verify disabled flag is NOT present in the flags object"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Feature flags library is attached to pages when feature flags exist",
+    "steps": [
+      "Step 1: Create and enable a feature flag",
+      "Step 2: Load a page",
+      "Step 3: View page source",
+      "Step 4: Verify feature_flags/base library is loaded",
+      "Step 5: Verify feature_flags/feature_flags library is loaded",
+      "Step 6: Verify algorithm libraries are loaded (e.g., feature_flags/algorithm.percentage_rollout)"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "FeatureFlagManager is initialized and accessible via Drupal.featureFlags",
+    "steps": [
+      "Step 1: Create and enable a feature flag",
+      "Step 2: Load a page",
+      "Step 3: Open browser console",
+      "Step 4: Type 'Drupal.featureFlags' and press enter",
+      "Step 5: Verify it returns a FeatureFlagManager instance",
+      "Step 6: Verify instance has resolve method"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Calling Drupal.featureFlags.resolve() resolves a feature flag to a variant",
+    "steps": [
+      "Step 1: Create feature flag with 2 variants and catch-all 50/50 algorithm",
+      "Step 2: Load a page",
+      "Step 3: Open browser console",
+      "Step 4: Run: await Drupal.featureFlags.resolve('flag_machine_name')",
+      "Step 5: Verify it returns a FeatureFlagResult object",
+      "Step 6: Verify result has featureFlag, result, and variant properties"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "FeatureFlagResult.result contains parsed JSON value of selected variant",
+    "steps": [
+      "Step 1: Create flag with variant value '{\"enabled\": true}'",
+      "Step 2: Load page and resolve flag in console",
+      "Step 3: Inspect result.result property",
+      "Step 4: Verify it's a JavaScript object, not a string",
+      "Step 5: Verify it contains {enabled: true}"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "FeatureFlagResult.variant contains full variant object with uuid, label, value",
+    "steps": [
+      "Step 1: Create flag with variant",
+      "Step 2: Resolve flag",
+      "Step 3: Inspect result.variant",
+      "Step 4: Verify uuid property exists",
+      "Step 5: Verify label property exists",
+      "Step 6: Verify value property exists (as JSON string)"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "featureFlags:provideContext event fires during resolution",
+    "steps": [
+      "Step 1: Load page with feature flag",
+      "Step 2: Add event listener: document.addEventListener('featureFlags:provideContext', (e) => console.log('fired'))",
+      "Step 3: Resolve a feature flag",
+      "Step 4: Verify 'fired' appears in console",
+      "Step 5: Verify event.detail has addContext method"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Context can be added via provideContext event",
+    "steps": [
+      "Step 1: Add event listener that calls event.detail.addContext('user_id', '123')",
+      "Step 2: Create flag with User ID condition for '123'",
+      "Step 3: Resolve flag",
+      "Step 4: Verify condition evaluates using provided user_id context"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Default context includes randomly generated user_id if not provided",
+    "steps": [
+      "Step 1: Create flag with 50/50 percentage rollout",
+      "Step 2: Resolve flag without providing user_id context",
+      "Step 3: Verify resolution succeeds",
+      "Step 4: Verify algorithm uses generated UUID for bucketing"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Percentage rollout algorithm distributes users based on configured percentages",
+    "steps": [
+      "Step 1: Create flag with 2 variants at 50/50 split",
+      "Step 2: Resolve flag 100 times with different user_id values",
+      "Step 3: Count how many times each variant is selected",
+      "Step 4: Verify distribution is approximately 50/50 (within reasonable margin)",
+      "Step 5: Test with 25/75 split and verify different distribution"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Percentage rollout uses deterministic hashing when persistence enabled",
+    "steps": [
+      "Step 1: Enable persistence in settings",
+      "Step 2: Create flag with 50/50 split",
+      "Step 3: Provide context with user_id '123'",
+      "Step 4: Resolve flag and note which variant is returned",
+      "Step 5: Resolve flag again with same user_id",
+      "Step 6: Verify same variant is returned"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Percentage rollout uses random selection when persistence disabled",
+    "steps": [
+      "Step 1: Disable persistence in settings",
+      "Step 2: Create flag with 50/50 split",
+      "Step 3: Resolve flag multiple times",
+      "Step 4: Verify different variants may be returned across calls"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "User ID condition matches when user_id is in configured list (OR operator)",
+    "steps": [
+      "Step 1: Create flag with algorithm that has User ID condition for '1,5,10' with OR operator",
+      "Step 2: Provide context with user_id '5'",
+      "Step 3: Resolve flag",
+      "Step 4: Verify algorithm with condition is used",
+      "Step 5: Provide context with user_id '99'",
+      "Step 6: Resolve flag",
+      "Step 7: Verify algorithm with condition is NOT used (falls to catch-all)"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "User ID condition with NOT operator inverts match logic",
+    "steps": [
+      "Step 1: Create flag with User ID condition for '1' with NOT operator",
+      "Step 2: Provide context with user_id '1'",
+      "Step 3: Resolve flag",
+      "Step 4: Verify condition evaluates to false (algorithm not used)",
+      "Step 5: Provide context with user_id '2'",
+      "Step 6: Verify condition evaluates to true (algorithm used)"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "User Tier condition matches when user_tier is in configured list",
+    "steps": [
+      "Step 1: Create flag with User Tier condition for 'premium,enterprise'",
+      "Step 2: Provide context with user_tier 'premium'",
+      "Step 3: Resolve flag",
+      "Step 4: Verify condition matches and algorithm is used",
+      "Step 5: Provide context with user_tier 'free'",
+      "Step 6: Verify condition doesn't match"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "User Tier condition matching is case-sensitive",
+    "steps": [
+      "Step 1: Create flag with User Tier condition for 'premium'",
+      "Step 2: Provide context with user_tier 'Premium' (capital P)",
+      "Step 3: Resolve flag",
+      "Step 4: Verify condition doesn't match (case mismatch)",
+      "Step 5: Provide context with user_tier 'premium' (lowercase)",
+      "Step 6: Verify condition matches"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Multiple conditions on same algorithm are evaluated with proper logic",
+    "steps": [
+      "Step 1: Create flag with algorithm having 2 conditions",
+      "Step 2: Set both to OR operator",
+      "Step 3: Provide context where only first condition matches",
+      "Step 4: Verify algorithm is used (any condition can match with OR)",
+      "Step 5: Provide context where neither condition matches",
+      "Step 6: Verify algorithm is not used"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Algorithms are evaluated in order by weight",
+    "steps": [
+      "Step 1: Create flag with 2 algorithms",
+      "Step 2: Set first algorithm (lower weight) with User ID condition for '1'",
+      "Step 3: Set second algorithm (higher weight) as catch-all",
+      "Step 4: Provide context with user_id '1'",
+      "Step 5: Resolve flag",
+      "Step 6: Verify first algorithm is used (not catch-all)",
+      "Step 7: Provide context with user_id '2'",
+      "Step 8: Verify second algorithm (catch-all) is used"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "First algorithm with matching conditions is used (stops evaluation)",
+    "steps": [
+      "Step 1: Create flag with 3 algorithms with overlapping conditions",
+      "Step 2: Set all algorithms to different variants",
+      "Step 3: Provide context that matches all 3 algorithms",
+      "Step 4: Resolve flag",
+      "Step 5: Verify variant from first algorithm is returned",
+      "Step 6: Verify subsequent algorithms are not evaluated"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Persistence stores decision in localStorage when enabled",
+    "steps": [
+      "Step 1: Enable persistence in settings",
+      "Step 2: Clear localStorage",
+      "Step 3: Create and resolve a feature flag",
+      "Step 4: Inspect localStorage",
+      "Step 5: Verify key 'feature_flags:{flag_id}' exists",
+      "Step 6: Verify stored value contains variant_uuid and timestamp"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Cached decision is returned on subsequent resolves when persistence enabled",
+    "steps": [
+      "Step 1: Enable persistence",
+      "Step 2: Create flag with 50/50 split",
+      "Step 3: Resolve flag and note variant",
+      "Step 4: Resolve flag again",
+      "Step 5: Verify same variant is returned (from cache)",
+      "Step 6: Verify no re-evaluation occurs"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Decisions are not persisted when persistence disabled",
+    "steps": [
+      "Step 1: Disable persistence in settings",
+      "Step 2: Clear localStorage",
+      "Step 3: Create and resolve a feature flag",
+      "Step 4: Inspect localStorage",
+      "Step 5: Verify no feature_flags keys are present"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Clearing localStorage invalidates cached decisions",
+    "steps": [
+      "Step 1: Enable persistence",
+      "Step 2: Resolve flag and note variant",
+      "Step 3: Clear localStorage",
+      "Step 4: Resolve flag again",
+      "Step 5: Verify new evaluation occurs (may return different variant)"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Debug mode logs resolution steps to console when enabled",
+    "steps": [
+      "Step 1: Enable debug mode in settings",
+      "Step 2: Create feature flag",
+      "Step 3: Open browser console",
+      "Step 4: Resolve flag",
+      "Step 5: Verify console.debug messages appear",
+      "Step 6: Verify logs include 'Resolving flag:', 'Context:', 'Evaluating algorithm:', 'Decision:'"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Debug mode is silent when disabled",
+    "steps": [
+      "Step 1: Disable debug mode in settings",
+      "Step 2: Clear console",
+      "Step 3: Resolve a feature flag",
+      "Step 4: Verify no debug messages appear in console"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Debug logs show context object values",
+    "steps": [
+      "Step 1: Enable debug mode",
+      "Step 2: Provide context with multiple keys",
+      "Step 3: Resolve flag",
+      "Step 4: Verify debug log shows context object with all provided keys and values"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Debug logs show algorithm evaluation results",
+    "steps": [
+      "Step 1: Enable debug mode",
+      "Step 2: Create flag with 2 algorithms",
+      "Step 3: Resolve flag",
+      "Step 4: Verify logs show 'Evaluating algorithm: {name}' for each algorithm",
+      "Step 5: Verify logs show which algorithm's conditions were met"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Debug logs show condition evaluation results",
+    "steps": [
+      "Step 1: Enable debug mode",
+      "Step 2: Create flag with algorithm containing conditions",
+      "Step 3: Resolve flag",
+      "Step 4: Verify logs show 'Condition {id} ({operator}): {true/false}' for each condition"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Debug logs show final decision with variant label and UUID",
+    "steps": [
+      "Step 1: Enable debug mode",
+      "Step 2: Resolve flag",
+      "Step 3: Verify final log shows 'Decision: variant {label} ({uuid})'"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "BaseAlgorithm provides hashString helper for deterministic bucketing",
+    "steps": [
+      "Step 1: Create custom algorithm that extends BaseAlgorithm",
+      "Step 2: Call hashString with same input multiple times",
+      "Step 3: Verify same hash is returned each time",
+      "Step 4: Call with different input",
+      "Step 5: Verify different hash is returned"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "BaseAlgorithm provides getVariantByUuid helper",
+    "steps": [
+      "Step 1: Create algorithm instance with variants",
+      "Step 2: Call getVariantByUuid with valid UUID",
+      "Step 3: Verify correct variant object is returned",
+      "Step 4: Call with invalid UUID",
+      "Step 5: Verify appropriate handling (null or error)"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "BaseCondition provides getContextValue helper",
+    "steps": [
+      "Step 1: Create condition instance",
+      "Step 2: Call getContextValue with valid context key",
+      "Step 3: Verify value is returned",
+      "Step 4: Call with missing key",
+      "Step 5: Verify undefined or appropriate default is returned"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "BaseCondition applyOperator helper applies AND/OR/NOT logic correctly",
+    "steps": [
+      "Step 1: Test applyOperator with AND operator and all true matches",
+      "Step 2: Verify returns true",
+      "Step 3: Test with AND operator and one false match",
+      "Step 4: Verify returns false",
+      "Step 5: Test with OR operator and at least one true match",
+      "Step 6: Verify returns true",
+      "Step 7: Test with NOT operator",
+      "Step 8: Verify inverts the result"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Module works on Drupal 10.3.x",
+    "steps": [
+      "Step 1: Install module on Drupal 10.3.x instance",
+      "Step 2: Create feature flag",
+      "Step 3: Resolve flag on frontend",
+      "Step 4: Verify all functionality works without errors"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Module works on Drupal 10.4.x",
+    "steps": [
+      "Step 1: Install module on Drupal 10.4.x instance",
+      "Step 2: Create feature flag",
+      "Step 3: Resolve flag on frontend",
+      "Step 4: Verify all functionality works without errors"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Module works on Drupal 11.0.x",
+    "steps": [
+      "Step 1: Install module on Drupal 11.0.x instance",
+      "Step 2: Create feature flag",
+      "Step 3: Resolve flag on frontend",
+      "Step 4: Verify all functionality works without errors"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Module works on Drupal 11.1.x",
+    "steps": [
+      "Step 1: Install module on Drupal 11.1.x instance (current environment)",
+      "Step 2: Create feature flag",
+      "Step 3: Resolve flag on frontend",
+      "Step 4: Verify all functionality works without errors"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "PHP 8.2 features are used appropriately (readonly properties)",
+    "steps": [
+      "Step 1: Review plugin base classes",
+      "Step 2: Verify readonly properties are used where immutability needed",
+      "Step 3: Verify code runs without PHP version errors"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "PHP 8.2 constructor property promotion is used",
+    "steps": [
+      "Step 1: Review class constructors in plugin system",
+      "Step 2: Verify constructor parameter properties are promoted where appropriate",
+      "Step 3: Verify syntax is valid PHP 8.2+"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Async context providers work with featureFlags:provideContext event",
+    "steps": [
+      "Step 1: Add event listener that returns async function with await delay",
+      "Step 2: Resolve feature flag",
+      "Step 3: Verify resolution waits for async context provider",
+      "Step 4: Verify context from async provider is used"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Module handles missing context keys gracefully",
+    "steps": [
+      "Step 1: Create flag with User ID condition",
+      "Step 2: Don't provide user_id context",
+      "Step 3: Resolve flag",
+      "Step 4: Verify condition evaluates as false (doesn't crash)",
+      "Step 5: Verify falls back to catch-all algorithm"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Module handles deleted variant references in algorithms gracefully",
+    "steps": [
+      "Step 1: Create flag with 3 variants",
+      "Step 2: Configure algorithm with percentages for all 3",
+      "Step 3: Delete one variant",
+      "Step 4: Verify form validation catches invalid algorithm configuration",
+      "Step 5: Reconfigure algorithm to fix references"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Drupal.once() prevents duplicate context provider registrations",
+    "steps": [
+      "Step 1: Add context provider that uses Drupal.once()",
+      "Step 2: Trigger Drupal.behaviors attach multiple times",
+      "Step 3: Verify context provider only registers once",
+      "Step 4: Verify no duplicate context values"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Variant JSON values can contain complex nested objects",
+    "steps": [
+      "Step 1: Create variant with value: '{\"config\": {\"enabled\": true, \"settings\": [1,2,3]}}'",
+      "Step 2: Save feature flag",
+      "Step 3: Resolve flag",
+      "Step 4: Verify result.result contains properly parsed nested object"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Variant JSON values can contain arrays",
+    "steps": [
+      "Step 1: Create variant with value: '[\"option1\", \"option2\", \"option3\"]'",
+      "Step 2: Resolve flag",
+      "Step 3: Verify result.result is an array with 3 elements"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Variant JSON values can contain scalar values (strings, numbers, booleans)",
+    "steps": [
+      "Step 1: Create variants with values: 'true', '42', '\"hello\"'",
+      "Step 2: Resolve flag multiple times",
+      "Step 3: Verify result.result contains proper JavaScript types (boolean, number, string)"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Feature flag can have more than 2 variants",
+    "steps": [
+      "Step 1: Create flag with 5 variants",
+      "Step 2: Configure percentage rollout: 20/20/20/20/20",
+      "Step 3: Save successfully",
+      "Step 4: Resolve flag multiple times",
+      "Step 5: Verify all 5 variants can be selected"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Edge case: 0% percentage allocation prevents variant from being selected",
+    "steps": [
+      "Step 1: Create flag with 3 variants: 50/50/0 split",
+      "Step 2: Resolve flag 100 times",
+      "Step 3: Verify third variant (0%) is never selected"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Edge case: 100% percentage allocation always selects that variant",
+    "steps": [
+      "Step 1: Create flag with 2 variants: 100/0 split",
+      "Step 2: Resolve flag multiple times with different contexts",
+      "Step 3: Verify first variant is always selected"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Feature flag with no enabled algorithms returns catch-all result",
+    "steps": [
+      "Step 1: Create flag with only catch-all algorithm",
+      "Step 2: Resolve flag with any context",
+      "Step 3: Verify catch-all algorithm is always used"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "UUIDs are properly generated for variants on creation",
+    "steps": [
+      "Step 1: Create feature flag with 2 variants",
+      "Step 2: Save flag",
+      "Step 3: Export config or inspect entity",
+      "Step 4: Verify each variant has valid UUID v4",
+      "Step 5: Verify UUIDs are unique"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "UUIDs are properly generated for algorithms on creation",
+    "steps": [
+      "Step 1: Create feature flag with 2 algorithms",
+      "Step 2: Save flag",
+      "Step 3: Inspect config",
+      "Step 4: Verify each algorithm has valid UUID v4",
+      "Step 5: Verify UUIDs are unique"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "UUIDs are properly generated for conditions on creation",
+    "steps": [
+      "Step 1: Create algorithm with 2 conditions",
+      "Step 2: Save flag",
+      "Step 3: Inspect config",
+      "Step 4: Verify each condition has valid UUID v4"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Variant UUIDs remain stable across edits",
+    "steps": [
+      "Step 1: Create flag with 2 variants",
+      "Step 2: Note variant UUIDs",
+      "Step 3: Edit flag and change variant labels",
+      "Step 4: Save flag",
+      "Step 5: Verify UUIDs haven't changed"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Algorithm weight field allows reordering via direct input",
+    "steps": [
+      "Step 1: Create flag with 3 algorithms",
+      "Step 2: Set weight values: 0, 5, 10",
+      "Step 3: Save flag",
+      "Step 4: Verify algorithms are evaluated in weight order"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Form AJAX operations don't lose user-entered data",
+    "steps": [
+      "Step 1: Start creating feature flag",
+      "Step 2: Enter variant labels and values",
+      "Step 3: Click 'Add variant' (AJAX operation)",
+      "Step 4: Verify existing variant data is preserved",
+      "Step 5: Click 'Add algorithm' (AJAX operation)",
+      "Step 6: Verify all variant data is still preserved"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Permission 'administer feature flags' controls access to admin pages",
+    "steps": [
+      "Step 1: Create user without 'administer feature flags' permission",
+      "Step 2: Log in as that user",
+      "Step 3: Try to access /admin/config/services/feature-flags",
+      "Step 4: Verify access denied",
+      "Step 5: Grant permission to user",
+      "Step 6: Verify access is now allowed"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Config schema validates feature flag configuration structure",
+    "steps": [
+      "Step 1: Create feature flag with valid config",
+      "Step 2: Verify no schema validation errors",
+      "Step 3: Manually create malformed config YAML",
+      "Step 4: Try to import config",
+      "Step 5: Verify schema validation catches errors"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Config schema defines all required properties for feature_flags.settings",
+    "steps": [
+      "Step 1: Review config/schema/feature_flags.schema.yml",
+      "Step 2: Verify schema defines debug, persist, exclude_from_config_export",
+      "Step 3: Verify types are correct (boolean)",
+      "Step 4: Test importing config with schema validation"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Config schema defines all properties for feature_flag entity",
+    "steps": [
+      "Step 1: Review config schema for feature_flag entity type",
+      "Step 2: Verify all entity properties have schema definitions",
+      "Step 3: Verify nested structures (variants, algorithms, conditions) have proper mapping",
+      "Step 4: Test config import validates against schema"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Services file defines decision algorithm plugin manager",
+    "steps": [
+      "Step 1: Review feature_flags.services.yml",
+      "Step 2: Verify plugin.manager.feature_flags.decision_algorithm service exists",
+      "Step 3: Verify it extends DefaultPluginManager",
+      "Step 4: Verify it scans src/Plugin/DecisionAlgorithm directory"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Services file defines algorithm condition plugin manager",
+    "steps": [
+      "Step 1: Review feature_flags.services.yml",
+      "Step 2: Verify plugin.manager.feature_flags.algorithm_condition service exists",
+      "Step 3: Verify proper configuration"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "DecisionAlgorithm annotation class exists with required properties",
+    "steps": [
+      "Step 1: Review src/Annotation/DecisionAlgorithm.php",
+      "Step 2: Verify class extends Plugin annotation",
+      "Step 3: Verify properties: id, label, description, js_library, js_class",
+      "Step 4: Verify proper documentation"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "AlgorithmCondition annotation class exists with required properties",
+    "steps": [
+      "Step 1: Review src/Annotation/AlgorithmCondition.php",
+      "Step 2: Verify class extends Plugin annotation",
+      "Step 3: Verify properties: id, label, description, context_key, js_library, js_class"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "DecisionAlgorithmInterface defines all required methods",
+    "steps": [
+      "Step 1: Review interface definition",
+      "Step 2: Verify methods: defaultConfiguration, buildConfigurationForm, validateConfigurationForm, submitConfigurationForm, getConfiguration, setConfiguration, getJavaScriptSettings",
+      "Step 3: Verify proper PHPDoc"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "AlgorithmConditionInterface defines all required methods",
+    "steps": [
+      "Step 1: Review interface definition",
+      "Step 2: Verify includes all configuration methods",
+      "Step 3: Verify includes getContextKey method"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "DecisionAlgorithmPluginBase provides base implementation",
+    "steps": [
+      "Step 1: Review base class",
+      "Step 2: Verify it implements interface",
+      "Step 3: Verify it provides configuration storage and getters/setters",
+      "Step 4: Verify child classes can extend it"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "AlgorithmConditionPluginBase provides base implementation",
+    "steps": [
+      "Step 1: Review base class",
+      "Step 2: Verify proper implementation of interface",
+      "Step 3: Verify configuration handling"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "PercentageRollout plugin has proper annotation",
+    "steps": [
+      "Step 1: Review PercentageRollout.php",
+      "Step 2: Verify @DecisionAlgorithm annotation",
+      "Step 3: Verify id = 'percentage_rollout'",
+      "Step 4: Verify js_library and js_class point to correct files"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "PercentageRollout plugin implements defaultConfiguration correctly",
+    "steps": [
+      "Step 1: Instantiate PercentageRollout plugin",
+      "Step 2: Call defaultConfiguration()",
+      "Step 3: Verify returns array with 'percentages' key",
+      "Step 4: Verify default is empty array"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "PercentageRollout buildConfigurationForm shows percentage inputs for each variant",
+    "steps": [
+      "Step 1: Create form with PercentageRollout plugin",
+      "Step 2: Provide 3 variants via form state",
+      "Step 3: Verify form shows 3 number inputs",
+      "Step 4: Verify each input labeled with variant label",
+      "Step 5: Verify inputs have min=0, max=100 attributes"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "PercentageRollout validateConfigurationForm rejects non-100% sums",
+    "steps": [
+      "Step 1: Build configuration form",
+      "Step 2: Submit with percentages summing to 90",
+      "Step 3: Call validateConfigurationForm",
+      "Step 4: Verify validation error is set",
+      "Step 5: Verify error message mentions 100% requirement"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "PercentageRollout validateConfigurationForm accepts 100% sum",
+    "steps": [
+      "Step 1: Submit configuration with percentages summing to 100",
+      "Step 2: Call validateConfigurationForm",
+      "Step 3: Verify no validation errors"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "PercentageRollout getJavaScriptSettings returns percentages map",
+    "steps": [
+      "Step 1: Configure plugin with percentages",
+      "Step 2: Call getJavaScriptSettings()",
+      "Step 3: Verify returns array with 'percentages' key",
+      "Step 4: Verify value is map of UUID to percentage"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "UserId condition plugin has proper annotation",
+    "steps": [
+      "Step 1: Review UserId.php",
+      "Step 2: Verify @AlgorithmCondition annotation",
+      "Step 3: Verify context_key = 'user_id'",
+      "Step 4: Verify js_library and js_class are set"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "UserId buildConfigurationForm shows comma-separated textfield",
+    "steps": [
+      "Step 1: Build condition configuration form",
+      "Step 2: Verify textfield for 'values' exists",
+      "Step 3: Verify description mentions comma-separated format"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "UserId submitConfigurationForm parses comma-separated values to array",
+    "steps": [
+      "Step 1: Submit form with values '1, 5, 10'",
+      "Step 2: Call submitConfigurationForm",
+      "Step 3: Retrieve configuration",
+      "Step 4: Verify values is array ['1', '5', '10']",
+      "Step 5: Verify whitespace is trimmed"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "UserId getJavaScriptSettings returns values array",
+    "steps": [
+      "Step 1: Configure UserId condition with values",
+      "Step 2: Call getJavaScriptSettings()",
+      "Step 3: Verify returns array with 'values' key",
+      "Step 4: Verify value is array of user IDs"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "UserTier condition plugin has proper annotation",
+    "steps": [
+      "Step 1: Review UserTier.php",
+      "Step 2: Verify @AlgorithmCondition annotation",
+      "Step 3: Verify context_key = 'user_tier'"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "UserTier configuration form allows entering tier values",
+    "steps": [
+      "Step 1: Build UserTier configuration form",
+      "Step 2: Verify textfield for tier values",
+      "Step 3: Submit with 'free, premium, enterprise'",
+      "Step 4: Verify values are parsed to array"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "FeatureFlag entity class has proper entity annotation",
+    "steps": [
+      "Step 1: Review FeatureFlag.php",
+      "Step 2: Verify @ConfigEntityType annotation",
+      "Step 3: Verify id = 'feature_flag'",
+      "Step 4: Verify handlers for list_builder, form, delete",
+      "Step 5: Verify config_prefix and entity_keys"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "FeatureFlag entity defines all required properties",
+    "steps": [
+      "Step 1: Review entity class properties",
+      "Step 2: Verify id, label, description, status, variants, algorithms",
+      "Step 3: Verify proper types and defaults"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "FeatureFlag entity provides methods for managing variants",
+    "steps": [
+      "Step 1: Review entity methods",
+      "Step 2: Verify methods like getVariants(), addVariant(), removeVariant() exist",
+      "Step 3: Test adding variant programmatically",
+      "Step 4: Test removing variant programmatically"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "FeatureFlag entity provides methods for managing algorithms",
+    "steps": [
+      "Step 1: Verify methods for getAlgorithms(), addAlgorithm(), removeAlgorithm()",
+      "Step 2: Test adding algorithm programmatically",
+      "Step 3: Test reordering algorithms"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "FeatureFlagListBuilder formats enabled/disabled status as badges",
+    "steps": [
+      "Step 1: Create enabled and disabled feature flags",
+      "Step 2: View feature flags list",
+      "Step 3: Verify enabled flag shows 'Enabled' badge (likely green)",
+      "Step 4: Verify disabled flag shows 'Disabled' badge (likely gray/red)"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "FeatureFlagListBuilder counts variants correctly",
+    "steps": [
+      "Step 1: Create flag with 5 variants",
+      "Step 2: View list",
+      "Step 3: Verify Variants count column shows '5'"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "FeatureFlagListBuilder counts algorithms correctly",
+    "steps": [
+      "Step 1: Create flag with 3 algorithms",
+      "Step 2: View list",
+      "Step 3: Verify Algorithms count column shows '3'"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "FeatureFlagForm uses vertical tabs for organization",
+    "steps": [
+      "Step 1: Load feature flag add/edit form",
+      "Step 2: Verify vertical tabs element is present",
+      "Step 3: Verify tabs: Basic Information, Variants, Decision Algorithms",
+      "Step 4: Click each tab and verify content switches"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "FeatureFlagForm subform state allows plugins to access parent form data",
+    "steps": [
+      "Step 1: Review form code for plugin configuration subforms",
+      "Step 2: Verify SubformState or similar is used",
+      "Step 3: Verify plugins can access variant list from parent form",
+      "Step 4: Test PercentageRollout reading variants during form build"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "SettingsForm saves configuration to feature_flags.settings config",
+    "steps": [
+      "Step 1: Submit settings form with changes",
+      "Step 2: Use Drush to get config: drush config:get feature_flags.settings",
+      "Step 3: Verify saved values match form input"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "FeatureFlagDeleteForm shows proper confirmation message",
+    "steps": [
+      "Step 1: Navigate to delete form for 'Test Flag'",
+      "Step 2: Verify message mentions deleting 'Test Flag'",
+      "Step 3: Verify message warns about permanent deletion"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Routing file defines all required routes",
+    "steps": [
+      "Step 1: Review feature_flags.routing.yml",
+      "Step 2: Verify routes for: settings, list, add, edit, delete",
+      "Step 3: Verify proper path patterns",
+      "Step 4: Verify requirements include permission check",
+      "Step 5: Verify _entity_form and _entity_list keys where appropriate"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Menu links appear in admin/config/services",
+    "steps": [
+      "Step 1: Review feature_flags.links.menu.yml",
+      "Step 2: Verify link with proper parent and route",
+      "Step 3: Navigate to /admin/config/services",
+      "Step 4: Verify 'Feature Flags' link appears"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Task links create proper tabs",
+    "steps": [
+      "Step 1: Review feature_flags.links.task.yml",
+      "Step 2: Verify Settings and Feature Flags tabs defined",
+      "Step 3: Navigate to feature flags section",
+      "Step 4: Verify tabs appear and work correctly"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Action link for 'Add feature flag' appears on list page",
+    "steps": [
+      "Step 1: Review feature_flags.links.action.yml",
+      "Step 2: Verify action link defined for list route",
+      "Step 3: Navigate to list page",
+      "Step 4: Verify 'Add feature flag' button appears",
+      "Step 5: Click button and verify navigation to add form"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Libraries file defines base library with all base classes",
+    "steps": [
+      "Step 1: Review feature_flags.libraries.yml",
+      "Step 2: Verify feature_flags/base library",
+      "Step 3: Verify it includes all files from js/base/",
+      "Step 4: Verify dependencies on core libraries"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Libraries file defines algorithm libraries",
+    "steps": [
+      "Step 1: Verify feature_flags/algorithm.percentage_rollout library",
+      "Step 2: Verify it includes js/algorithm/PercentageRollout.js",
+      "Step 3: Verify dependency on feature_flags/base"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Libraries file defines condition libraries",
+    "steps": [
+      "Step 1: Verify feature_flags/condition.user_id library",
+      "Step 2: Verify feature_flags/condition.user_tier library",
+      "Step 3: Verify proper JS files and dependencies"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Libraries file defines json_editor library with CDN resources",
+    "steps": [
+      "Step 1: Review feature_flags/json_editor library",
+      "Step 2: Verify CDN URLs for CodeMirror CSS and JS",
+      "Step 3: Verify jsonlint is included",
+      "Step 4: Verify all required addons (lint, javascript mode)",
+      "Step 5: Verify resources are marked as external"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Libraries file defines admin_form library",
+    "steps": [
+      "Step 1: Verify feature_flags/admin_form library exists",
+      "Step 2: Verify includes admin-specific JS and CSS",
+      "Step 3: Verify dependencies include json_editor and AJAX libraries"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "JavaScript FeatureFlagConfig class properly represents flag configuration",
+    "steps": [
+      "Step 1: Load page with feature flag",
+      "Step 2: Instantiate FeatureFlagConfig from drupalSettings",
+      "Step 3: Verify properties: id, label, variants, algorithms",
+      "Step 4: Verify structure matches specification"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "JavaScript FeatureFlagResult class properly encapsulates result",
+    "steps": [
+      "Step 1: Resolve a feature flag",
+      "Step 2: Inspect returned FeatureFlagResult",
+      "Step 3: Verify featureFlag property is FeatureFlagConfig",
+      "Step 4: Verify result property is parsed JSON",
+      "Step 5: Verify variant property is full variant object"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "JavaScript PercentageRollout class extends BaseAlgorithm",
+    "steps": [
+      "Step 1: Review js/algorithm/PercentageRollout.js",
+      "Step 2: Verify class extends BaseAlgorithm",
+      "Step 3: Verify constructor accepts variants and config",
+      "Step 4: Verify decide method implementation"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "JavaScript UserIdCondition class extends BaseCondition",
+    "steps": [
+      "Step 1: Review js/condition/UserId.js",
+      "Step 2: Verify class extends BaseCondition",
+      "Step 3: Verify evaluate method implementation"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "JavaScript UserTierCondition class extends BaseCondition",
+    "steps": [
+      "Step 1: Review js/condition/UserTier.js",
+      "Step 2: Verify class extends BaseCondition",
+      "Step 3: Verify evaluate method implementation"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "feature_flags.js behavior initializes FeatureFlagManager and attaches to Drupal.featureFlags",
+    "steps": [
+      "Step 1: Review js/feature_flags.js",
+      "Step 2: Verify Drupal.behaviors.featureFlags is defined",
+      "Step 3: Verify attach method creates FeatureFlagManager",
+      "Step 4: Verify it assigns to Drupal.featureFlags",
+      "Step 5: Test on actual page load"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "json_editor.js behavior initializes CodeMirror on marked textareas",
+    "steps": [
+      "Step 1: Review js/json_editor.js",
+      "Step 2: Verify selector targets data-json-editor attribute",
+      "Step 3: Verify CodeMirror initialization with JSON mode",
+      "Step 4: Verify lint configuration",
+      "Step 5: Test on feature flag form"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Module file implements necessary hooks",
+    "steps": [
+      "Step 1: Review feature_flags.module",
+      "Step 2: Verify hook_page_attachments implementation",
+      "Step 3: Verify any other required hooks (theme, help, etc.)",
+      "Step 4: Verify proper documentation"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "hook_page_attachments loads feature flags and settings into drupalSettings",
+    "steps": [
+      "Step 1: Review hook implementation",
+      "Step 2: Verify it loads all enabled feature flags",
+      "Step 3: Verify it attaches module settings",
+      "Step 4: Verify it attaches necessary libraries",
+      "Step 5: Test on actual page"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Only libraries for active plugins are attached",
+    "steps": [
+      "Step 1: Create flag using only PercentageRollout (not User ID)",
+      "Step 2: Load page",
+      "Step 3: Verify feature_flags/algorithm.percentage_rollout is loaded",
+      "Step 4: Verify feature_flags/condition.user_id is NOT loaded (optimization)"
+    ],
+    "passes": false
+  },
+  {
+    "category": "style",
+    "description": "Settings form follows Drupal admin theme styling",
+    "steps": [
+      "Step 1: Navigate to settings form",
+      "Step 2: Take screenshot",
+      "Step 3: Verify form uses standard Drupal form styling",
+      "Step 4: Verify checkboxes are properly styled",
+      "Step 5: Verify descriptions appear in help text style"
+    ],
+    "passes": false
+  },
+  {
+    "category": "style",
+    "description": "Feature flags list table is properly formatted",
+    "steps": [
+      "Step 1: Create several feature flags",
+      "Step 2: Navigate to list page",
+      "Step 3: Take screenshot",
+      "Step 4: Verify table has clear column headers",
+      "Step 5: Verify rows are readable with proper spacing",
+      "Step 6: Verify status badges are visually distinct"
+    ],
+    "passes": false
+  },
+  {
+    "category": "style",
+    "description": "Vertical tabs on feature flag form are styled correctly",
+    "steps": [
+      "Step 1: Navigate to add feature flag form",
+      "Step 2: Take screenshot",
+      "Step 3: Verify vertical tabs appear on left side",
+      "Step 4: Verify active tab is highlighted",
+      "Step 5: Verify tab content area is distinct"
+    ],
+    "passes": false
+  },
+  {
+    "category": "style",
+    "description": "CodeMirror JSON editor is styled to fit Drupal admin theme",
+    "steps": [
+      "Step 1: Navigate to variant configuration",
+      "Step 2: Take screenshot of JSON editor",
+      "Step 3: Verify editor fits well within form",
+      "Step 4: Verify line numbers are visible",
+      "Step 5: Verify syntax colors are readable",
+      "Step 6: Verify lint gutter is present"
+    ],
+    "passes": false
+  },
+  {
+    "category": "style",
+    "description": "Algorithm details sections have clear visual hierarchy",
+    "steps": [
+      "Step 1: Create flag with multiple algorithms",
+      "Step 2: Take screenshot",
+      "Step 3: Verify each algorithm is in distinct details element",
+      "Step 4: Verify drag handles are visible",
+      "Step 5: Verify nested conditions section is clearly subordinate"
+    ],
+    "passes": false
+  },
+  {
+    "category": "style",
+    "description": "Add/Remove buttons are consistently styled",
+    "steps": [
+      "Step 1: Review feature flag form",
+      "Step 2: Take screenshot",
+      "Step 3: Verify all 'Add' buttons use same style",
+      "Step 4: Verify all 'Remove' buttons use same style",
+      "Step 5: Verify buttons are distinguishable from primary actions"
+    ],
+    "passes": false
+  },
+  {
+    "category": "style",
+    "description": "Condition configuration forms are properly indented within algorithms",
+    "steps": [
+      "Step 1: Add algorithm with conditions",
+      "Step 2: Take screenshot",
+      "Step 3: Verify conditions appear indented/nested under algorithm",
+      "Step 4: Verify visual hierarchy is clear"
+    ],
+    "passes": false
+  },
+  {
+    "category": "style",
+    "description": "Form validation errors are clearly displayed",
+    "steps": [
+      "Step 1: Submit invalid form (e.g., percentages don't sum to 100)",
+      "Step 2: Take screenshot",
+      "Step 3: Verify error messages appear at top of form",
+      "Step 4: Verify error messages are in red/error color",
+      "Step 5: Verify invalid fields are highlighted"
+    ],
+    "passes": false
+  },
+  {
+    "category": "style",
+    "description": "Success messages are clearly displayed after save",
+    "steps": [
+      "Step 1: Save a feature flag successfully",
+      "Step 2: Take screenshot",
+      "Step 3: Verify success message appears at top",
+      "Step 4: Verify message uses success color (green)",
+      "Step 5: Verify message is dismissible"
+    ],
+    "passes": false
+  },
+  {
+    "category": "style",
+    "description": "Delete confirmation form has warning styling",
+    "steps": [
+      "Step 1: Navigate to delete confirmation",
+      "Step 2: Take screenshot",
+      "Step 3: Verify warning message is prominent",
+      "Step 4: Verify 'Delete' button is styled as dangerous action (red)",
+      "Step 5: Verify 'Cancel' link is less prominent"
+    ],
+    "passes": false
+  },
+  {
+    "category": "style",
+    "description": "Empty state on feature flags list is helpful",
+    "steps": [
+      "Step 1: Ensure no feature flags exist",
+      "Step 2: Navigate to list page",
+      "Step 3: Take screenshot",
+      "Step 4: Verify empty state message is centered and clear",
+      "Step 5: Verify 'Add feature flag' action is prominent"
+    ],
+    "passes": false
+  },
+  {
+    "category": "style",
+    "description": "Percentage input fields have clear labels and units",
+    "steps": [
+      "Step 1: Add percentage rollout algorithm",
+      "Step 2: Take screenshot",
+      "Step 3: Verify each variant has clear label",
+      "Step 4: Verify percentage symbol or label is present",
+      "Step 5: Verify inputs are aligned"
+    ],
+    "passes": false
+  },
+  {
+    "category": "style",
+    "description": "Drag handles for algorithm reordering are visible and intuitive",
+    "steps": [
+      "Step 1: Create flag with multiple algorithms",
+      "Step 2: Take screenshot",
+      "Step 3: Verify drag handle icon is present",
+      "Step 4: Verify handle appears on hover or is always visible",
+      "Step 5: Verify cursor changes to grab cursor on hover"
+    ],
+    "passes": false
+  },
+  {
+    "category": "style",
+    "description": "Tabs (Settings and Feature Flags) are clearly differentiated",
+    "steps": [
+      "Step 1: Navigate to feature flags section",
+      "Step 2: Take screenshot",
+      "Step 3: Verify active tab is highlighted",
+      "Step 4: Verify inactive tab is clickable",
+      "Step 5: Click other tab and verify visual change"
+    ],
+    "passes": false
+  },
+  {
+    "category": "style",
+    "description": "Admin form CSS provides responsive layout",
+    "steps": [
+      "Step 1: Load feature flag form in full-width browser",
+      "Step 2: Take screenshot",
+      "Step 3: Resize browser to narrower width",
+      "Step 4: Take screenshot",
+      "Step 5: Verify form adapts gracefully (no horizontal scroll, proper wrapping)"
+    ],
+    "passes": false
+  },
+  {
+    "category": "style",
+    "description": "Machine name field shows edit/lock toggle clearly",
+    "steps": [
+      "Step 1: Navigate to add form",
+      "Step 2: Take screenshot",
+      "Step 3: Verify machine name field has 'Edit' button when locked",
+      "Step 4: Click Edit and verify field becomes editable",
+      "Step 5: Verify visual state change is clear"
+    ],
+    "passes": false
+  },
+  {
+    "category": "style",
+    "description": "Operator dropdown in conditions is clearly labeled",
+    "steps": [
+      "Step 1: Add condition to algorithm",
+      "Step 2: Take screenshot",
+      "Step 3: Verify 'Operator' label is present",
+      "Step 4: Verify dropdown options have descriptive text",
+      "Step 5: Verify selected option is clearly displayed"
+    ],
+    "passes": false
+  }
+]
