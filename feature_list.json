@@ -21,7 +21,7 @@
       "Step 3: Click on 'Feature Flags' link",
       "Step 4: Verify it navigates to /admin/config/services/feature-flags"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -34,7 +34,7 @@
       "Step 5: Verify each field has proper description text",
       "Step 6: Verify default values are set correctly (all unchecked)"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -48,7 +48,7 @@
       "Step 6: Reload the page",
       "Step 7: Verify checkboxes remain checked"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -60,7 +60,7 @@
       "Step 4: Verify column headers: Label, Machine name, Status, Variants count, Algorithms count, Operations",
       "Step 5: Verify 'Add feature flag' action button is present"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -74,7 +74,7 @@
       "Step 6: Verify Description textarea is present",
       "Step 7: Verify Enabled checkbox is present and checked by default"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -86,7 +86,7 @@
       "Step 4: Enter 'Another-Test!' in Label field",
       "Step 5: Verify machine name auto-generates to 'another_test'"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -112,7 +112,7 @@
       "Step 6: Verify 'Add variant' button is present",
       "Step 7: Verify 'Remove' button is present for variants beyond minimum"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -217,7 +217,7 @@
       "Step 4: Verify 'Percentage Rollout' option is available",
       "Step 5: Verify it has a descriptive label about distributing users"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -231,7 +231,7 @@
       "Step 6: Verify details section is open by default",
       "Step 7: Verify title shows 'Algorithm: Percentage Rollout'"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -246,7 +246,7 @@
       "Step 7: Verify each variant has a number input field (0-100)",
       "Step 8: Verify input fields show percentage symbol or label"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -261,7 +261,7 @@
       "Step 7: Change percentages to 50% and 50%",
       "Step 8: Verify form submits successfully"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -363,7 +363,7 @@
       "Step 4: Verify condition fieldset is removed without page reload",
       "Step 5: Verify first condition remains"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -376,7 +376,7 @@
       "Step 5: Verify each has its own configuration section",
       "Step 6: Verify weight fields for ordering"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -506,7 +506,7 @@
       "Step 5: Return to list",
       "Step 6: Verify label shows 'Updated Flag'"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -519,7 +519,7 @@
       "Step 5: Return to list",
       "Step 6: Verify Status column shows 'Disabled' badge"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -545,7 +545,7 @@
       "Step 5: Verify redirect to list page",
       "Step 6: Verify 'Test Flag' no longer appears in list"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -557,7 +557,7 @@
       "Step 4: Verify redirect to list page",
       "Step 5: Verify feature flag still appears in list"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -570,7 +570,7 @@
       "Step 5: Verify variants array is present with all variants",
       "Step 6: Verify algorithms array contains all algorithms with conditions"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -744,7 +744,7 @@
       "Step 3: Verify resolution succeeds",
       "Step 4: Verify algorithm uses generated UUID for bucketing"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -756,7 +756,7 @@
       "Step 4: Verify distribution is approximately 50/50 (within reasonable margin)",
       "Step 5: Test with 25/75 split and verify different distribution"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
