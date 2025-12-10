@@ -646,7 +646,7 @@
       "Step 3: Inspect drupalSettings.featureFlags.flags",
       "Step 4: Verify disabled flag is NOT present in the flags object"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -769,7 +769,7 @@
       "Step 5: Resolve flag again with same user_id",
       "Step 6: Verify same variant is returned"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
