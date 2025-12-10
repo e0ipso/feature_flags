@@ -71,11 +71,6 @@ class FeatureFlag extends ConfigEntityBase {
   protected string $description = '';
 
   /**
-   * Whether the feature flag is enabled.
-   */
-  protected bool $status = TRUE;
-
-  /**
    * The variants for this feature flag.
    *
    * Each variant has:
