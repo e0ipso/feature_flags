@@ -8,3 +8,9 @@ services:
     class: Drupal\feature_flags\AlgorithmConditionPluginManager
     autowire: true
     parent: default_plugin_manager
+
+  feature_flags.config_exclude_subscriber:
+    class: Drupal\feature_flags\EventSubscriber\ConfigExcludeSubscriber
+    arguments: ['@config.manager', '@entity_type.manager']
+    tags:
+      - { name: event_subscriber }

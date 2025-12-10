@@ -583,7 +583,7 @@
       "Step 5: Run drush config:export",
       "Step 6: Verify feature flag config file is NOT created in config/sync"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -596,7 +596,7 @@
       "Step 5: Run drush config:export",
       "Step 6: Verify feature flag config file IS created in config/sync"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
