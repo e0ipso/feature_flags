@@ -31,7 +31,7 @@ class FeatureFlagListBuilder extends ConfigEntityListBuilder {
   public function buildRow(EntityInterface $entity): array {
     assert($entity instanceof FeatureFlag);
 
-    $row['label'] = $entity->label();
+    $row['label'] = $entity->toLink($entity->label(), 'edit-form');
     $row['machine_name'] = $entity->id();
 
     // Status badge.
