@@ -1,0 +1,11 @@
+feature_flags.settings_tab:
+  route_name: feature_flags.settings
+  title: 'Settings'
+  base_route: feature_flags.settings
+  weight: 0
+
+feature_flags.list_tab:
+  route_name: entity.feature_flag.collection
+  title: 'Feature Flags'
+  base_route: feature_flags.settings
+  weight: 10

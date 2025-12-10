@@ -1,0 +1,6 @@
+feature_flags.settings:
+  title: 'Feature Flags'
+  description: 'Manage feature flags for client-side A/B testing and feature rollouts.'
+  route_name: feature_flags.settings
+  parent: system.admin_config_services
+  weight: 10

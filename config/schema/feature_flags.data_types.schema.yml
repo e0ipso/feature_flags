@@ -1,0 +1,101 @@
+# Data type schemas for feature flag entities
+
+feature_flags.variant:
+  type: mapping
+  label: 'Feature flag variant'
+  mapping:
+    uuid:
+      type: string
+      label: 'UUID'
+    label:
+      type: string
+      label: 'Label'
+    value:
+      type: string
+      label: 'Value (JSON)'
+
+feature_flags.algorithm:
+  type: mapping
+  label: 'Decision algorithm'
+  mapping:
+    uuid:
+      type: string
+      label: 'UUID'
+    plugin_id:
+      type: string
+      label: 'Plugin ID'
+    configuration:
+      type: feature_flags.plugin.decision_algorithm.[%parent.plugin_id]
+      label: 'Plugin configuration'
+    conditions:
+      type: sequence
+      label: 'Conditions'
+      sequence:
+        type: feature_flags.condition
+    weight:
+      type: integer
+      label: 'Weight'
+
+feature_flags.condition:
+  type: mapping
+  label: 'Algorithm condition'
+  mapping:
+    uuid:
+      type: string
+      label: 'UUID'
+    plugin_id:
+      type: string
+      label: 'Plugin ID'
+    operator:
+      type: string
+      label: 'Operator'
+    configuration:
+      type: feature_flags.plugin.algorithm_condition.[%parent.plugin_id]
+      label: 'Plugin configuration'
+
+# Plugin configuration schemas - base types
+feature_flags.plugin.decision_algorithm:
+  type: mapping
+  label: 'Decision algorithm plugin configuration'
+
+feature_flags.plugin.algorithm_condition:
+  type: mapping
+  label: 'Algorithm condition plugin configuration'
+
+# Specific plugin schemas
+feature_flags.plugin.decision_algorithm.percentage_rollout:
+  type: mapping
+  label: 'Percentage rollout algorithm configuration'
+  mapping:
+    percentages:
+      type: sequence
+      label: 'Variant percentages'
+      sequence:
+        type: mapping
+        mapping:
+          variant_uuid:
+            type: string
+            label: 'Variant UUID'
+          percentage:
+            type: integer
+            label: 'Percentage'
+
+feature_flags.plugin.algorithm_condition.user_id:
+  type: mapping
+  label: 'User ID condition configuration'
+  mapping:
+    values:
+      type: sequence
+      label: 'User IDs'
+      sequence:
+        type: string
+
+feature_flags.plugin.algorithm_condition.user_tier:
+  type: mapping
+  label: 'User tier condition configuration'
+  mapping:
+    values:
+      type: sequence
+      label: 'User tier values'
+      sequence:
+        type: string

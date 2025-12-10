@@ -1,0 +1,42 @@
+# Schema for module settings
+feature_flags.settings:
+  type: config_object
+  label: 'Feature Flags settings'
+  mapping:
+    debug:
+      type: boolean
+      label: 'Debug mode'
+    persist_decisions:
+      type: boolean
+      label: 'Persist decisions in localStorage'
+    exclude_from_config_export:
+      type: boolean
+      label: 'Exclude feature flags from configuration export'
+
+# Schema for feature_flag config entities
+feature_flags.feature_flag.*:
+  type: config_entity
+  label: 'Feature Flag'
+  mapping:
+    id:
+      type: string
+      label: 'Machine name'
+    label:
+      type: label
+      label: 'Label'
+    description:
+      type: text
+      label: 'Description'
+    status:
+      type: boolean
+      label: 'Enabled'
+    variants:
+      type: sequence
+      label: 'Variants'
+      sequence:
+        type: feature_flags.variant
+    algorithms:
+      type: sequence
+      label: 'Decision algorithms'
+      sequence:
+        type: feature_flags.algorithm

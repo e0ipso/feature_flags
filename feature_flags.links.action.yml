@@ -1,0 +1,5 @@
+entity.feature_flag.add:
+  route_name: 'entity.feature_flag.add_form'
+  title: 'Add feature flag'
+  appears_on:
+    - entity.feature_flag.collection

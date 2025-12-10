@@ -1,0 +1,80 @@
+# Base JavaScript library with core classes
+base:
+  version: 1.x
+  js:
+    js/base/FeatureFlagConfig.js: {}
+    js/base/FeatureFlagResult.js: {}
+    js/base/BaseAlgorithm.js: {}
+    js/base/BaseCondition.js: {}
+    js/base/FeatureFlagManager.js: {}
+  dependencies:
+    - core/drupal
+    - core/drupalSettings
+    - core/once
+
+# Main feature flags behavior
+feature_flags:
+  version: 1.x
+  js:
+    js/feature_flags.js: {}
+  dependencies:
+    - feature_flags/base
+
+# Algorithm: Percentage Rollout
+algorithm.percentage_rollout:
+  version: 1.x
+  js:
+    js/algorithm/PercentageRollout.js: {}
+  dependencies:
+    - feature_flags/base
+
+# Condition: User ID
+condition.user_id:
+  version: 1.x
+  js:
+    js/condition/UserId.js: {}
+  dependencies:
+    - feature_flags/base
+
+# Condition: User Tier
+condition.user_tier:
+  version: 1.x
+  js:
+    js/condition/UserTier.js: {}
+  dependencies:
+    - feature_flags/base
+
+# JSON Editor (CodeMirror from CDN)
+json_editor:
+  version: 1.x
+  css:
+    theme:
+      https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.css: { type: external, minified: true }
+      https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/lint/lint.min.css: { type: external, minified: true }
+  js:
+    https://cdnjs.cloudflare.com/ajax/libs/jsonlint/1.6.0/jsonlint.min.js: { type: external, minified: true }
+    https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.js: { type: external, minified: true }
+    https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/javascript/javascript.min.js: { type: external, minified: true }
+    https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/lint/lint.min.js: { type: external, minified: true }
+    https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/lint/json-lint.min.js: { type: external, minified: true }
+    https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/edit/matchbrackets.min.js: { type: external, minified: true }
+    https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/edit/closebrackets.min.js: { type: external, minified: true }
+    js/json_editor.js: {}
+  dependencies:
+    - core/drupal
+    - core/once
+
+# Admin form enhancements
+admin_form:
+  version: 1.x
+  js:
+    js/admin_form.js: {}
+  css:
+    theme:
+      css/admin_form.css: {}
+  dependencies:
+    - core/drupal
+    - core/jquery
+    - core/drupal.ajax
+    - core/drupal.tabledrag
+    - feature_flags/json_editor

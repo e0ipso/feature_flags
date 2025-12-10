@@ -1,0 +1,20 @@
+services:
+  plugin.manager.feature_flags.decision_algorithm:
+    class: Drupal\Core\Plugin\DefaultPluginManager
+    parent: default_plugin_manager
+    arguments:
+      - Plugin/DecisionAlgorithm
+      - '@container.namespaces'
+      - '@module_handler'
+      - 'Drupal\feature_flags\Plugin\DecisionAlgorithm\DecisionAlgorithmInterface'
+      - 'Drupal\feature_flags\Annotation\DecisionAlgorithm'
+
+  plugin.manager.feature_flags.algorithm_condition:
+    class: Drupal\Core\Plugin\DefaultPluginManager
+    parent: default_plugin_manager
+    arguments:
+      - Plugin/AlgorithmCondition
+      - '@container.namespaces'
+      - '@module_handler'
+      - 'Drupal\feature_flags\Plugin\AlgorithmCondition\AlgorithmConditionInterface'
+      - 'Drupal\feature_flags\Annotation\AlgorithmCondition'

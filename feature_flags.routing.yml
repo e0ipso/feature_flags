@@ -1,0 +1,44 @@
+# Settings form
+feature_flags.settings:
+  path: '/admin/config/services/feature-flags'
+  defaults:
+    _form: '\Drupal\feature_flags\Form\SettingsForm'
+    _title: 'Feature Flags'
+  requirements:
+    _permission: 'administer feature flags'
+
+# Feature flag entity list
+entity.feature_flag.collection:
+  path: '/admin/config/services/feature-flags/list'
+  defaults:
+    _entity_list: 'feature_flag'
+    _title: 'Feature Flags'
+  requirements:
+    _permission: 'administer feature flags'
+
+# Add feature flag
+entity.feature_flag.add_form:
+  path: '/admin/config/services/feature-flags/add'
+  defaults:
+    _entity_form: 'feature_flag.add'
+    _title: 'Add feature flag'
+  requirements:
+    _permission: 'administer feature flags'
+
+# Edit feature flag
+entity.feature_flag.edit_form:
+  path: '/admin/config/services/feature-flags/{feature_flag}/edit'
+  defaults:
+    _entity_form: 'feature_flag.edit'
+    _title_callback: '\Drupal\feature_flags\Entity\FeatureFlag::getTitle'
+  requirements:
+    _permission: 'administer feature flags'
+
+# Delete feature flag
+entity.feature_flag.delete_form:
+  path: '/admin/config/services/feature-flags/{feature_flag}/delete'
+  defaults:
+    _entity_form: 'feature_flag.delete'
+    _title: 'Delete'
+  requirements:
+    _permission: 'administer feature flags'
