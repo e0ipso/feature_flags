@@ -388,7 +388,7 @@
       "Step 4: Verify algorithm order changes visually",
       "Step 5: Verify weight values update accordingly"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -399,7 +399,7 @@
       "Step 3: Verify algorithm details section is removed without page reload",
       "Step 4: Verify first algorithm remains intact"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",

@@ -276,7 +276,16 @@ class FeatureFlagForm extends EntityForm {
     ];
 
     $form['algorithms_tab']['algorithms_wrapper']['algorithms'] = [
-      '#type' => 'container',
+      '#type' => 'table',
+      '#header' => [],
+      '#empty' => $this->t('No algorithms have been added yet.'),
+      '#tabledrag' => [
+        [
+          'action' => 'order',
+          'relationship' => 'sibling',
+          'group' => 'algorithm-weight',
+        ],
+      ],
       '#tree' => TRUE,
     ];
 
@@ -295,18 +304,24 @@ class FeatureFlagForm extends EntityForm {
       }
 
       $form['algorithms_tab']['algorithms_wrapper']['algorithms'][$delta] = [
+        '#attributes' => [
+          'class' => ['draggable', 'algorithm-item'],
+        ],
+      ];
+
+      // Algorithm content wrapper (holds all fields in a single cell).
+      $form['algorithms_tab']['algorithms_wrapper']['algorithms'][$delta]['content'] = [
         '#type' => 'details',
         '#title' => $this->t('Algorithm: @label', ['@label' => $plugin_label]),
         '#open' => TRUE,
-        '#attributes' => ['class' => ['algorithm-item']],
       ];
 
-      $form['algorithms_tab']['algorithms_wrapper']['algorithms'][$delta]['uuid'] = [
+      $form['algorithms_tab']['algorithms_wrapper']['algorithms'][$delta]['content']['uuid'] = [
         '#type' => 'value',
         '#value' => $algorithm['uuid'],
       ];
 
-      $form['algorithms_tab']['algorithms_wrapper']['algorithms'][$delta]['plugin_id'] = [
+      $form['algorithms_tab']['algorithms_wrapper']['algorithms'][$delta]['content']['plugin_id'] = [
         '#type' => 'value',
         '#value' => $plugin_id,
       ];
@@ -314,13 +329,17 @@ class FeatureFlagForm extends EntityForm {
       $form['algorithms_tab']['algorithms_wrapper']['algorithms'][$delta]['weight'] = [
         '#type' => 'weight',
         '#title' => $this->t('Weight'),
+        '#title_display' => 'invisible',
         '#default_value' => $algorithm['weight'] ?? 0,
         '#delta' => 50,
+        '#attributes' => [
+          'class' => ['algorithm-weight'],
+        ],
       ];
 
       // Plugin configuration subform.
       $this->buildAlgorithmConfigurationForm(
-        $form['algorithms_tab']['algorithms_wrapper']['algorithms'][$delta],
+        $form['algorithms_tab']['algorithms_wrapper']['algorithms'][$delta]['content'],
         $form_state,
         $plugin_id,
         $algorithm['configuration'] ?? [],
@@ -329,13 +348,13 @@ class FeatureFlagForm extends EntityForm {
 
       // Conditions section.
       $this->buildConditionsForm(
-        $form['algorithms_tab']['algorithms_wrapper']['algorithms'][$delta],
+        $form['algorithms_tab']['algorithms_wrapper']['algorithms'][$delta]['content'],
         $form_state,
         $algorithm['conditions'] ?? [],
         $delta
       );
 
-      $form['algorithms_tab']['algorithms_wrapper']['algorithms'][$delta]['remove'] = [
+      $form['algorithms_tab']['algorithms_wrapper']['algorithms'][$delta]['content']['remove'] = [
         '#type' => 'submit',
         '#value' => $this->t('Remove algorithm'),
         '#name' => 'remove_algorithm_' . $delta,
