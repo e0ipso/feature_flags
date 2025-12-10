@@ -8,6 +8,7 @@ use Drupal\Component\Plugin\PluginBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Form\SubformState;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
+use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -18,10 +19,14 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  */
 abstract class DecisionAlgorithmPluginBase extends PluginBase implements DecisionAlgorithmInterface, ContainerFactoryPluginInterface {
 
+  use StringTranslationTrait;
+
   /**
    * The plugin configuration.
+   *
+   * @var array
    */
-  protected array $configuration;
+  protected $configuration;
 
   /**
    * Constructs a DecisionAlgorithmPluginBase object.

@@ -7,6 +7,7 @@ namespace Drupal\feature_flags\Plugin\AlgorithmCondition;
 use Drupal\Component\Plugin\PluginBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
+use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -17,10 +18,14 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  */
 abstract class AlgorithmConditionPluginBase extends PluginBase implements AlgorithmConditionInterface, ContainerFactoryPluginInterface {
 
+  use StringTranslationTrait;
+
   /**
    * The plugin configuration.
+   *
+   * @var array
    */
-  protected array $configuration;
+  protected $configuration;
 
   /**
    * Constructs an AlgorithmConditionPluginBase object.
