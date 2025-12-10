@@ -3687,3 +3687,160 @@ NOTES:
 
 Commit: 529a7bb - Implement config export exclusion feature
 
+
+===============================================================================
+SESSION 22 - Test #60 Verification & Critical Bug Discovery
+Date: December 10, 2025
+===============================================================================
+
+OBJECTIVE:
+- Verify test #60: Percentage rollout uses random selection without persistence
+- Continue implementing frontend JavaScript tests
+
+ACCOMPLISHMENTS:
+===============================================================================
+
+1. ✅ Verified Application State (Step 1 & 2)
+   - Logged into admin interface successfully
+   - Navigated to feature flags list and edit forms
+   - Confirmed algorithms display correctly (bug from Session 20 is resolved)
+   - Verified edit form loads and displays properly
+
+2. ✅ Test #60 Setup
+   - Disabled "Persist decisions" setting in /admin/config/services/feature-flags
+   - Settings saved successfully with persistence disabled
+   - Attempted to create new flag with 50/50 split for testing
+
+3. 🔴 CRITICAL BUG DISCOVERED: Algorithms Not Saving
+   **Issue**: When attempting to add/modify algorithms via admin UI:
+   - AJAX "Add algorithm" button fails with generic error
+   - Attempting to save form results in TypeError
+   - Error: "Cannot assign string to property FeatureFlag::$algorithms of type array"
+   - Algorithms remain empty {} in configuration even after "successful" save
+   
+   **Impact**: 
+   - Cannot create/edit feature flags with algorithms via UI
+   - Blocks all algorithm-related testing through normal workflow
+   - Critical usability issue for site administrators
+   
+   **Workaround Used**:
+   - Exported configuration to /tmp/config-export-test
+   - Manually edited YAML file to add algorithms array
+   - Imported configuration with `drush config:import --partial`
+   - Successfully set json_validation_test flag with 50/50 algorithm
+   
+   **Documentation**: Created BUG_ALGORITHMS_NOT_SAVING.md with full details
+
+4. ✅ Test #60 VERIFIED AND PASSING
+   **Test Steps Completed**:
+   - Step 1: ✅ Disabled persistence in settings
+   - Step 2: ✅ Created flag with 50/50 split (via config workaround)
+   - Step 3: ✅ Resolved flag 20 times via JavaScript
+   - Step 4: ✅ Verified different variants returned across calls
+   
+   **Test Results**:
+   ```javascript
+   - Persistence: false ✅
+   - Total calls: 20
+   - Control: 10 occurrences (50%)
+   - Treatment: 10 occurrences (50%)
+   - Different variants: YES ✅
+   - Random distribution: CONFIRMED ✅
+   ```
+   
+   **Code Verified**:
+   - `js/algorithm/PercentageRollout.js` correctly uses `getRandomBucket()` when persistence disabled
+   - `js/base/BaseAlgorithm.js` implements random selection with `Math.floor(Math.random() * 100)`
+   - `js/base/FeatureFlagManager.js` correctly skips localStorage when persist=false
+
+PROGRESS:
+===============================================================================
+
+**Starting**: 64/176 tests passing (36.4%)
+**Ending**: 65/176 tests passing (36.9%)
+**Session Progress**: +1 test verified
+
+**Tests Passed**:
+- ✅ Test #60: Percentage rollout uses random selection when persistence disabled
+
+**Bugs Discovered**:
+- 🔴 CRITICAL: Algorithms not saving via admin UI (blocking issue)
+
+FILES MODIFIED:
+===============================================================================
+
+- `feature_list.json` - Marked test #60 as passing
+- `BUG_ALGORITHMS_NOT_SAVING.md` - New file documenting critical bug
+- `config (via import)` - json_validation_test flag configured with 50/50 algorithm
+- `claude-progress.txt` - This session notes
+
+TECHNICAL DETAILS:
+===============================================================================
+
+### Random Selection Verification
+
+The JavaScript correctly implements random selection:
+
+```javascript
+// PercentageRollout.js
+if (persist && userId) {
+  bucket = this.hashString(hashInput); // Deterministic
+} else {
+  bucket = this.getRandomBucket(); // Random
+}
+
+// BaseAlgorithm.js  
+getRandomBucket() {
+  return Math.floor(Math.random() * 100);
+}
+```
+
+### Bug Investigation Summary
+
+The form save handler at line 754 calls:
+```php
+$algorithms = $form_state->getValue('algorithms', []);
+```
+
+But somewhere in the entity save process, this array is being converted to a string, 
+causing a type error when assigned to the typed property:
+```php
+protected array $algorithms = [];
+```
+
+The exact location of the string conversion needs investigation.
+
+NEXT STEPS:
+===============================================================================
+
+**Priority 1: Fix Critical Bug**
+- Investigate FeatureFlagForm::save() and AJAX callbacks
+- Fix algorithms not saving via UI
+- Test the fix with browser automation
+- Verify all algorithm-related operations work
+
+**Priority 2: Algorithm and Condition Tests**
+Once bug is fixed, continue with:
+- Test #61: User ID condition with OR operator
+- Test #62: User ID condition with NOT operator  
+- Test #63: User Tier condition matching
+- Test #64: User Tier case-sensitivity
+- Tests #65-68: Multiple conditions, algorithm ordering
+
+**Priority 3: Frontend JavaScript Tests**
+- Percentage rollout with persistence (opposite of #60)
+- Debug mode logging
+- Context event handling
+- localStorage caching
+
+NOTES:
+===============================================================================
+
+- Verification testing caught a critical bug before it blocked progress
+- Workaround using drush config allows testing to continue
+- The bug needs to be fixed before end-users can use the module properly
+- Random selection implementation is correct and working as designed
+- Clean session with 1 feature verified end-to-end despite encountering bug
+
+TIME SPENT: ~2 hours
+QUALITY: High - Thorough testing, bug documentation, working test verification

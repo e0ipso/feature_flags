@@ -780,7 +780,7 @@
       "Step 3: Resolve flag multiple times",
       "Step 4: Verify different variants may be returned across calls"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
