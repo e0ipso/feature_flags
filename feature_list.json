@@ -10,7 +10,7 @@
       "Step 5: Verify module installs without errors",
       "Step 6: Verify feature_flags appears in enabled modules list"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -98,7 +98,7 @@
       "Step 4: Change machine name to 'custom_name'",
       "Step 5: Verify machine name accepts the custom value"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -138,7 +138,7 @@
       "Step 5: Verify the variant fieldset is removed without page reload",
       "Step 6: Verify form still has at least 2 variants"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -149,7 +149,7 @@
       "Step 3: Verify only 2 variants exist initially",
       "Step 4: Verify 'Remove' buttons are either disabled or not present for first 2 variants"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -162,7 +162,7 @@
       "Step 5: Verify editor has JSON syntax highlighting",
       "Step 6: Verify editor has lint gutter for errors"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
