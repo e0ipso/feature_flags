@@ -543,7 +543,10 @@ class FeatureFlagForm extends EntityForm {
         'callback' => '::algorithmsAjaxCallback',
         'wrapper' => 'algorithms-wrapper',
       ],
-      '#limit_validation_errors' => [],
+      // Limit validation but allow the condition selection to be processed.
+      '#limit_validation_errors' => [
+        ['algorithms', $algorithm_delta, 'conditions_section', 'add_condition', 'condition_plugin_select'],
+      ],
       '#algorithm_delta' => $algorithm_delta,
     ];
   }
