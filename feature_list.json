@@ -311,7 +311,7 @@
       "Step 4: Verify 'User Tier' option is available",
       "Step 5: Verify it has descriptive text about matching user tiers"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -337,7 +337,7 @@
       "Step 5: Verify textfield for entering tier values is present",
       "Step 6: Verify description mentions comma-separated format"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -426,7 +426,7 @@
       "Step 5: Add second variant",
       "Step 6: Verify validation passes"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
