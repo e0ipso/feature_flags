@@ -175,7 +175,7 @@
       "Step 5: Enter valid JSON: '{\"key\": \"value\"}'",
       "Step 6: Verify error marker disappears"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -192,7 +192,7 @@
       "Step 9: Edit the feature flag",
       "Step 10: Verify variant values are correctly populated in editors"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
