@@ -30,7 +30,7 @@ entity.feature_flag.edit_form:
   path: '/admin/config/services/feature-flags/{feature_flag}/edit'
   defaults:
     _entity_form: 'feature_flag.edit'
-    _title_callback: '\Drupal\feature_flags\Entity\FeatureFlag::getTitle'
+    _title: 'Edit feature flag'
   requirements:
     _permission: 'administer feature flags'
 

@@ -46,7 +46,7 @@ function feature_flags_help(string $route_name, RouteMatchInterface $route_match
 function feature_flags_page_attachments(array &$attachments): void {
   // Load module settings.
   $config = \Drupal::config('feature_flags.settings');
-  $debug = $config->get('debug') ?? FALSE;
+  $debug = $config->get('debug_mode') ?? FALSE;
   $persist = $config->get('persist_decisions') ?? FALSE;
 
   // Load all enabled feature flags.
