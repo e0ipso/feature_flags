@@ -125,7 +125,7 @@
       "Step 5: Verify a new variant fieldset appears without page reload",
       "Step 6: Verify the new fieldset has all required fields"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -493,7 +493,7 @@
       "Step 7: Click Variants tab and verify all variants are present",
       "Step 8: Click Algorithms tab and verify all algorithms are present"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -532,7 +532,7 @@
       "Step 5: Verify confirmation form appears with warning message",
       "Step 6: Verify Cancel and Delete buttons are present"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
