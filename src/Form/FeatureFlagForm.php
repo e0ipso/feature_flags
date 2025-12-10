@@ -674,6 +674,13 @@ class FeatureFlagForm extends EntityForm {
   public function validateForm(array &$form, FormStateInterface $form_state): void {
     parent::validateForm($form, $form_state);
 
+    // Skip validation during AJAX operations where validation is limited.
+    // This prevents errors when adding/removing elements dynamically.
+    $triggering_element = $form_state->getTriggeringElement();
+    if (!empty($triggering_element['#limit_validation_errors'])) {
+      return;
+    }
+
     // Validate variants.
     $variants = $form_state->getValue('variants', []);
     if (count($variants) < 2) {
@@ -700,6 +707,11 @@ class FeatureFlagForm extends EntityForm {
     $algorithms = $form_state->getValue('algorithms', []);
     if (empty($algorithms)) {
       $form_state->setErrorByName('algorithms', $this->t('At least one algorithm is required.'));
+    }
+
+    // Ensure $algorithms is an array before iterating.
+    if (!is_array($algorithms)) {
+      return;
     }
 
     // Validate catch-all algorithm (one with no conditions).

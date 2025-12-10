@@ -794,7 +794,7 @@
       "Step 6: Resolve flag",
       "Step 7: Verify algorithm with condition is NOT used (falls to catch-all)"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
