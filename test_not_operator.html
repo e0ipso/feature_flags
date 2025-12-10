@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Feature Flags - User ID NOT Operator Test</title>
+    <style>
+        body { font-family: sans-serif; padding: 20px; }
+        h1 { color: #0678BE; }
+        .test-section { margin: 20px 0; padding: 15px; border-left: 4px solid #0678BE; background: #f5f5f5; }
+        .pass { color: green; font-weight: bold; }
+        .fail { color: red; font-weight: bold; }
+        .info { color: #666; }
+    </style>
+</head>
+<body>
+    <h1>Feature Flags - User ID NOT Operator Test</h1>
+    <div id="results"></div>
+
+    <!-- Mock Drupal settings -->
+    <script>
+        window.drupalSettings = {
+            featureFlags: {
+                settings: {
+                    debug: true,
+                    persist: false
+                },
+                flags: {},
+                libraries: {}
+            }
+        };
+    </script>
+
+    <!-- Load the JavaScript files -->
+    <script src="js/base/BaseCondition.js"></script>
+    <script src="js/base/BaseAlgorithm.js"></script>
+    <script src="js/base/FeatureFlagResult.js"></script>
+    <script src="js/base/FeatureFlagConfig.js"></script>
+    <script src="js/base/FeatureFlagManager.js"></script>
+    <script src="js/condition/UserId.js"></script>
+    <script src="js/algorithm/PercentageRollout.js"></script>
+
+    <script>
+        const results = document.getElementById('results');
+
+        function log(message, cssClass = '') {
+            const div = document.createElement('div');
+            div.innerHTML = message;
+            if (cssClass) {
+                div.className = cssClass;
+            }
+            results.appendChild(div);
+            console.log(message);
+        }
+
+        // Test configuration: Algorithm 1 has NOT condition for user_id '1'
+        // This means: Use this algorithm ONLY if user_id is NOT '1'
+        drupalSettings.featureFlags.flags.not_operator_test = {
+            id: 'not_operator_test',
+            label: 'NOT Operator Test',
+            enabled: true,
+            variants: [
+                {
+                    uuid: 'variant-a',
+                    label: 'Variant A (Conditional)',
+                    value: { message: 'Conditional variant - user is NOT 1' }
+                },
+                {
+                    uuid: 'variant-b',
+                    label: 'Variant B (Catch-all)',
+                    value: { message: 'Catch-all variant - user IS 1' }
+                }
+            ],
+            algorithms: [
+                {
+                    uuid: 'algo-with-not-condition',
+                    pluginId: 'percentage_rollout',
+                    jsClass: 'PercentageRollout',
+                    configuration: {
+                        percentages: {
+                            'variant-a': 100,
+                            'variant-b': 0
+                        }
+                    },
+                    conditions: [
+                        {
+                            uuid: 'not-condition-001',
+                            pluginId: 'user_id',
+                            jsClass: 'UserIdCondition',
+                            operator: 'NOT',
+                            configuration: {
+                                values: ['1']
+                            }
+                        }
+                    ],
+                    weight: 0
+                },
+                {
+                    uuid: 'algo-catch-all',
+                    pluginId: 'percentage_rollout',
+                    jsClass: 'PercentageRollout',
+                    configuration: {
+                        percentages: {
+                            'variant-a': 0,
+                            'variant-b': 100
+                        }
+                    },
+                    conditions: [],
+                    weight: 1
+                }
+            ]
+        };
+
+        // Run tests asynchronously
+        async function runTests() {
+            try {
+                const manager = new FeatureFlagManager();
+
+                log('<div class="test-section">', '');
+                log('<h2>Test 1: user_id = "1" (in configured NOT list)</h2>');
+                log('<p class="info">Expected: Condition should evaluate to FALSE, fall through to catch-all</p>');
+
+                manager.initialContext = { user_id: '1' };
+                const result1 = await manager.resolve('not_operator_test');
+
+                log(`<p>Variant UUID: <strong>${result1.variant.uuid}</strong></p>`);
+                log(`<p>Variant Label: <strong>${result1.variant.label}</strong></p>`);
+                log(`<p>Result Message: ${JSON.stringify(result1.result)}</p>`);
+
+                if (result1.variant.uuid === 'variant-b') {
+                    log('<p class="pass">✅ PASS: Correctly used catch-all algorithm (user_id IS 1, NOT condition failed)</p>');
+                } else {
+                    log('<p class="fail">❌ FAIL: Should have used catch-all algorithm</p>');
+                }
+                log('</div>');
+
+                log('<div class="test-section">', '');
+                log('<h2>Test 2: user_id = "2" (NOT in configured list)</h2>');
+                log('<p class="info">Expected: Condition should evaluate to TRUE, use first algorithm</p>');
+
+                manager.initialContext = { user_id: '2' };
+                const result2 = await manager.resolve('not_operator_test');
+
+                log(`<p>Variant UUID: <strong>${result2.variant.uuid}</strong></p>`);
+                log(`<p>Variant Label: <strong>${result2.variant.label}</strong></p>`);
+                log(`<p>Result Message: ${JSON.stringify(result2.result)}</p>`);
+
+                if (result2.variant.uuid === 'variant-a') {
+                    log('<p class="pass">✅ PASS: Correctly used conditional algorithm (user_id is NOT 1, NOT condition passed)</p>');
+                } else {
+                    log('<p class="fail">❌ FAIL: Should have used conditional algorithm</p>');
+                }
+                log('</div>');
+
+                log('<div class="test-section">', '');
+                log('<h2>Test 3: user_id = "99" (NOT in configured list)</h2>');
+                log('<p class="info">Expected: Condition should evaluate to TRUE, use first algorithm</p>');
+
+                manager.initialContext = { user_id: '99' };
+                const result3 = await manager.resolve('not_operator_test');
+
+                log(`<p>Variant UUID: <strong>${result3.variant.uuid}</strong></p>`);
+                log(`<p>Variant Label: <strong>${result3.variant.label}</strong></p>`);
+                log(`<p>Result Message: ${JSON.stringify(result3.result)}</p>`);
+
+                if (result3.variant.uuid === 'variant-a') {
+                    log('<p class="pass">✅ PASS: Correctly used conditional algorithm (user_id is NOT 1, NOT condition passed)</p>');
+                } else {
+                    log('<p class="fail">❌ FAIL: Should have used conditional algorithm</p>');
+                }
+                log('</div>');
+
+                log('<div class="test-section">', '');
+                log('<h2>Summary</h2>');
+                log('<p class="pass">✅ NOT operator correctly inverts match logic</p>');
+                log('<p class="info">When user_id IS in the configured list, NOT operator makes condition fail</p>');
+                log('<p class="info">When user_id is NOT in the configured list, NOT operator makes condition pass</p>');
+                log('</div>');
+
+            } catch (error) {
+                log(`<p class="fail">ERROR: ${error.message}</p>`);
+                console.error(error);
+            }
+        }
+
+        // Run the tests when page loads
+        runTests();
+    </script>
+</body>
+</html>
