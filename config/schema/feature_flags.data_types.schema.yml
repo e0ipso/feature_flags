@@ -71,14 +71,7 @@ feature_flags.plugin.decision_algorithm.percentage_rollout:
       type: sequence
       label: 'Variant percentages'
       sequence:
-        type: mapping
-        mapping:
-          variant_uuid:
-            type: string
-            label: 'Variant UUID'
-          percentage:
-            type: integer
-            label: 'Percentage'
+        type: integer
 
 feature_flags.plugin.algorithm_condition.user_id:
   type: mapping

@@ -3,7 +3,7 @@ feature_flags.settings:
   type: config_object
   label: 'Feature Flags settings'
   mapping:
-    debug:
+    debug_mode:
       type: boolean
       label: 'Debug mode'
     persist_decisions:
