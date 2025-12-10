@@ -3594,3 +3594,96 @@ RECOMMENDATIONS FOR NEXT SESSION:
    - This may be another manifestation of the same root cause
    - Consider comprehensive form refactoring
 
+
+===============================================================================
+SESSION 21 - Config Export Exclusion Feature
+===============================================================================
+
+COMPLETED TASKS:
+===============================================================================
+
+1. ✅ Verified existing tests still work
+   - Tested basic form functionality with browser automation
+   - Confirmed machine name auto-generation working
+   - Verified form structure (Basic Information, Variants, Decision Algorithms tabs)
+   - All core features functioning correctly
+
+2. ✅ Implemented Config Export Exclusion Feature
+   - Created src/EventSubscriber/ConfigExcludeSubscriber.php
+   - Implements EventSubscriberInterface
+   - Listens to ConfigEvents::STORAGE_TRANSFORM_EXPORT
+   - Checks exclude_from_config_export setting
+   - Removes feature flag configs from export when enabled
+   - Registered service in feature_flags.services.yml
+   - Rebuilt cache to register new event subscriber
+
+3. ✅ Test #35: Config Export Exclusion When Enabled
+   - Enabled "Exclude from configuration export" setting via UI
+   - Saved configuration successfully
+   - Ran drush config:export to /tmp/test-config-export
+   - Verified NO feature flag config files were created
+   - Confirmed feature_flags.settings.yml WAS exported (as expected)
+
+4. ✅ Test #36: Config Export When Exclusion Disabled
+   - Disabled "Exclude from configuration export" setting via UI
+   - Saved configuration successfully
+   - Ran drush config:export to /tmp/test-config-export
+   - Verified 8 feature flag config files WERE exported
+   - Exclusion feature working bidirectionally
+
+PROGRESS:
+===============================================================================
+
+Starting: 62/176 tests passing (35.2%)
+Ending:   64/176 tests passing (36.4%)
+Session Progress: +2 tests verified
+
+Tests Passed This Session:
+- ✅ Test #35: Feature flags can be excluded from config export when setting enabled
+- ✅ Test #36: Feature flags ARE exported when exclusion setting is disabled
+
+TECHNICAL IMPLEMENTATION:
+===============================================================================
+
+File: src/EventSubscriber/ConfigExcludeSubscriber.php
+- Uses PHP 8.2+ readonly properties and constructor property promotion
+- Final class following Drupal best practices
+- Subscribes to ConfigEvents::STORAGE_TRANSFORM_EXPORT
+- Checks setting: \Drupal::config('feature_flags.settings')->get('exclude_from_config_export')
+- Uses storage->listAll('feature_flags.feature_flag.') to find configs
+- Uses storage->delete() to remove from export
+- Clean, simple implementation following Drupal patterns
+
+File: feature_flags.services.yml
+- Registered feature_flags.config_exclude_subscriber service
+- Tagged with event_subscriber
+- Proper dependency injection: @config.manager, @entity_type.manager
+
+NEXT SESSION PRIORITIES:
+===============================================================================
+
+Priority 1: Continue with passing tests that don't require algorithms
+- Test #37: Module attaches feature flag settings to page
+- Frontend JavaScript tests that don't need algorithm conditions
+
+Priority 2: Fix Critical Algorithm Display Bug (from Session 20)
+- Algorithms saved correctly but don't display in edit form
+- Blocks tests #60-68 and beyond
+- Issue in src/Form/FeatureFlagForm.php::buildAlgorithmsForm()
+- May be form state management issue similar to Session 17
+
+Priority 3: Additional Testing
+- Test remaining non-algorithm features
+- Verify CodeMirror integration
+- Test frontend functionality
+
+NOTES:
+===============================================================================
+
+- Config export exclusion follows Drupal's event system properly
+- EventSubscriber pattern is clean and maintainable
+- Both inclusion and exclusion tested end-to-end
+- Feature complete and working as specified
+
+Commit: 529a7bb - Implement config export exclusion feature
+
