@@ -376,7 +376,11 @@ class FeatureFlagForm extends EntityForm {
         'callback' => '::algorithmsAjaxCallback',
         'wrapper' => 'algorithms-wrapper',
       ],
-      '#limit_validation_errors' => [],
+      // Limit validation but allow the algorithm selection to be processed.
+      // Since algorithms_wrapper has #tree => FALSE, the element name is just 'algorithm_plugin_select'.
+      '#limit_validation_errors' => [
+        ['algorithm_plugin_select'],
+      ],
     ];
   }
 
@@ -548,6 +552,8 @@ class FeatureFlagForm extends EntityForm {
    * Submit handler for adding an algorithm.
    */
   public function addAlgorithmSubmit(array &$form, FormStateInterface $form_state): void {
+    // Get the selected plugin ID. Since algorithms_wrapper has #tree => FALSE,
+    // the form element name is just 'algorithm_plugin_select'.
     $plugin_id = $form_state->getValue('algorithm_plugin_select');
 
     $algorithms = $form_state->get('algorithms');

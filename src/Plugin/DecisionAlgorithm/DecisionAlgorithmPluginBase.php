@@ -6,6 +6,7 @@ namespace Drupal\feature_flags\Plugin\DecisionAlgorithm;
 
 use Drupal\Component\Plugin\PluginBase;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Form\SubformState;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -117,5 +118,23 @@ abstract class DecisionAlgorithmPluginBase extends PluginBase implements Decisio
    * {@inheritdoc}
    */
   abstract public function getJavaScriptSettings(): array;
+
+  /**
+   * Helper method to get variants from the complete form state.
+   *
+   * @param \Drupal\Core\Form\FormStateInterface $form_state
+   *   The form state, which may be a subform state.
+   *
+   * @return array
+   *   The variants array.
+   */
+  protected function getVariantsFromFormState(FormStateInterface $form_state): array {
+    // Get the complete form state (in case we're in a subform).
+    $complete_form_state = $form_state instanceof SubformState
+      ? $form_state->getCompleteFormState()
+      : $form_state;
+
+    return $complete_form_state->get('variants') ?? [];
+  }
 
 }

@@ -278,8 +278,9 @@ class FeatureFlag extends ConfigEntityBase {
   /**
    * {@inheritdoc}
    */
-  public function calculateDependencies(): array {
-    $dependencies = parent::calculateDependencies();
+  public function calculateDependencies() {
+    // Call parent to calculate dependencies and return $this for chaining.
+    parent::calculateDependencies();
 
     // Add dependencies for algorithm plugins.
     foreach ($this->algorithms as $algorithm) {
@@ -289,7 +290,7 @@ class FeatureFlag extends ConfigEntityBase {
       }
     }
 
-    return $dependencies;
+    return $this;
   }
 
 }
