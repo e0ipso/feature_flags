@@ -742,6 +742,24 @@ class FeatureFlagForm extends EntityForm {
   /**
    * {@inheritdoc}
    */
+  protected function copyFormValuesToEntity(\Drupal\Core\Entity\EntityInterface $entity, array $form, FormStateInterface $form_state): void {
+    // Get all form values.
+    $values = $form_state->getValues();
+
+    // Exclude 'algorithms' and 'variants' from automatic copying.
+    // These are complex structures that need special handling in save().
+    unset($values['algorithms']);
+    unset($values['variants']);
+
+    // Copy remaining values to entity.
+    foreach ($values as $key => $value) {
+      $entity->set($key, $value);
+    }
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function save(array $form, FormStateInterface $form_state): int {
     /** @var \Drupal\feature_flags\Entity\FeatureFlag $feature_flag */
     $feature_flag = $this->entity;
@@ -756,21 +774,24 @@ class FeatureFlagForm extends EntityForm {
     // Clean up algorithms structure and process plugin configurations.
     $processed_algorithms = [];
     foreach ($algorithms as $delta => $algorithm) {
-      $plugin_id = $algorithm['plugin_id'] ?? NULL;
+      // Tabledrag wraps the actual data in a 'content' key.
+      $algorithm_data = $algorithm['content'] ?? $algorithm;
+
+      $plugin_id = $algorithm_data['plugin_id'] ?? NULL;
       if (!$plugin_id) {
         continue;
       }
 
       $processed_algorithm = [
-        'uuid' => $algorithm['uuid'],
+        'uuid' => $algorithm_data['uuid'],
         'plugin_id' => $plugin_id,
         'weight' => $algorithm['weight'] ?? 0,
-        'configuration' => $algorithm['configuration'] ?? [],
+        'configuration' => $algorithm_data['configuration'] ?? [],
         'conditions' => [],
       ];
 
       // Process conditions.
-      $conditions = $algorithm['conditions_section']['conditions'] ?? [];
+      $conditions = $algorithm_data['conditions_section']['conditions'] ?? [];
       foreach ($conditions as $condition) {
         if (empty($condition['plugin_id'])) {
           continue;

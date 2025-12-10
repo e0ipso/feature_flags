@@ -74,4 +74,50 @@ Session 22 - December 10, 2025
 
 ## Status
 
-**OPEN** - Needs investigation and fix
+**RESOLVED** - Fixed in Session 23 (December 10, 2025)
+
+## Solution
+
+The bug was caused by two issues:
+
+1. **`copyFormValuesToEntity()` method**: Drupal's base `EntityForm` class automatically copies ALL form values to the entity, including the complex `algorithms` array. This caused a type error because the algorithms were being set as a raw array before the `save()` method could process them.
+
+2. **Tabledrag form structure**: The algorithms form uses Drupal's tabledrag element, which wraps algorithm data in a `content` key for each row. The `save()` method wasn't accounting for this structure.
+
+### Changes Made
+
+**File: `src/Form/FeatureFlagForm.php`**
+
+1. Added `copyFormValuesToEntity()` override to exclude `algorithms` and `variants` from automatic copying:
+   ```php
+   protected function copyFormValuesToEntity(\Drupal\Core\Entity\EntityInterface $entity, array $form, FormStateInterface $form_state): void {
+     $values = $form_state->getValues();
+     unset($values['algorithms']);
+     unset($values['variants']);
+     foreach ($values as $key => $value) {
+       $entity->set($key, $value);
+     }
+   }
+   ```
+
+2. Updated `save()` method to handle tabledrag structure:
+   ```php
+   foreach ($algorithms as $delta => $algorithm) {
+     // Tabledrag wraps the actual data in a 'content' key.
+     $algorithm_data = $algorithm['content'] ?? $algorithm;
+     $plugin_id = $algorithm_data['plugin_id'] ?? NULL;
+     // ... rest of processing uses $algorithm_data instead of $algorithm
+   }
+   ```
+
+### Verification
+
+- ✅ AJAX "Add algorithm" works without errors
+- ✅ Algorithms save correctly to configuration
+- ✅ Algorithms persist across page loads
+- ✅ Algorithm count displays correctly in list view
+- ✅ Algorithms load properly when editing
+
+## Status
+
+**CLOSED** - Fixed and verified
