@@ -820,7 +820,7 @@
       "Step 5: Provide context with user_tier 'free'",
       "Step 6: Verify condition doesn't match"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -833,7 +833,7 @@
       "Step 5: Provide context with user_tier 'premium' (lowercase)",
       "Step 6: Verify condition matches"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
