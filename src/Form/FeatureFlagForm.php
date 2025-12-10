@@ -667,7 +667,7 @@ class FeatureFlagForm extends EntityForm {
         json_decode($variant['value']);
         if (json_last_error() !== JSON_ERROR_NONE) {
           $form_state->setErrorByName(
-            "variants][$delta][value",
+            "variants][{$delta}][value",
             $this->t('Variant @delta has invalid JSON: @error', [
               '@delta' => $delta + 1,
               '@error' => json_last_error_msg(),
@@ -681,7 +681,6 @@ class FeatureFlagForm extends EntityForm {
     $algorithms = $form_state->getValue('algorithms', []);
     if (empty($algorithms)) {
       $form_state->setErrorByName('algorithms', $this->t('At least one algorithm is required.'));
-      return;
     }
 
     // Validate catch-all algorithm (one with no conditions).
