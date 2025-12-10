@@ -274,7 +274,7 @@
       "Step 5: Verify description mentions catch-all behavior when no conditions",
       "Step 6: Verify 'Add condition' button is present"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -287,7 +287,7 @@
       "Step 5: Verify condition type select dropdown is present",
       "Step 6: Verify operator select dropdown is present"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -299,7 +299,7 @@
       "Step 4: Verify 'User ID' option is available",
       "Step 5: Verify it has descriptive text about matching user IDs"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -324,7 +324,7 @@
       "Step 5: Verify textfield for entering user IDs is present",
       "Step 6: Verify description mentions comma-separated format"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -351,7 +351,7 @@
       "Step 6: Verify 'NOT (none of the values must match)' option exists",
       "Step 7: Verify 'OR' is selected by default"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -413,7 +413,7 @@
       "Step 6: Add second algorithm without conditions",
       "Step 7: Verify form submits successfully"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
