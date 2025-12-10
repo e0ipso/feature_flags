@@ -1,0 +1,103 @@
+/**
+ * @file
+ * Styles for the feature flag admin forms.
+ */
+
+/* Variant items styling */
+.variant-item {
+  margin-bottom: 1.5em;
+  padding: 1em;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  background: #f9f9f9;
+}
+
+.variant-item .form-item {
+  margin-bottom: 0.5em;
+}
+
+/* Algorithm items styling */
+.algorithm-item {
+  margin-bottom: 1.5em;
+}
+
+.algorithm-item > summary {
+  font-weight: bold;
+  background: #f0f0f0;
+  padding: 0.5em 1em;
+  border-radius: 4px;
+}
+
+/* Condition items styling */
+.condition-item {
+  margin-bottom: 1em;
+  padding: 1em;
+  border: 1px solid #e0e0e0;
+  border-radius: 4px;
+  background: #fafafa;
+}
+
+/* JSON editor specific styles */
+.json-editor-textarea {
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 14px;
+}
+
+/* Add/Remove button spacing */
+.variant-item .form-submit,
+.algorithm-item .form-submit,
+.condition-item .form-submit {
+  margin-top: 0.5em;
+}
+
+/* Vertical tabs enhancement */
+.vertical-tabs__menu-item a {
+  font-weight: 500;
+}
+
+/* Improve spacing in algorithm configuration */
+.algorithm-item .form-item-weight {
+  max-width: 150px;
+}
+
+/* Conditions section styling */
+details.conditions-section {
+  margin-top: 1em;
+}
+
+/* Add variant/algorithm buttons */
+input[type="submit"][value="Add variant"],
+input[type="submit"][value="Add algorithm"],
+input[type="submit"][value="Add condition"] {
+  background-color: #0074bd;
+  color: white;
+  border: none;
+  padding: 0.5em 1em;
+  border-radius: 3px;
+  cursor: pointer;
+}
+
+input[type="submit"][value="Add variant"]:hover,
+input[type="submit"][value="Add algorithm"]:hover,
+input[type="submit"][value="Add condition"]:hover {
+  background-color: #005a8e;
+}
+
+/* Remove buttons */
+input[type="submit"][value="Remove"],
+input[type="submit"][value="Remove algorithm"],
+input[type="submit"][value="Remove condition"] {
+  background-color: #d9534f;
+  color: white;
+  border: none;
+  padding: 0.4em 0.8em;
+  border-radius: 3px;
+  cursor: pointer;
+  font-size: 0.9em;
+}
+
+input[type="submit"][value="Remove"]:hover,
+input[type="submit"][value="Remove algorithm"]:hover,
+input[type="submit"][value="Remove condition"]:hover {
+  background-color: #c9302c;
+}
