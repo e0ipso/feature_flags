@@ -846,7 +846,7 @@
       "Step 5: Provide context where neither condition matches",
       "Step 6: Verify algorithm is not used"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",

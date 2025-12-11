@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Test #65: Multiple Conditions with OR Logic</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      max-width: 1200px;
+      margin: 40px auto;
+      padding: 20px;
+      background: #f5f5f5;
+    }
+    h1 {
+      color: #333;
+      border-bottom: 3px solid #0073e6;
+      padding-bottom: 10px;
+    }
+    .test-section {
+      background: white;
+      padding: 20px;
+      margin: 20px 0;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    .test-result {
+      padding: 15px;
+      margin: 10px 0;
+      border-radius: 4px;
+      border-left: 4px solid #ccc;
+    }
+    .test-result.pass {
+      background: #e8f5e9;
+      border-left-color: #4caf50;
+    }
+    .test-result.fail {
+      background: #ffebee;
+      border-left-color: #f44336;
+    }
+    .test-result.info {
+      background: #e3f2fd;
+      border-left-color: #2196f3;
+    }
+    .status {
+      font-weight: bold;
+      display: inline-block;
+      padding: 3px 8px;
+      border-radius: 3px;
+      margin-right: 8px;
+    }
+    .status.pass { background: #4caf50; color: white; }
+    .status.fail { background: #f44336; color: white; }
+    .status.info { background: #2196f3; color: white; }
+    pre {
+      background: #f5f5f5;
+      padding: 10px;
+      border-radius: 4px;
+      overflow-x: auto;
+    }
+    .summary {
+      font-size: 1.2em;
+      font-weight: bold;
+      margin: 20px 0;
+      padding: 15px;
+      background: #fff3cd;
+      border-radius: 4px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Test #65: Multiple Conditions on Same Algorithm with OR Logic</h1>
+
+  <div class="test-section">
+    <h2>Test Overview</h2>
+    <p><strong>Requirement:</strong> Multiple conditions on the same algorithm should be evaluated with proper OR logic.</p>
+    <p><strong>Test Steps:</strong></p>
+    <ol>
+      <li>Create flag with algorithm having 2 conditions</li>
+      <li>Set both conditions to OR operator</li>
+      <li>Provide context where only first condition matches</li>
+      <li>Verify algorithm is used (any condition can match with OR)</li>
+      <li>Provide context where neither condition matches</li>
+      <li>Verify algorithm is not used (falls through to catch-all)</li>
+    </ol>
+  </div>
+
+  <div id="results"></div>
+
+  <div class="summary" id="summary"></div>
+
+  <!-- Setup drupalSettings -->
+  <script>
+    window.drupalSettings = {
+      featureFlags: {
+        settings: {
+          debug: true,
+          persist: false
+        },
+        flags: {},
+        libraries: {
+          algorithms: {
+            'percentage_rollout': 'PercentageRollout'
+          },
+          conditions: {
+            'user_id': 'UserIdCondition',
+            'user_tier': 'UserTierCondition'
+          }
+        }
+      }
+    };
+  </script>
+
+  <!-- Load the JavaScript files in correct order -->
+  <script src="js/base/BaseCondition.js"></script>
+  <script src="js/base/BaseAlgorithm.js"></script>
+  <script src="js/base/FeatureFlagResult.js"></script>
+  <script src="js/base/FeatureFlagConfig.js"></script>
+  <script src="js/base/FeatureFlagManager.js"></script>
+  <script src="js/condition/UserId.js"></script>
+  <script src="js/condition/UserTier.js"></script>
+  <script src="js/algorithm/PercentageRollout.js"></script>
+
+  <script>
+    const results = document.getElementById('results');
+    const summary = document.getElementById('summary');
+    let passCount = 0;
+    let failCount = 0;
+
+    function log(message, type = 'info') {
+      const div = document.createElement('div');
+      div.className = `test-result ${type}`;
+      div.innerHTML = `<span class="status ${type}">${type.toUpperCase()}</span>${message}`;
+      results.appendChild(div);
+
+      if (type === 'pass') passCount++;
+      if (type === 'fail') failCount++;
+    }
+
+    function updateSummary() {
+      const total = passCount + failCount;
+      const status = failCount === 0 ? 'ALL TESTS PASSED ✓' : `${failCount} TEST(S) FAILED ✗`;
+      summary.innerHTML = `${status} (${passCount}/${total} passed)`;
+      summary.style.background = failCount === 0 ? '#d4edda' : '#f8d7da';
+      summary.style.color = failCount === 0 ? '#155724' : '#721c24';
+    }
+
+    // Create a feature flag configuration with multiple conditions
+    drupalSettings.featureFlags.flags.multiple_conditions_test = {
+      id: 'multiple_conditions_test',
+      label: 'Multiple Conditions Test',
+      enabled: true,
+      variants: [
+        {
+          uuid: 'variant-matched',
+          label: 'Matched Variant',
+          value: { matched: true }
+        },
+        {
+          uuid: 'variant-default',
+          label: 'Default Variant',
+          value: { matched: false }
+        }
+      ],
+      algorithms: [
+        {
+          uuid: 'algo-1',
+          pluginId: 'percentage_rollout',
+          jsClass: 'PercentageRollout',
+          weight: 0,
+          configuration: {
+            percentages: {
+              'variant-matched': 100,
+              'variant-default': 0
+            }
+          },
+          conditions: [
+            {
+              uuid: 'cond-1',
+              pluginId: 'user_id',
+              jsClass: 'UserIdCondition',
+              operator: 'OR',
+              configuration: {
+                values: ['1', '2', '3']
+              }
+            },
+            {
+              uuid: 'cond-2',
+              pluginId: 'user_tier',
+              jsClass: 'UserTierCondition',
+              operator: 'OR',
+              configuration: {
+                values: ['premium', 'enterprise']
+              }
+            }
+          ]
+        },
+        {
+          uuid: 'algo-2',
+          pluginId: 'percentage_rollout',
+          jsClass: 'PercentageRollout',
+          weight: 1,
+          configuration: {
+            percentages: {
+              'variant-matched': 0,
+              'variant-default': 100
+            }
+          },
+          conditions: []
+        }
+      ]
+    };
+
+    // Run tests
+    async function runTests() {
+      log('<h3>Configuration</h3>', 'info');
+      log(`Flag has 2 algorithms:<br>
+        - Algorithm 1 (weight 0): Has 2 conditions with OR operator<br>
+        &nbsp;&nbsp;• User ID condition: ['1', '2', '3']<br>
+        &nbsp;&nbsp;• User Tier condition: ['premium', 'enterprise']<br>
+        &nbsp;&nbsp;• Returns: Matched Variant (100%)<br>
+        - Algorithm 2 (weight 1): Catch-all (no conditions)<br>
+        &nbsp;&nbsp;• Returns: Default Variant (100%)`, 'info');
+
+      // Test 1: Only first condition matches (user_id matches, user_tier doesn't)
+      log('<h3>Test 1: Only First Condition Matches</h3>', 'info');
+      const manager1 = new FeatureFlagManager();
+
+      // Provide context through event
+      document.addEventListener('featureFlags:provideContext', (event) => {
+        event.detail.addContext('user_id', '2');
+        event.detail.addContext('user_tier', 'free');
+      }, { once: true });
+
+      const result1 = await manager1.resolve('multiple_conditions_test');
+      log(`Context: user_id='2' (matches), user_tier='free' (doesn't match)`, 'info');
+      log(`Expected: Matched Variant (because OR logic - one matching condition is enough)`, 'info');
+      log(`Actual: ${result1.variant.label}`, 'info');
+
+      if (result1.variant.label === 'Matched Variant') {
+        log('✓ Test 1 PASSED: Algorithm with conditions was used (OR logic worked)', 'pass');
+      } else {
+        log('✗ Test 1 FAILED: Expected Matched Variant, got ' + result1.variant.label, 'fail');
+      }
+
+      // Test 2: Only second condition matches (user_id doesn't match, user_tier matches)
+      log('<h3>Test 2: Only Second Condition Matches</h3>', 'info');
+      const manager2 = new FeatureFlagManager();
+
+      document.addEventListener('featureFlags:provideContext', (event) => {
+        event.detail.addContext('user_id', '99');
+        event.detail.addContext('user_tier', 'premium');
+      }, { once: true });
+
+      const result2 = await manager2.resolve('multiple_conditions_test');
+      log(`Context: user_id='99' (doesn't match), user_tier='premium' (matches)`, 'info');
+      log(`Expected: Matched Variant (because OR logic - one matching condition is enough)`, 'info');
+      log(`Actual: ${result2.variant.label}`, 'info');
+
+      if (result2.variant.label === 'Matched Variant') {
+        log('✓ Test 2 PASSED: Algorithm with conditions was used (OR logic worked)', 'pass');
+      } else {
+        log('✗ Test 2 FAILED: Expected Matched Variant, got ' + result2.variant.label, 'fail');
+      }
+
+      // Test 3: Both conditions match
+      log('<h3>Test 3: Both Conditions Match</h3>', 'info');
+      const manager3 = new FeatureFlagManager();
+
+      document.addEventListener('featureFlags:provideContext', (event) => {
+        event.detail.addContext('user_id', '1');
+        event.detail.addContext('user_tier', 'enterprise');
+      }, { once: true });
+
+      const result3 = await manager3.resolve('multiple_conditions_test');
+      log(`Context: user_id='1' (matches), user_tier='enterprise' (matches)`, 'info');
+      log(`Expected: Matched Variant (both conditions match)`, 'info');
+      log(`Actual: ${result3.variant.label}`, 'info');
+
+      if (result3.variant.label === 'Matched Variant') {
+        log('✓ Test 3 PASSED: Algorithm with conditions was used (both matched)', 'pass');
+      } else {
+        log('✗ Test 3 FAILED: Expected Matched Variant, got ' + result3.variant.label, 'fail');
+      }
+
+      // Test 4: Neither condition matches
+      log('<h3>Test 4: Neither Condition Matches</h3>', 'info');
+      const manager4 = new FeatureFlagManager();
+
+      document.addEventListener('featureFlags:provideContext', (event) => {
+        event.detail.addContext('user_id', '99');
+        event.detail.addContext('user_tier', 'free');
+      }, { once: true });
+
+      const result4 = await manager4.resolve('multiple_conditions_test');
+      log(`Context: user_id='99' (doesn't match), user_tier='free' (doesn't match)`, 'info');
+      log(`Expected: Default Variant (catch-all algorithm used)`, 'info');
+      log(`Actual: ${result4.variant.label}`, 'info');
+
+      if (result4.variant.label === 'Default Variant') {
+        log('✓ Test 4 PASSED: Catch-all algorithm was used when no conditions matched', 'pass');
+      } else {
+        log('✗ Test 4 FAILED: Expected Default Variant, got ' + result4.variant.label, 'fail');
+      }
+
+      updateSummary();
+    }
+
+    // Run tests when page loads
+    window.addEventListener('load', () => {
+      runTests().catch(error => {
+        log('Test execution error: ' + error.message, 'fail');
+        console.error(error);
+        updateSummary();
+      });
+    });
+  </script>
+</body>
+</html>

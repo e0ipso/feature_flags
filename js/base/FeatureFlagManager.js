@@ -123,7 +123,7 @@ class FeatureFlagManager {
    *
    * @param {Array} conditions - Array of condition configurations.
    * @param {Object} context - The context object.
-   * @return {Promise<boolean>} True if all conditions pass.
+   * @return {Promise<boolean>} True if any condition passes (OR logic).
    */
   async evaluateConditions(conditions, context) {
     // No conditions means this is a catch-all algorithm.
@@ -131,17 +131,19 @@ class FeatureFlagManager {
       return true;
     }
 
-    // All conditions must pass for the algorithm to be used.
+    // Multiple conditions use OR logic - any passing condition is sufficient.
     for (const conditionConfig of conditions) {
       const result = await this.evaluateCondition(conditionConfig, context);
       this.debugLog(`Condition ${conditionConfig.pluginId} (${conditionConfig.operator}): ${result}`);
 
-      if (!result) {
-        return false;
+      if (result) {
+        // At least one condition passed, so the algorithm applies.
+        return true;
       }
     }
 
-    return true;
+    // No conditions passed.
+    return false;
   }
 
   /**
