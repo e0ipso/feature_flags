@@ -1898,7 +1898,7 @@
       "Step 4: Verify checkboxes are properly styled",
       "Step 5: Verify descriptions appear in help text style"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "style",
@@ -1911,7 +1911,7 @@
       "Step 5: Verify rows are readable with proper spacing",
       "Step 6: Verify status badges are visually distinct"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "style",
@@ -1923,7 +1923,7 @@
       "Step 4: Verify active tab is highlighted",
       "Step 5: Verify tab content area is distinct"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "style",
@@ -1936,7 +1936,7 @@
       "Step 5: Verify syntax colors are readable",
       "Step 6: Verify lint gutter is present"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "style",
@@ -1960,7 +1960,7 @@
       "Step 4: Verify all 'Remove' buttons use same style",
       "Step 5: Verify buttons are distinguishable from primary actions"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "style",
@@ -2055,7 +2055,7 @@
       "Step 4: Verify inactive tab is clickable",
       "Step 5: Click other tab and verify visual change"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "style",
