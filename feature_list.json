@@ -1355,7 +1355,7 @@
       "Step 3: Verify it extends DefaultPluginManager",
       "Step 4: Verify it scans src/Plugin/DecisionAlgorithm directory"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -1365,7 +1365,7 @@
       "Step 2: Verify plugin.manager.feature_flags.algorithm_condition service exists",
       "Step 3: Verify proper configuration"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -1376,7 +1376,7 @@
       "Step 3: Verify properties: id, label, description, js_library, js_class",
       "Step 4: Verify proper documentation"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -1386,7 +1386,7 @@
       "Step 2: Verify class extends Plugin annotation",
       "Step 3: Verify properties: id, label, description, context_key, js_library, js_class"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -1396,7 +1396,7 @@
       "Step 2: Verify methods: defaultConfiguration, buildConfigurationForm, validateConfigurationForm, submitConfigurationForm, getConfiguration, setConfiguration, getJavaScriptSettings",
       "Step 3: Verify proper PHPDoc"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -1406,7 +1406,7 @@
       "Step 2: Verify includes all configuration methods",
       "Step 3: Verify includes getContextKey method"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -1417,7 +1417,7 @@
       "Step 3: Verify it provides configuration storage and getters/setters",
       "Step 4: Verify child classes can extend it"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -1427,7 +1427,7 @@
       "Step 2: Verify proper implementation of interface",
       "Step 3: Verify configuration handling"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -1449,7 +1449,7 @@
       "Step 3: Verify returns array with 'percentages' key",
       "Step 4: Verify default is empty array"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -1461,7 +1461,7 @@
       "Step 4: Verify each input labeled with variant label",
       "Step 5: Verify inputs have min=0, max=100 attributes"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -1515,7 +1515,7 @@
       "Step 2: Verify textfield for 'values' exists",
       "Step 3: Verify description mentions comma-separated format"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -1538,7 +1538,7 @@
       "Step 3: Verify returns array with 'values' key",
       "Step 4: Verify value is array of user IDs"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -1559,7 +1559,7 @@
       "Step 3: Submit with 'free, premium, enterprise'",
       "Step 4: Verify values are parsed to array"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -1571,7 +1571,7 @@
       "Step 4: Verify handlers for list_builder, form, delete",
       "Step 5: Verify config_prefix and entity_keys"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -1581,7 +1581,7 @@
       "Step 2: Verify id, label, description, status, variants, algorithms",
       "Step 3: Verify proper types and defaults"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -1592,7 +1592,7 @@
       "Step 3: Test adding variant programmatically",
       "Step 4: Test removing variant programmatically"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -1602,7 +1602,7 @@
       "Step 2: Test adding algorithm programmatically",
       "Step 3: Test reordering algorithms"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -1623,7 +1623,7 @@
       "Step 2: View list",
       "Step 3: Verify Variants count column shows '5'"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -1633,7 +1633,7 @@
       "Step 2: View list",
       "Step 3: Verify Algorithms count column shows '3'"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -1644,7 +1644,7 @@
       "Step 3: Verify tabs: Basic Information, Variants, Decision Algorithms",
       "Step 4: Click each tab and verify content switches"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -1655,7 +1655,7 @@
       "Step 3: Verify plugins can access variant list from parent form",
       "Step 4: Test PercentageRollout reading variants during form build"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -1665,7 +1665,7 @@
       "Step 2: Use Drush to get config: drush config:get feature_flags.settings",
       "Step 3: Verify saved values match form input"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -1675,7 +1675,7 @@
       "Step 2: Verify message mentions deleting 'Test Flag'",
       "Step 3: Verify message warns about permanent deletion"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -1687,7 +1687,7 @@
       "Step 4: Verify requirements include permission check",
       "Step 5: Verify _entity_form and _entity_list keys where appropriate"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -1698,7 +1698,7 @@
       "Step 3: Navigate to /admin/config/services",
       "Step 4: Verify 'Feature Flags' link appears"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -1709,7 +1709,7 @@
       "Step 3: Navigate to feature flags section",
       "Step 4: Verify tabs appear and work correctly"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -1721,7 +1721,7 @@
       "Step 4: Verify 'Add feature flag' button appears",
       "Step 5: Click button and verify navigation to add form"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -1774,7 +1774,7 @@
       "Step 2: Verify includes admin-specific JS and CSS",
       "Step 3: Verify dependencies include json_editor and AJAX libraries"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -1785,7 +1785,7 @@
       "Step 3: Verify properties: id, label, variants, algorithms",
       "Step 4: Verify structure matches specification"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -1808,7 +1808,7 @@
       "Step 3: Verify constructor accepts variants and config",
       "Step 4: Verify decide method implementation"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -1818,7 +1818,7 @@
       "Step 2: Verify class extends BaseCondition",
       "Step 3: Verify evaluate method implementation"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -1828,7 +1828,7 @@
       "Step 2: Verify class extends BaseCondition",
       "Step 3: Verify evaluate method implementation"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -1852,7 +1852,7 @@
       "Step 4: Verify lint configuration",
       "Step 5: Test on feature flag form"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -1863,7 +1863,7 @@
       "Step 3: Verify any other required hooks (theme, help, etc.)",
       "Step 4: Verify proper documentation"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
