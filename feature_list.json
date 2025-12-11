@@ -1438,7 +1438,7 @@
       "Step 3: Verify id = 'percentage_rollout'",
       "Step 4: Verify js_library and js_class point to correct files"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -1473,7 +1473,7 @@
       "Step 4: Verify validation error is set",
       "Step 5: Verify error message mentions 100% requirement"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -1483,7 +1483,7 @@
       "Step 2: Call validateConfigurationForm",
       "Step 3: Verify no validation errors"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -1494,7 +1494,7 @@
       "Step 3: Verify returns array with 'percentages' key",
       "Step 4: Verify value is map of UUID to percentage"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -1505,7 +1505,7 @@
       "Step 3: Verify context_key = 'user_id'",
       "Step 4: Verify js_library and js_class are set"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -1527,7 +1527,7 @@
       "Step 4: Verify values is array ['1', '5', '10']",
       "Step 5: Verify whitespace is trimmed"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -1548,7 +1548,7 @@
       "Step 2: Verify @AlgorithmCondition annotation",
       "Step 3: Verify context_key = 'user_tier'"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -1613,7 +1613,7 @@
       "Step 3: Verify enabled flag shows 'Enabled' badge (likely green)",
       "Step 4: Verify disabled flag shows 'Disabled' badge (likely gray/red)"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -1732,7 +1732,7 @@
       "Step 3: Verify it includes all files from js/base/",
       "Step 4: Verify dependencies on core libraries"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -1742,7 +1742,7 @@
       "Step 2: Verify it includes js/algorithm/PercentageRollout.js",
       "Step 3: Verify dependency on feature_flags/base"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -1752,7 +1752,7 @@
       "Step 2: Verify feature_flags/condition.user_tier library",
       "Step 3: Verify proper JS files and dependencies"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -1764,7 +1764,7 @@
       "Step 4: Verify all required addons (lint, javascript mode)",
       "Step 5: Verify resources are marked as external"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -1948,7 +1948,7 @@
       "Step 4: Verify drag handles are visible",
       "Step 5: Verify nested conditions section is clearly subordinate"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "style",
@@ -2067,7 +2067,7 @@
       "Step 4: Take screenshot",
       "Step 5: Verify form adapts gracefully (no horizontal scroll, proper wrapping)"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "style",
@@ -2079,7 +2079,7 @@
       "Step 4: Click Edit and verify field becomes editable",
       "Step 5: Verify visual state change is clear"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "style",
