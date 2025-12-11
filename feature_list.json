@@ -992,7 +992,7 @@
       "Step 2: Resolve flag",
       "Step 3: Verify final log shows 'Decision: variant {label} ({uuid})'"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
