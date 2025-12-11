@@ -1322,7 +1322,7 @@
       "Step 4: Try to import config",
       "Step 5: Verify schema validation catches errors"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -1333,7 +1333,7 @@
       "Step 3: Verify types are correct (boolean)",
       "Step 4: Test importing config with schema validation"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -1344,7 +1344,7 @@
       "Step 3: Verify nested structures (variants, algorithms, conditions) have proper mapping",
       "Step 4: Test config import validates against schema"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
