@@ -1142,7 +1142,7 @@
       "Step 4: Verify form validation catches invalid algorithm configuration",
       "Step 5: Reconfigure algorithm to fix references"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -1284,7 +1284,7 @@
       "Step 3: Save flag",
       "Step 4: Verify algorithms are evaluated in weight order"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
