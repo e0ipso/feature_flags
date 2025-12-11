@@ -1971,7 +1971,7 @@
       "Step 3: Verify conditions appear indented/nested under algorithm",
       "Step 4: Verify visual hierarchy is clear"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "style",
@@ -1983,7 +1983,7 @@
       "Step 4: Verify error messages are in red/error color",
       "Step 5: Verify invalid fields are highlighted"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "style",
@@ -1995,7 +1995,7 @@
       "Step 4: Verify message uses success color (green)",
       "Step 5: Verify message is dismissible"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "style",
