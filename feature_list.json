@@ -1297,7 +1297,7 @@
       "Step 5: Click 'Add algorithm' (AJAX operation)",
       "Step 6: Verify all variant data is still preserved"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
