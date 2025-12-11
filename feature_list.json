@@ -937,7 +937,7 @@
       "Step 5: Verify console.debug messages appear",
       "Step 6: Verify logs include 'Resolving flag:', 'Context:', 'Evaluating algorithm:', 'Decision:'"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
