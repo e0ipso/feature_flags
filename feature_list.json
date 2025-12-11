@@ -912,7 +912,7 @@
       "Step 4: Inspect localStorage",
       "Step 5: Verify no feature_flags keys are present"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
