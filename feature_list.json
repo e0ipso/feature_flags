@@ -1016,7 +1016,7 @@
       "Step 4: Call with invalid UUID",
       "Step 5: Verify appropriate handling (null or error)"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
