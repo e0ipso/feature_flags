@@ -1076,7 +1076,7 @@
       "Step 3: Resolve flag on frontend",
       "Step 4: Verify all functionality works without errors"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -1196,7 +1196,7 @@
       "Step 4: Resolve flag multiple times",
       "Step 5: Verify all 5 variants can be selected"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
