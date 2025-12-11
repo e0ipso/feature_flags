@@ -887,7 +887,7 @@
       "Step 5: Verify key 'feature_flags:{flag_id}' exists",
       "Step 6: Verify stored value contains variant_uuid and timestamp"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
