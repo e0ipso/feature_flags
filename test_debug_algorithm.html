@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Feature Flags - Debug Algorithm Evaluation Test</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      line-height: 1.6;
+      padding: 20px;
+      background: #f5f5f5;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      background: white;
+      padding: 30px;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    h1 {
+      color: #0678be;
+      margin-bottom: 10px;
+      padding-bottom: 10px;
+      border-bottom: 3px solid #0678be;
+    }
+
+    .test-info {
+      background: #e7f5ff;
+      padding: 20px;
+      margin: 20px 0;
+      border-radius: 4px;
+      border-left: 4px solid #0678be;
+    }
+
+    .test-info h2 {
+      margin-bottom: 15px;
+      color: #333;
+    }
+
+    .test-info ul {
+      margin-left: 20px;
+    }
+
+    .test-info li {
+      margin: 5px 0;
+    }
+
+    .test-section {
+      margin: 30px 0;
+      padding: 20px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+    }
+
+    .test-section h2 {
+      color: #333;
+      margin-bottom: 15px;
+      padding-bottom: 10px;
+      border-bottom: 2px solid #eee;
+    }
+
+    .test-section h3 {
+      color: #666;
+      font-size: 16px;
+      font-style: italic;
+      margin-bottom: 15px;
+    }
+
+    .result {
+      margin: 15px 0;
+      padding: 15px;
+      border-radius: 4px;
+      font-family: 'Courier New', monospace;
+      font-size: 14px;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+    }
+
+    .result.pass {
+      background: #d4edda;
+      border: 1px solid #c3e6cb;
+      color: #155724;
+    }
+
+    .result.fail {
+      background: #f8d7da;
+      border: 1px solid #f5c6cb;
+      color: #721c24;
+    }
+
+    .instruction {
+      background: #fff3cd;
+      border: 1px solid #ffeaa7;
+      padding: 15px;
+      margin: 15px 0;
+      border-radius: 4px;
+      color: #856404;
+    }
+
+    .instruction strong {
+      display: block;
+      margin-bottom: 5px;
+    }
+
+    code {
+      background: #f4f4f4;
+      padding: 2px 6px;
+      border-radius: 3px;
+      font-family: 'Courier New', monospace;
+    }
+
+    .console-output {
+      background: #1e1e1e;
+      color: #d4d4d4;
+      padding: 15px;
+      border-radius: 4px;
+      font-family: 'Courier New', monospace;
+      font-size: 13px;
+      margin: 15px 0;
+      max-height: 400px;
+      overflow-y: auto;
+    }
+
+    .console-output .debug {
+      color: #4ec9b0;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Feature Flags - Debug Algorithm Evaluation Test</h1>
+
+    <div class="test-info">
+      <h2>Test #75: Debug logs show algorithm evaluation results</h2>
+      <p>This test verifies that when debug mode is enabled, the system logs algorithm evaluation details including which algorithms are evaluated and their condition results.</p>
+      <ul>
+        <li><strong>Feature flag:</strong> "test_algorithm" with 2 variants</li>
+        <li><strong>Algorithms:</strong> 2 algorithms with different conditions</li>
+        <li><strong>Debug mode:</strong> Enabled</li>
+        <li><strong>Expected logs:</strong> "Evaluating algorithm: {pluginId}" and "conditions met: {true/false}"</li>
+      </ul>
+    </div>
+
+    <div class="instruction">
+      <strong>Algorithm Evaluation Verification:</strong>
+      The test will verify that debug logs show each algorithm being evaluated and whether its conditions were met.
+    </div>
+
+    <!-- Test 1 -->
+    <div class="test-section">
+      <h2>Test 1: Logs show algorithm evaluation</h2>
+      <h3>Expected: "Evaluating algorithm: percentage_rollout" appears in logs</h3>
+      <div id="test1-result" class="result">Running...</div>
+    </div>
+
+    <!-- Test 2 -->
+    <div class="test-section">
+      <h2>Test 2: Logs show condition results for each algorithm</h2>
+      <h3>Expected: "Algorithm {name} conditions met: true/false" appears for each algorithm</h3>
+      <div id="test2-result" class="result">Running...</div>
+    </div>
+
+    <!-- Test 3 -->
+    <div class="test-section">
+      <h2>Test 3: Multiple algorithms are logged in order</h2>
+      <h3>Expected: When flag has 2 algorithms, both are logged in weight order</h3>
+      <div id="test3-result" class="result">Running...</div>
+    </div>
+
+    <!-- Test 4 -->
+    <div class="test-section">
+      <h2>Test 4: First matching algorithm stops evaluation</h2>
+      <h3>Expected: When first algorithm matches, second algorithm is not evaluated</h3>
+      <div id="test4-result" class="result">Running...</div>
+    </div>
+
+    <!-- Test 5 -->
+    <div class="test-section">
+      <h2>Test 5: Algorithm evaluation appears after context</h2>
+      <h3>Expected: "Evaluating algorithm" log appears after "Context:" log</h3>
+      <div id="test5-result" class="result">Running...</div>
+    </div>
+
+    <div class="instruction">
+      <strong>Console Output Capture:</strong>
+      The area below shows captured console.debug() calls with algorithm evaluation details.
+    </div>
+
+    <div id="console-capture" class="console-output">
+      Waiting for test execution...
+    </div>
+  </div>
+
+  <!-- Load dependencies -->
+  <script src="js/base/FeatureFlagConfig.js"></script>
+  <script src="js/base/FeatureFlagResult.js"></script>
+  <script src="js/base/BaseAlgorithm.js"></script>
+  <script src="js/base/BaseCondition.js"></script>
+  <script src="js/algorithm/PercentageRollout.js"></script>
+  <script src="js/condition/UserId.js"></script>
+  <script src="js/condition/UserTier.js"></script>
+  <script src="js/base/FeatureFlagManager.js"></script>
+
+  <script>
+    // Capture console.debug calls
+    const debugLogs = [];
+    const originalDebug = console.debug;
+    console.debug = function(...args) {
+      debugLogs.push(args);
+      originalDebug.apply(console, args);
+    };
+
+    // Mock drupalSettings with TWO algorithms
+    window.drupalSettings = {
+      featureFlags: {
+        settings: {
+          debug_mode: true,  // Debug mode ENABLED
+          persist: false
+        },
+        flags: {
+          test_algorithm: {
+            id: 'test_algorithm',
+            label: 'Algorithm Test Flag',
+            description: 'Feature flag for testing algorithm evaluation logging',
+            status: true,
+            variants: [
+              {
+                uuid: 'variant-premium-uuid',
+                label: 'Premium Variant',
+                weight: 0
+              },
+              {
+                uuid: 'variant-standard-uuid',
+                label: 'Standard Variant',
+                weight: 1
+              }
+            ],
+            algorithms: [
+              {
+                uuid: 'algo-premium-uuid',
+                pluginId: 'percentage_rollout',
+                jsClass: 'PercentageRollout',
+                weight: 0,
+                configuration: {
+                  percentages: {
+                    'variant-premium-uuid': 100,
+                    'variant-standard-uuid': 0
+                  }
+                },
+                conditions: [
+                  {
+                    pluginId: 'user_tier',
+                    jsClass: 'UserTierCondition',
+                    operator: 'equals',
+                    configuration: {
+                      values: ['premium']
+                    }
+                  }
+                ]
+              },
+              {
+                uuid: 'algo-catchall-uuid',
+                pluginId: 'percentage_rollout',
+                jsClass: 'PercentageRollout',
+                weight: 1,
+                configuration: {
+                  percentages: {
+                    'variant-premium-uuid': 50,
+                    'variant-standard-uuid': 50
+                  }
+                },
+                conditions: []  // Catch-all (no conditions)
+              }
+            ]
+          }
+        },
+        libraries: {}
+      }
+    };
+
+    // Helper function to display result
+    function showResult(testId, passed, message) {
+      const resultDiv = document.getElementById(testId);
+      resultDiv.className = `result ${passed ? 'pass' : 'fail'}`;
+      resultDiv.textContent = `Result: ${passed ? 'PASS' : 'FAIL'} - ${message}`;
+    }
+
+    // Helper function to update console capture display
+    function updateConsoleCapture() {
+      const captureDiv = document.getElementById('console-capture');
+      let output = '';
+
+      debugLogs.forEach((args, index) => {
+        output += `<span class="timestamp">[${index + 1}]</span> <span class="debug">`;
+
+        args.forEach((arg, i) => {
+          if (i > 0) output += ' ';
+
+          if (typeof arg === 'object') {
+            output += JSON.stringify(arg, null, 2);
+          } else {
+            output += String(arg);
+          }
+        });
+
+        output += '</span>\n';
+      });
+
+      captureDiv.innerHTML = output || 'No debug logs captured...';
+    }
+
+    // Run tests
+    async function runTests() {
+      try {
+        // Clear previous logs
+        debugLogs.length = 0;
+        localStorage.clear();
+
+        // Test 1 & 2: Resolve flag with premium user (first algorithm should match)
+        const manager = new FeatureFlagManager({ user_id: 'user-123', user_tier: 'premium' });
+        const result = await manager.resolve('test_algorithm');
+
+        // Update console capture
+        updateConsoleCapture();
+
+        const logText = debugLogs.map(args => args.join(' ')).join('\n');
+
+        // Test 1: Check for "Evaluating algorithm"
+        const hasEvaluatingLog = logText.includes('Evaluating algorithm:') &&
+                                logText.includes('percentage_rollout');
+
+        showResult(
+          'test1-result',
+          hasEvaluatingLog,
+          hasEvaluatingLog
+            ? 'Found "Evaluating algorithm: percentage_rollout" in logs'
+            : 'Missing "Evaluating algorithm:" log entry'
+        );
+
+        // Test 2: Check for conditions met log
+        const hasConditionsLog = logText.includes('conditions met:') &&
+                                (logText.includes('true') || logText.includes('false'));
+
+        showResult(
+          'test2-result',
+          hasConditionsLog,
+          hasConditionsLog
+            ? 'Found "conditions met: true/false" in logs'
+            : 'Missing algorithm conditions result log'
+        );
+
+        // Test 3: Check that only first algorithm was evaluated (since it matched)
+        const evaluatingLogs = debugLogs.filter(args =>
+          String(args).includes('Evaluating algorithm:')
+        );
+
+        // Premium user should only evaluate first algorithm (it matches)
+        const correctEvalCount = evaluatingLogs.length === 1;
+
+        showResult(
+          'test3-result',
+          correctEvalCount,
+          correctEvalCount
+            ? `Correct: Only 1 algorithm evaluated (first match wins)`
+            : `Wrong: ${evaluatingLogs.length} algorithms evaluated (expected 1)`
+        );
+
+        // Test 4: Verify second algorithm NOT evaluated when first matches
+        debugLogs.length = 0;  // Clear logs
+
+        // Resolve again with premium user
+        const manager2 = new FeatureFlagManager({ user_id: 'user-456', user_tier: 'premium' });
+        await manager2.resolve('test_algorithm');
+
+        const secondRunLogs = debugLogs.filter(args =>
+          String(args).includes('Evaluating algorithm:')
+        );
+
+        const onlyFirstEvaluated = secondRunLogs.length === 1;
+
+        showResult(
+          'test4-result',
+          onlyFirstEvaluated,
+          onlyFirstEvaluated
+            ? 'Correct: Second algorithm skipped when first matches'
+            : `Wrong: ${secondRunLogs.length} algorithms evaluated (should stop after first match)`
+        );
+
+        // Test 5: Verify evaluation order (Context before Algorithm)
+        debugLogs.length = 0;  // Clear logs
+
+        const manager3 = new FeatureFlagManager({ user_id: 'user-789', user_tier: 'standard' });
+        await manager3.resolve('test_algorithm');
+
+        const contextIndex = debugLogs.findIndex(args => String(args[1]) === 'Context:');
+        const algorithmIndex = debugLogs.findIndex(args => String(args).includes('Evaluating algorithm:'));
+
+        const correctOrder = contextIndex >= 0 && algorithmIndex > contextIndex;
+
+        showResult(
+          'test5-result',
+          correctOrder,
+          correctOrder
+            ? `Correct order: Context(${contextIndex}) → Algorithm(${algorithmIndex})`
+            : `Wrong order: Context(${contextIndex}), Algorithm(${algorithmIndex})`
+        );
+
+        // Final update of console capture
+        updateConsoleCapture();
+
+      } catch (error) {
+        console.error('Test execution failed:', error);
+        showResult('test1-result', false, `Error: ${error.message}`);
+        showResult('test2-result', false, `Error: ${error.message}`);
+        showResult('test3-result', false, `Error: ${error.message}`);
+        showResult('test4-result', false, `Error: ${error.message}`);
+        showResult('test5-result', false, `Error: ${error.message}`);
+      }
+    }
+
+    // Run tests when page loads
+    window.addEventListener('load', runTests);
+  </script>
+</body>
+</html>
