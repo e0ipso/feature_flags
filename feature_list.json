@@ -948,7 +948,7 @@
       "Step 3: Resolve a feature flag",
       "Step 4: Verify no debug messages appear in console"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",

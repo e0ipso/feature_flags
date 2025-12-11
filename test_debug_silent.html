@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Feature Flags - Debug Mode Silent Test</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      line-height: 1.6;
+      padding: 20px;
+      background: #f5f5f5;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      background: white;
+      padding: 30px;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    h1 {
+      color: #0678be;
+      margin-bottom: 10px;
+      padding-bottom: 10px;
+      border-bottom: 3px solid #0678be;
+    }
+
+    .test-info {
+      background: #e7f5ff;
+      padding: 20px;
+      margin: 20px 0;
+      border-radius: 4px;
+      border-left: 4px solid #0678be;
+    }
+
+    .test-info h2 {
+      margin-bottom: 15px;
+      color: #333;
+    }
+
+    .test-info ul {
+      margin-left: 20px;
+    }
+
+    .test-info li {
+      margin: 5px 0;
+    }
+
+    .test-section {
+      margin: 30px 0;
+      padding: 20px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+    }
+
+    .test-section h2 {
+      color: #333;
+      margin-bottom: 15px;
+      padding-bottom: 10px;
+      border-bottom: 2px solid #eee;
+    }
+
+    .test-section h3 {
+      color: #666;
+      font-size: 16px;
+      font-style: italic;
+      margin-bottom: 15px;
+    }
+
+    .result {
+      margin: 15px 0;
+      padding: 15px;
+      border-radius: 4px;
+      font-family: 'Courier New', monospace;
+      font-size: 14px;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+    }
+
+    .result.pass {
+      background: #d4edda;
+      border: 1px solid #c3e6cb;
+      color: #155724;
+    }
+
+    .result.fail {
+      background: #f8d7da;
+      border: 1px solid #f5c6cb;
+      color: #721c24;
+    }
+
+    .instruction {
+      background: #fff3cd;
+      border: 1px solid #ffeaa7;
+      padding: 15px;
+      margin: 15px 0;
+      border-radius: 4px;
+      color: #856404;
+    }
+
+    .instruction strong {
+      display: block;
+      margin-bottom: 5px;
+    }
+
+    code {
+      background: #f4f4f4;
+      padding: 2px 6px;
+      border-radius: 3px;
+      font-family: 'Courier New', monospace;
+    }
+
+    .console-output {
+      background: #1e1e1e;
+      color: #d4d4d4;
+      padding: 15px;
+      border-radius: 4px;
+      font-family: 'Courier New', monospace;
+      font-size: 13px;
+      margin: 15px 0;
+      min-height: 60px;
+    }
+
+    .console-output .empty {
+      color: #808080;
+      font-style: italic;
+    }
+
+    .console-output .error {
+      color: #f48771;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Feature Flags - Debug Mode Silent Test</h1>
+
+    <div class="test-info">
+      <h2>Test #73: Debug mode is silent when disabled</h2>
+      <p>This test verifies that when debug mode is disabled in settings, no debug messages are logged to the console.</p>
+      <ul>
+        <li><strong>Feature flag:</strong> "test_silent" with 2 variants</li>
+        <li><strong>Algorithm:</strong> Percentage rollout (50/50 split)</li>
+        <li><strong>Debug mode:</strong> Disabled (false)</li>
+        <li><strong>Expected behavior:</strong> No console.debug() calls with "[Feature Flags]" prefix</li>
+      </ul>
+    </div>
+
+    <div class="instruction">
+      <strong>Test Verification:</strong>
+      This test captures console.debug() calls and verifies that NO debug logs from the Feature Flags module are generated when debug mode is disabled.
+    </div>
+
+    <!-- Test 1 -->
+    <div class="test-section">
+      <h2>Test 1: No debug logs when disabled</h2>
+      <h3>Expected: Console should have ZERO debug logs with "[Feature Flags]" prefix</h3>
+      <div id="test1-result" class="result">Running...</div>
+    </div>
+
+    <!-- Test 2 -->
+    <div class="test-section">
+      <h2>Test 2: Flag resolution still works</h2>
+      <h3>Expected: Flag resolves successfully even without debug logs</h3>
+      <div id="test2-result" class="result">Running...</div>
+    </div>
+
+    <!-- Test 3 -->
+    <div class="test-section">
+      <h2>Test 3: Settings respect debug_mode: false</h2>
+      <h3>Expected: Settings object has debug_mode set to false</h3>
+      <div id="test3-result" class="result">Running...</div>
+    </div>
+
+    <!-- Test 4 -->
+    <div class="test-section">
+      <h2>Test 4: Multiple resolutions produce no logs</h2>
+      <h3>Expected: Resolving flag 3 times produces zero debug logs</h3>
+      <div id="test4-result" class="result">Running...</div>
+    </div>
+
+    <!-- Test 5 -->
+    <div class="test-section">
+      <h2>Test 5: debugLog method respects setting</h2>
+      <h3>Expected: debugLog() calls are blocked when debug_mode is false</h3>
+      <div id="test5-result" class="result">Running...</div>
+    </div>
+
+    <div class="instruction">
+      <strong>Console Output Capture:</strong>
+      The area below shows captured console.debug() calls. It should be EMPTY when debug mode is disabled.
+    </div>
+
+    <div id="console-capture" class="console-output">
+      <span class="empty">Waiting for test execution...</span>
+    </div>
+  </div>
+
+  <!-- Load dependencies -->
+  <script src="js/base/FeatureFlagConfig.js"></script>
+  <script src="js/base/FeatureFlagResult.js"></script>
+  <script src="js/base/BaseAlgorithm.js"></script>
+  <script src="js/base/BaseCondition.js"></script>
+  <script src="js/algorithm/PercentageRollout.js"></script>
+  <script src="js/condition/UserId.js"></script>
+  <script src="js/base/FeatureFlagManager.js"></script>
+
+  <script>
+    // Capture console.debug calls
+    const debugLogs = [];
+    const originalDebug = console.debug;
+    console.debug = function(...args) {
+      debugLogs.push(args);
+      originalDebug.apply(console, args);
+    };
+
+    // Mock drupalSettings with DEBUG MODE DISABLED
+    window.drupalSettings = {
+      featureFlags: {
+        settings: {
+          debug_mode: false,  // Debug mode DISABLED
+          debug: false,       // Also set debug to false
+          persist: false
+        },
+        flags: {
+          test_silent: {
+            id: 'test_silent',
+            label: 'Silent Test Flag',
+            description: 'Feature flag for testing silent mode (no debug logs)',
+            status: true,
+            variants: [
+              {
+                uuid: 'variant-a-uuid-111',
+                label: 'Variant A',
+                weight: 0
+              },
+              {
+                uuid: 'variant-b-uuid-222',
+                label: 'Variant B',
+                weight: 1
+              }
+            ],
+            algorithms: [
+              {
+                uuid: 'algo-uuid-333',
+                pluginId: 'percentage_rollout',
+                jsClass: 'PercentageRollout',
+                weight: 0,
+                configuration: {
+                  percentages: {
+                    'variant-a-uuid-111': 50,
+                    'variant-b-uuid-222': 50
+                  }
+                },
+                conditions: []
+              }
+            ]
+          }
+        },
+        libraries: {}
+      }
+    };
+
+    // Helper function to display result
+    function showResult(testId, passed, message) {
+      const resultDiv = document.getElementById(testId);
+      resultDiv.className = `result ${passed ? 'pass' : 'fail'}`;
+      resultDiv.textContent = `Result: ${passed ? 'PASS' : 'FAIL'} - ${message}`;
+    }
+
+    // Helper function to update console capture display
+    function updateConsoleCapture() {
+      const captureDiv = document.getElementById('console-capture');
+
+      if (debugLogs.length === 0) {
+        captureDiv.innerHTML = '<span class="empty">✓ No debug logs captured (as expected when debug mode is disabled)</span>';
+      } else {
+        let output = '<span class="error">ERROR: Debug logs were captured when they should not have been:</span>\n\n';
+
+        debugLogs.forEach((args, index) => {
+          args.forEach((arg, i) => {
+            if (i > 0) output += ' ';
+
+            if (typeof arg === 'object') {
+              output += JSON.stringify(arg, null, 2);
+            } else {
+              output += String(arg);
+            }
+          });
+          output += '\n';
+        });
+
+        captureDiv.innerHTML = output;
+      }
+    }
+
+    // Helper to filter Feature Flags debug logs
+    function getFeatureFlagsLogs() {
+      return debugLogs.filter(args => {
+        return args.some(arg => String(arg).includes('[Feature Flags]'));
+      });
+    }
+
+    // Run tests
+    async function runTests() {
+      try {
+        // Clear previous logs
+        debugLogs.length = 0;
+        localStorage.clear();
+
+        // Test 3: Verify settings first
+        const manager = new FeatureFlagManager({ user_id: 'test-user-silent' });
+        const settingsCorrect = manager.settings.debug_mode === false &&
+                               (manager.settings.debug === false || manager.settings.debug === undefined);
+
+        showResult(
+          'test3-result',
+          settingsCorrect,
+          settingsCorrect
+            ? 'Settings have debug_mode: false'
+            : `Settings incorrect: debug_mode=${manager.settings.debug_mode}, debug=${manager.settings.debug}`
+        );
+
+        // Test 1 & 2: Resolve flag and check for logs
+        const result = await manager.resolve('test_silent');
+
+        // Update console capture
+        updateConsoleCapture();
+
+        // Test 1: Check that NO Feature Flags debug logs were generated
+        const featureFlagsLogs = getFeatureFlagsLogs();
+        const noDebugLogs = featureFlagsLogs.length === 0;
+
+        showResult(
+          'test1-result',
+          noDebugLogs,
+          noDebugLogs
+            ? 'No debug logs from Feature Flags (correct behavior)'
+            : `Found ${featureFlagsLogs.length} debug log entries (should be 0)`
+        );
+
+        // Test 2: Verify resolution worked
+        const resolved = result && result.variant;
+
+        showResult(
+          'test2-result',
+          resolved,
+          resolved
+            ? `Flag resolved to variant: ${result.variant.label}`
+            : 'Flag resolution failed'
+        );
+
+        // Test 4: Multiple resolutions
+        debugLogs.length = 0;  // Clear logs
+        await manager.resolve('test_silent');
+        await manager.resolve('test_silent');
+        await manager.resolve('test_silent');
+
+        const logsAfterMultiple = getFeatureFlagsLogs();
+        const noLogsAfterMultiple = logsAfterMultiple.length === 0;
+
+        showResult(
+          'test4-result',
+          noLogsAfterMultiple,
+          noLogsAfterMultiple
+            ? '3 resolutions produced 0 debug logs (correct)'
+            : `Found ${logsAfterMultiple.length} debug logs after 3 resolutions`
+        );
+
+        // Test 5: Test debugLog method directly
+        debugLogs.length = 0;  // Clear logs
+        manager.debugLog('This should NOT appear');
+        manager.debugLog('Test', 'Multiple', 'Args');
+
+        const directCallLogs = getFeatureFlagsLogs();
+        const blockedDirectCalls = directCallLogs.length === 0;
+
+        showResult(
+          'test5-result',
+          blockedDirectCalls,
+          blockedDirectCalls
+            ? 'Direct debugLog() calls blocked (correct)'
+            : `debugLog() calls were not blocked: found ${directCallLogs.length} logs`
+        );
+
+        // Final update of console capture
+        updateConsoleCapture();
+
+      } catch (error) {
+        console.error('Test execution failed:', error);
+        showResult('test1-result', false, `Error: ${error.message}`);
+        showResult('test2-result', false, `Error: ${error.message}`);
+        showResult('test3-result', false, `Error: ${error.message}`);
+        showResult('test4-result', false, `Error: ${error.message}`);
+        showResult('test5-result', false, `Error: ${error.message}`);
+      }
+    }
+
+    // Run tests when page loads
+    window.addEventListener('load', runTests);
+  </script>
+</body>
+</html>
