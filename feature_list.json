@@ -1226,7 +1226,7 @@
       "Step 2: Resolve flag with any context",
       "Step 3: Verify catch-all algorithm is always used"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
