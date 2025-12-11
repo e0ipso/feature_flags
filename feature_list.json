@@ -1206,7 +1206,7 @@
       "Step 2: Resolve flag 100 times",
       "Step 3: Verify third variant (0%) is never selected"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
