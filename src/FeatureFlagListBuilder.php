@@ -100,6 +100,9 @@ class FeatureFlagListBuilder extends ConfigEntityListBuilder {
   public function render(): array {
     $build = parent::render();
 
+    // Attach admin list styling library.
+    $build['#attached']['library'][] = 'feature_flags/admin_list';
+
     // Add empty state message if no entities.
     if (empty($build['table']['#rows'])) {
       $build['empty'] = [

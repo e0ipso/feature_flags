@@ -1,0 +1,30 @@
+/**
+ * @file
+ * Styles for the feature flags list builder.
+ */
+
+/* Empty state styling - centered and clear */
+.empty-state {
+  text-align: center;
+  padding: 3em 2em;
+  background: #f9f9f9;
+  border: 1px dashed #ccc;
+  border-radius: 4px;
+  margin: 2em 0;
+}
+
+.empty-state p {
+  font-size: 1.1em;
+  color: #666;
+  margin: 0;
+}
+
+/* Make the Add feature flag button prominent */
+.local-actions {
+  margin: 1.5em 0;
+}
+
+.local-actions .button--primary {
+  font-size: 1em;
+  padding: 0.6em 1.2em;
+}

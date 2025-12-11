@@ -78,3 +78,21 @@ admin_form:
     - core/drupal.ajax
     - core/drupal.tabledrag
     - feature_flags/json_editor
+
+# Admin list styling
+admin_list:
+  version: 1.x
+  css:
+    theme:
+      css/admin_list.css: {}
+  dependencies:
+    - core/drupal
+
+# Admin delete form styling
+admin_delete:
+  version: 1.x
+  css:
+    theme:
+      css/admin_delete.css: {}
+  dependencies:
+    - core/drupal

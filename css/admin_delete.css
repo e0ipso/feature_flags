@@ -1,0 +1,50 @@
+/**
+ * @file
+ * Styles for the feature flag delete confirmation form.
+ */
+
+/* Make the warning message more prominent */
+form.confirmation-form .description {
+  padding: 1em;
+  background: #fff3cd;
+  border: 1px solid #ffc107;
+  border-left: 4px solid #ff6b6b;
+  border-radius: 4px;
+  margin: 1em 0;
+  font-weight: 500;
+  color: #856404;
+}
+
+/* Style the Delete button as dangerous */
+form input[type="submit"][value="Delete"],
+form button[value="Delete"],
+.confirmation input[type="submit"][value="Delete"],
+.confirmation button[value="Delete"] {
+  background-color: #dc3545 !important;
+  color: white !important;
+  border: 1px solid #dc3545 !important;
+  padding: 0.6em 1.5em;
+  border-radius: 3px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+form input[type="submit"][value="Delete"]:hover,
+form button[value="Delete"]:hover,
+.confirmation input[type="submit"][value="Delete"]:hover,
+.confirmation button[value="Delete"]:hover {
+  background-color: #c82333 !important;
+  border-color: #c82333 !important;
+}
+
+/* Make the Cancel link less prominent */
+form.confirmation-form .form-actions a {
+  color: #666;
+  margin-left: 1em;
+  text-decoration: none;
+}
+
+form.confirmation-form .form-actions a:hover {
+  color: #333;
+  text-decoration: underline;
+}

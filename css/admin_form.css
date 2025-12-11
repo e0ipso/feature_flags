@@ -101,3 +101,73 @@ input[type="submit"][value="Remove algorithm"]:hover,
 input[type="submit"][value="Remove condition"]:hover {
   background-color: #c9302c;
 }
+
+/* Empty state styling - centered and clear */
+.empty-state {
+  text-align: center;
+  padding: 3em 2em;
+  background: #f9f9f9;
+  border: 1px dashed #ccc;
+  border-radius: 4px;
+  margin: 2em 0;
+}
+
+.empty-state p {
+  font-size: 1.1em;
+  color: #666;
+  margin: 0;
+}
+
+/* Percentage input styling */
+.percentage-input-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 0.5em;
+  margin-bottom: 0.75em;
+}
+
+.percentage-input-wrapper label {
+  flex: 1;
+  margin: 0;
+}
+
+.percentage-input-wrapper input[type="number"] {
+  width: 80px;
+}
+
+.percentage-input-wrapper .percentage-suffix {
+  font-weight: bold;
+  color: #333;
+}
+
+/* Drag handles for algorithm reordering */
+.tabledrag-handle {
+  cursor: grab;
+}
+
+.tabledrag-handle:active {
+  cursor: grabbing;
+}
+
+.tabledrag-handle:hover {
+  background-color: #f0f0f0;
+}
+
+.tabledrag-handle .handle {
+  width: 20px;
+  height: 20px;
+  background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path fill="%23666" d="M7 2a2 2 0 1 0 .001 4.001A2 2 0 0 0 7 2zm0 6a2 2 0 1 0 .001 4.001A2 2 0 0 0 7 8zm0 6a2 2 0 1 0 .001 4.001A2 2 0 0 0 7 14zm6-8a2 2 0 1 0-.001-4.001A2 2 0 0 0 13 6zm0 2a2 2 0 1 0 .001 4.001A2 2 0 0 0 13 8zm0 6a2 2 0 1 0 .001 4.001A2 2 0 0 0 13 14z"/></svg>') no-repeat center;
+  display: inline-block;
+}
+
+/* Operator dropdown clarity */
+select.operator-select,
+select[name*="[operator]"] {
+  min-width: 200px;
+  font-weight: 500;
+}
+
+select.operator-select option,
+select[name*="[operator]"] option {
+  padding: 0.5em;
+}

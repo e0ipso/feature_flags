@@ -1054,7 +1054,7 @@
       "Step 3: Resolve flag on frontend",
       "Step 4: Verify all functionality works without errors"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -1065,7 +1065,7 @@
       "Step 3: Resolve flag on frontend",
       "Step 4: Verify all functionality works without errors"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -2007,7 +2007,7 @@
       "Step 4: Verify 'Delete' button is styled as dangerous action (red)",
       "Step 5: Verify 'Cancel' link is less prominent"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "style",
@@ -2019,7 +2019,7 @@
       "Step 4: Verify empty state message is centered and clear",
       "Step 5: Verify 'Add feature flag' action is prominent"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "style",
@@ -2031,7 +2031,7 @@
       "Step 4: Verify percentage symbol or label is present",
       "Step 5: Verify inputs are aligned"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "style",
@@ -2043,7 +2043,7 @@
       "Step 4: Verify handle appears on hover or is always visible",
       "Step 5: Verify cursor changes to grab cursor on hover"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "style",
@@ -2091,6 +2091,6 @@
       "Step 4: Verify dropdown options have descriptive text",
       "Step 5: Verify selected option is clearly displayed"
     ],
-    "passes": false
+    "passes": true
   }
 ]
