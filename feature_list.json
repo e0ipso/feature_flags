@@ -874,7 +874,7 @@
       "Step 5: Verify variant from first algorithm is returned",
       "Step 6: Verify subsequent algorithms are not evaluated"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",

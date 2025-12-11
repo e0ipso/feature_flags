@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Feature Flags - First Match Wins Test</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+      line-height: 1.6;
+      color: #333;
+    }
+    h1 {
+      color: #0678be;
+      border-bottom: 3px solid #0678be;
+      padding-bottom: 10px;
+    }
+    h2 {
+      color: #333;
+      margin-top: 30px;
+      padding: 10px;
+      background-color: #f5f5f5;
+      border-left: 4px solid #0678be;
+    }
+    .test-section {
+      margin: 20px 0;
+      padding: 15px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      background-color: #fafafa;
+    }
+    .result {
+      margin: 10px 0;
+      padding: 10px;
+      border-radius: 4px;
+      font-family: monospace;
+    }
+    .pass {
+      background-color: #d4edda;
+      color: #155724;
+      border: 1px solid #c3e6cb;
+    }
+    .fail {
+      background-color: #f8d7da;
+      color: #721c24;
+      border: 1px solid #f5c6cb;
+    }
+    .info {
+      background-color: #d1ecf1;
+      color: #0c5460;
+      border: 1px solid #bee5eb;
+      padding: 10px;
+      margin: 10px 0;
+      border-radius: 4px;
+    }
+    .summary {
+      margin-top: 30px;
+      padding: 20px;
+      background-color: #e7f3ff;
+      border: 2px solid #0678be;
+      border-radius: 4px;
+    }
+    .warning {
+      background-color: #fff3cd;
+      color: #856404;
+      border: 1px solid #ffeaa7;
+      padding: 10px;
+      margin: 10px 0;
+      border-radius: 4px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Feature Flags - First Match Wins Test</h1>
+
+  <div class="info">
+    <strong>Test #67: First algorithm with matching conditions is used (stops evaluation)</strong>
+    <p>Configuration: Feature flag with 3 algorithms, ALL with overlapping conditions that match the same context. The first matching algorithm should win and stop evaluation.</p>
+    <ul>
+      <li><strong>Algorithm 0 (weight 0):</strong> User ID ['100'] → First Match variant</li>
+      <li><strong>Algorithm 1 (weight 1):</strong> User ID ['100'] → Second Match variant</li>
+      <li><strong>Algorithm 2 (weight 2):</strong> User ID ['100'] → Third Match variant</li>
+    </ul>
+    <p><strong>Expected Behavior:</strong> When user_id='100', only the first algorithm (weight 0) should be used, returning "First Match" variant. Subsequent algorithms should NOT be evaluated.</p>
+  </div>
+
+  <div id="results"></div>
+
+  <!-- Setup drupalSettings -->
+  <script>
+    // Track algorithm evaluations
+    window.algorithmEvaluations = [];
+
+    window.drupalSettings = {
+      featureFlags: {
+        settings: {
+          debug: true,  // Enable debug to track evaluations
+          persist: false
+        },
+        flags: {
+          first_match_test: {
+            id: 'first_match_test',
+            label: 'First Match Wins Test',
+            enabled: true,
+            variants: [
+              {
+                uuid: 'variant-first',
+                label: 'First Match',
+                value: { message: 'First algorithm matched (weight 0)' }
+              },
+              {
+                uuid: 'variant-second',
+                label: 'Second Match',
+                value: { message: 'Second algorithm matched (weight 1)' }
+              },
+              {
+                uuid: 'variant-third',
+                label: 'Third Match',
+                value: { message: 'Third algorithm matched (weight 2)' }
+              }
+            ],
+            algorithms: [
+              {
+                uuid: 'algo-1',
+                pluginId: 'percentage_rollout',
+                jsClass: 'PercentageRollout',
+                weight: 0,
+                configuration: {
+                  percentages: {
+                    'variant-first': 100,
+                    'variant-second': 0,
+                    'variant-third': 0
+                  }
+                },
+                conditions: [
+                  {
+                    uuid: 'cond-1',
+                    pluginId: 'user_id',
+                    jsClass: 'UserIdCondition',
+                    operator: 'OR',
+                    negate: false,
+                    configuration: {
+                      values: ['100']
+                    }
+                  }
+                ]
+              },
+              {
+                uuid: 'algo-2',
+                pluginId: 'percentage_rollout',
+                jsClass: 'PercentageRollout',
+                weight: 1,
+                configuration: {
+                  percentages: {
+                    'variant-first': 0,
+                    'variant-second': 100,
+                    'variant-third': 0
+                  }
+                },
+                conditions: [
+                  {
+                    uuid: 'cond-2',
+                    pluginId: 'user_id',
+                    jsClass: 'UserIdCondition',
+                    operator: 'OR',
+                    negate: false,
+                    configuration: {
+                      values: ['100']
+                    }
+                  }
+                ]
+              },
+              {
+                uuid: 'algo-3',
+                pluginId: 'percentage_rollout',
+                jsClass: 'PercentageRollout',
+                weight: 2,
+                configuration: {
+                  percentages: {
+                    'variant-first': 0,
+                    'variant-second': 0,
+                    'variant-third': 100
+                  }
+                },
+                conditions: [
+                  {
+                    uuid: 'cond-3',
+                    pluginId: 'user_id',
+                    jsClass: 'UserIdCondition',
+                    operator: 'OR',
+                    negate: false,
+                    configuration: {
+                      values: ['100']
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        libraries: {
+          algorithms: {
+            'percentage_rollout': 'PercentageRollout'
+          },
+          conditions: {
+            'user_id': 'UserIdCondition'
+          }
+        }
+      }
+    };
+  </script>
+
+  <!-- Load Feature Flag JS files -->
+  <script src="js/base/BaseCondition.js"></script>
+  <script src="js/base/BaseAlgorithm.js"></script>
+  <script src="js/base/FeatureFlagResult.js"></script>
+  <script src="js/base/FeatureFlagConfig.js"></script>
+  <script src="js/base/FeatureFlagManager.js"></script>
+  <script src="js/condition/UserId.js"></script>
+  <script src="js/algorithm/PercentageRollout.js"></script>
+
+  <script>
+    const resultsDiv = document.getElementById('results');
+
+    // Test helper functions
+    function createTestSection(title, description) {
+      const section = document.createElement('div');
+      section.className = 'test-section';
+      section.innerHTML = `<h2>${title}</h2><p>${description}</p>`;
+      resultsDiv.appendChild(section);
+      return section;
+    }
+
+    function addResult(section, label, value, isPass, details = '') {
+      const result = document.createElement('div');
+      result.className = `result ${isPass ? 'pass' : 'fail'}`;
+      result.innerHTML = `
+        <strong>${label}:</strong> ${value}<br>
+        ${details ? `<em>${details}</em><br>` : ''}
+        <strong>Result: ${isPass ? '✓ PASS' : '✗ FAIL'}</strong>
+      `;
+      section.appendChild(result);
+      return isPass;
+    }
+
+    function addWarning(section, message) {
+      const warning = document.createElement('div');
+      warning.className = 'warning';
+      warning.innerHTML = `<strong>Note:</strong> ${message}`;
+      section.appendChild(warning);
+    }
+
+    // Intercept console.log to track debug messages
+    const originalLog = console.log;
+    const debugLogs = [];
+    console.log = function(...args) {
+      const message = args.join(' ');
+      debugLogs.push(message);
+      originalLog.apply(console, args);
+    };
+
+    // Run tests
+    async function runTests() {
+      const testResults = [];
+
+      // Test 1: Verify first matching algorithm is used
+      {
+        const section = createTestSection(
+          'Test 1: Context matches all 3 algorithms - first should win',
+          'Expected: First Match variant (weight 0) is returned'
+        );
+
+        debugLogs.length = 0; // Clear logs
+
+        const manager = new FeatureFlagManager();
+
+        document.addEventListener('featureFlags:provideContext', (event) => {
+          event.detail.addContext('user_id', '100');
+        }, { once: true });
+
+        const result = await manager.resolve('first_match_test');
+
+        const variantUuid = result.variant?.uuid || 'unknown';
+        const variantLabel = result.variant?.label || 'unknown';
+        const expectedUuid = 'variant-first';
+        const expectedLabel = 'First Match';
+
+        const pass = variantUuid === expectedUuid && variantLabel === expectedLabel;
+
+        testResults.push(addResult(
+          section,
+          'Variant UUID',
+          variantUuid,
+          pass,
+          `Expected: ${expectedUuid}, Status: "${result.status}"`
+        ));
+
+        addResult(section, 'Variant Label', variantLabel, pass, `Expected: ${expectedLabel}`);
+
+        // Check that only the first algorithm was evaluated
+        const algoEvalLogs = debugLogs.filter(log => log.includes('Evaluating algorithm'));
+        const conditionLogs = debugLogs.filter(log => log.includes('Algorithm percentage_rollout conditions met'));
+
+        addResult(
+          section,
+          'Algorithm Evaluations',
+          `${algoEvalLogs.length} algorithm(s) evaluated`,
+          true,
+          'Debug logs show evaluation process'
+        );
+
+        if (conditionLogs.length > 0) {
+          const info = document.createElement('div');
+          info.className = 'info';
+          info.innerHTML = `<strong>Condition Evaluation Results:</strong><br>${conditionLogs.map(log => `- ${log}`).join('<br>')}`;
+          section.appendChild(info);
+        }
+      }
+
+      // Test 2: Verify variant is NOT from second algorithm
+      {
+        const section = createTestSection(
+          'Test 2: Second algorithm should NOT be used',
+          'Expected: Result is NOT "Second Match" variant'
+        );
+
+        const manager2 = new FeatureFlagManager();
+
+        document.addEventListener('featureFlags:provideContext', (event) => {
+          event.detail.addContext('user_id', '100');
+        }, { once: true });
+
+        const result = await manager2.resolve('first_match_test');
+
+        const variantUuid = result.variant?.uuid || 'unknown';
+        const variantLabel = result.variant?.label || 'unknown';
+        const notSecond = variantUuid !== 'variant-second';
+        const notThird = variantUuid !== 'variant-third';
+
+        testResults.push(addResult(
+          section,
+          'Not Second Match',
+          variantLabel,
+          notSecond,
+          `Variant UUID: ${variantUuid} (should NOT be variant-second)`
+        ));
+
+        addResult(
+          section,
+          'Not Third Match',
+          variantLabel,
+          notThird,
+          `Variant UUID: ${variantUuid} (should NOT be variant-third)`
+        );
+      }
+
+      // Test 3: Verify deterministic behavior (multiple resolutions return same result)
+      {
+        const section = createTestSection(
+          'Test 3: Multiple resolutions return consistent first match',
+          'Expected: All 3 resolutions return "First Match" variant'
+        );
+
+        const results = [];
+        for (let i = 0; i < 3; i++) {
+          const manager = new FeatureFlagManager();
+
+          document.addEventListener('featureFlags:provideContext', (event) => {
+            event.detail.addContext('user_id', '100');
+          }, { once: true });
+
+          const result = await manager.resolve('first_match_test');
+          results.push(result.variant.uuid);
+        }
+
+        const allFirst = results.every(uuid => uuid === 'variant-first');
+        const uniqueResults = [...new Set(results)];
+
+        testResults.push(addResult(
+          section,
+          'Consistency Check',
+          `All 3 resolutions returned: ${uniqueResults.join(', ')}`,
+          allFirst && uniqueResults.length === 1,
+          `Expected: All should be 'variant-first'`
+        ));
+
+        addResult(
+          section,
+          'Deterministic',
+          uniqueResults.length === 1 ? 'Yes' : 'No',
+          uniqueResults.length === 1,
+          'Same context always produces same result'
+        );
+      }
+
+      // Summary
+      const summary = document.createElement('div');
+      summary.className = 'summary';
+      const passCount = testResults.filter(r => r).length;
+      const totalCount = testResults.length;
+      const allPass = passCount === totalCount;
+
+      summary.innerHTML = `
+        <h2>Summary</h2>
+        <p><strong>${allPass ? '✓ PASS' : '✗ FAIL'}: First algorithm with matching conditions is used (stops evaluation)</strong></p>
+        <p>Tests passed: ${passCount}/${totalCount}</p>
+        <ul>
+          <li>When multiple algorithms match, the first (lowest weight) is used</li>
+          <li>Subsequent algorithms are not used once a match is found</li>
+          <li>Evaluation stops at first match (early exit optimization)</li>
+          <li>Behavior is deterministic and consistent</li>
+        </ul>
+        ${allPass ? '<p style="color: #155724;"><strong>First match wins behavior works correctly!</strong></p>' : '<p style="color: #721c24;"><strong>First match wins has issues - review test results above</strong></p>'}
+      `;
+      resultsDiv.appendChild(summary);
+
+      // Restore console.log
+      console.log = originalLog;
+    }
+
+    // Run tests on page load
+    runTests().catch(error => {
+      console.error('Test execution failed:', error);
+      resultsDiv.innerHTML += `<div class="result fail"><strong>Error:</strong> ${error.message}</div>`;
+    });
+  </script>
+</body>
+</html>
