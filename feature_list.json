@@ -1153,7 +1153,7 @@
       "Step 3: Verify context provider only registers once",
       "Step 4: Verify no duplicate context values"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
