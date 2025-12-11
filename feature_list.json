@@ -1130,7 +1130,7 @@
       "Step 4: Verify condition evaluates as false (doesn't crash)",
       "Step 5: Verify falls back to catch-all algorithm"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
