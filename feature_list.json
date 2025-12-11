@@ -1004,7 +1004,7 @@
       "Step 4: Call with different input",
       "Step 5: Verify different hash is returned"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
