@@ -924,7 +924,7 @@
       "Step 4: Resolve flag again",
       "Step 5: Verify new evaluation occurs (may return different variant)"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",

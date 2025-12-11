@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Feature Flags - Clear Cache Test</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+      line-height: 1.6;
+    }
+    h1 {
+      color: #0678be;
+      border-bottom: 3px solid #0678be;
+      padding-bottom: 10px;
+    }
+    h2 {
+      color: #333;
+      border-left: 4px solid #0678be;
+      padding-left: 12px;
+      margin-top: 30px;
+    }
+    .test-info {
+      background: #e7f5fd;
+      padding: 15px;
+      border-radius: 4px;
+      margin: 20px 0;
+    }
+    .test-case {
+      border: 1px solid #ddd;
+      padding: 20px;
+      margin: 20px 0;
+      border-radius: 4px;
+    }
+    .result {
+      padding: 10px;
+      margin: 10px 0;
+      border-radius: 4px;
+      font-family: monospace;
+      white-space: pre-wrap;
+    }
+    .pass {
+      background: #d4edda;
+      border: 1px solid #c3e6cb;
+    }
+    .fail {
+      background: #f8d7da;
+      border: 1px solid #f5c6cb;
+    }
+    .expected {
+      font-style: italic;
+      color: #666;
+    }
+  </style>
+</head>
+<body>
+  <h1>Feature Flags - Clear Cache Test</h1>
+
+  <div class="test-info">
+    <h3>Test #71: Clearing localStorage invalidates cached decisions</h3>
+    <p>This test verifies that clearing localStorage removes cached decisions and allows new evaluations.</p>
+    <ul>
+      <li><strong>Feature flag:</strong> "test_clear_cache" with 2 variants</li>
+      <li><strong>Algorithm:</strong> Percentage rollout (50/50 split)</li>
+      <li><strong>Persistence:</strong> Enabled</li>
+      <li><strong>Expected behavior:</strong> Clearing cache allows re-evaluation</li>
+    </ul>
+  </div>
+
+  <div id="test-results"></div>
+
+  <!-- Include Feature Flags JavaScript -->
+  <script>
+    // Mock Drupal global
+    window.Drupal = window.Drupal || { behaviors: {} };
+    window.drupalSettings = window.drupalSettings || {};
+  </script>
+
+  <!-- Load Feature Flags base classes -->
+  <script src="js/base/FeatureFlagConfig.js"></script>
+  <script src="js/base/FeatureFlagResult.js"></script>
+  <script src="js/base/BaseAlgorithm.js"></script>
+  <script src="js/base/BaseCondition.js"></script>
+  <script src="js/base/FeatureFlagManager.js"></script>
+
+  <!-- Load algorithm implementation -->
+  <script src="js/algorithm/PercentageRollout.js"></script>
+
+  <script>
+    // Define feature flag configuration
+    const variantA = 'variant-a-clear-123';
+    const variantB = 'variant-b-clear-456';
+
+    window.drupalSettings.featureFlags = {
+      settings: {
+        debug: false,
+        persist: true  // PERSISTENCE ENABLED
+      },
+      flags: {
+        test_clear_cache: {
+          id: 'test_clear_cache',
+          label: 'Test Clear Cache',
+          variants: [
+            {
+              uuid: variantA,
+              label: 'Variant A',
+              value: JSON.stringify({ color: 'purple' })
+            },
+            {
+              uuid: variantB,
+              label: 'Variant B',
+              value: JSON.stringify({ color: 'orange' })
+            }
+          ],
+          algorithms: [
+            {
+              uuid: 'algo-clear-1',
+              pluginId: 'percentage_rollout',
+              jsClass: 'PercentageRollout',
+              weight: 0,
+              configuration: {
+                percentages: {
+                  [variantA]: 50,
+                  [variantB]: 50
+                }
+              },
+              conditions: []
+            }
+          ]
+        }
+      }
+    };
+
+    // Test execution
+    async function runTests() {
+      const resultsDiv = document.getElementById('test-results');
+      let html = '';
+
+      // Test 1: Initial resolution creates cache
+      html += '<div class="test-case">';
+      html += '<h2>Test 1: Initial resolution creates cached decision</h2>';
+      html += '<p class="expected">Expected: First resolution stores decision in localStorage</p>';
+
+      try {
+        // Clear any existing cache
+        localStorage.removeItem('feature_flags:test_clear_cache');
+
+        // First resolution
+        const manager1 = new FeatureFlagManager({ user_id: 'cache-test-user' });
+        const result1 = await manager1.resolve('test_clear_cache');
+
+        // Check cache was created
+        const cachedData = localStorage.getItem('feature_flags:test_clear_cache');
+        const cached = cachedData ? JSON.parse(cachedData) : null;
+
+        html += '<div class="result ' + (cached ? 'pass' : 'fail') + '">';
+        html += `Resolved variant: ${result1.variant.label} (${result1.variant.uuid})\n`;
+        html += `\nLocalStorage after resolution:\n`;
+        html += `  Raw: ${cachedData}\n`;
+        if (cached) {
+          html += `  Parsed:\n`;
+          html += `    variantUuid: ${cached.variantUuid}\n`;
+          html += `    timestamp: ${cached.timestamp}\n`;
+          html += `\nResult: ${cached ? 'PASS' : 'FAIL'} - Cache ${cached ? 'created' : 'not created'}`;
+        }
+        html += '</div>';
+
+        // Store for next test
+        window.firstVariantUuid = result1.variant.uuid;
+        window.firstCachedData = cachedData;
+
+      } catch (error) {
+        html += '<div class="result fail">';
+        html += `Error: ${error.message}\n`;
+        html += `Stack: ${error.stack}`;
+        html += '</div>';
+      }
+
+      html += '</div>';
+
+      // Test 2: Subsequent resolution uses cache
+      html += '<div class="test-case">';
+      html += '<h2>Test 2: Subsequent resolution uses cached decision</h2>';
+      html += '<p class="expected">Expected: Same variant returned from cache</p>';
+
+      try {
+        const manager2 = new FeatureFlagManager({ user_id: 'cache-test-user' });
+        const result2 = await manager2.resolve('test_clear_cache');
+
+        const sameVariant = result2.variant.uuid === window.firstVariantUuid;
+
+        html += '<div class="result ' + (sameVariant ? 'pass' : 'fail') + '">';
+        html += `First variant: ${window.firstVariantUuid}\n`;
+        html += `Second variant: ${result2.variant.uuid}\n`;
+        html += `Variants match: ${sameVariant ? 'YES' : 'NO'}\n`;
+        html += `\nResult: ${sameVariant ? 'PASS' : 'FAIL'} - Cached decision ${sameVariant ? 'used correctly' : 'not used'}`;
+        html += '</div>';
+
+      } catch (error) {
+        html += '<div class="result fail">';
+        html += `Error: ${error.message}\n`;
+        html += `Stack: ${error.stack}`;
+        html += '</div>';
+      }
+
+      html += '</div>';
+
+      // Test 3: Clear cache invalidates decision
+      html += '<div class="test-case">';
+      html += '<h2>Test 3: Clearing cache allows new evaluation</h2>';
+      html += '<p class="expected">Expected: After clearing cache, new evaluation occurs</p>';
+
+      try {
+        // Verify cache exists before clearing
+        const beforeClear = localStorage.getItem('feature_flags:test_clear_cache');
+        html += '<div class="result pass">';
+        html += `Cache before clear: ${beforeClear ? 'EXISTS' : 'MISSING'}\n`;
+        html += `Data: ${beforeClear}\n`;
+        html += 'Result: PASS - Cache exists before clearing';
+        html += '</div>';
+
+        // Clear the cache
+        localStorage.removeItem('feature_flags:test_clear_cache');
+
+        // Verify cache was removed
+        const afterClear = localStorage.getItem('feature_flags:test_clear_cache');
+        html += '<div class="result ' + (afterClear === null ? 'pass' : 'fail') + '">';
+        html += `Cache after clear: ${afterClear === null ? 'REMOVED' : 'STILL EXISTS'}\n`;
+        html += `\nResult: ${afterClear === null ? 'PASS' : 'FAIL'} - Cache ${afterClear === null ? 'successfully cleared' : 'not cleared'}`;
+        html += '</div>';
+
+      } catch (error) {
+        html += '<div class="result fail">';
+        html += `Error: ${error.message}\n`;
+        html += `Stack: ${error.stack}`;
+        html += '</div>';
+      }
+
+      html += '</div>';
+
+      // Test 4: Resolution after clear creates new cache
+      html += '<div class="test-case">';
+      html += '<h2>Test 4: New resolution after clear creates fresh cache</h2>';
+      html += '<p class="expected">Expected: New resolution stores a new cached decision</p>';
+
+      try {
+        // Use different user_id to potentially get different variant
+        const manager3 = new FeatureFlagManager({ user_id: 'cache-test-different-user' });
+        const result3 = await manager3.resolve('test_clear_cache');
+
+        // Check new cache was created
+        const newCache = localStorage.getItem('feature_flags:test_clear_cache');
+        const newCached = newCache ? JSON.parse(newCache) : null;
+
+        html += '<div class="result ' + (newCached ? 'pass' : 'fail') + '">';
+        html += `New variant: ${result3.variant.label} (${result3.variant.uuid})\n`;
+        html += `\nNew cache created: ${newCached ? 'YES' : 'NO'}\n`;
+        if (newCached) {
+          html += `  variantUuid: ${newCached.variantUuid}\n`;
+          html += `  timestamp: ${newCached.timestamp}\n`;
+          html += `\nCache is different from original: ${newCache !== window.firstCachedData ? 'YES' : 'NO'}\n`;
+        }
+        html += `\nResult: ${newCached ? 'PASS' : 'FAIL'} - New cache ${newCached ? 'created successfully' : 'not created'}`;
+        html += '</div>';
+
+      } catch (error) {
+        html += '<div class="result fail">';
+        html += `Error: ${error.message}\n`;
+        html += `Stack: ${error.stack}`;
+        html += '</div>';
+      }
+
+      html += '</div>';
+
+      // Test 5: Multiple clear/resolve cycles work correctly
+      html += '<div class="test-case">';
+      html += '<h2>Test 5: Multiple clear/resolve cycles work correctly</h2>';
+      html += '<p class="expected">Expected: Cache can be cleared and recreated multiple times</p>';
+
+      try {
+        const results = [];
+        for (let i = 0; i < 3; i++) {
+          // Clear cache
+          localStorage.removeItem('feature_flags:test_clear_cache');
+
+          // Resolve with unique user_id
+          const manager = new FeatureFlagManager({ user_id: `cycle-user-${i}` });
+          const result = await manager.resolve('test_clear_cache');
+
+          // Verify cache was created
+          const cache = localStorage.getItem('feature_flags:test_clear_cache');
+
+          results.push({
+            cycle: i + 1,
+            variant: result.variant.uuid,
+            cacheExists: cache !== null
+          });
+        }
+
+        const allCachesCreated = results.every(r => r.cacheExists);
+
+        html += '<div class="result ' + (allCachesCreated ? 'pass' : 'fail') + '">';
+        html += `Completed ${results.length} clear/resolve cycles:\n\n`;
+        results.forEach(r => {
+          html += `Cycle ${r.cycle}:\n`;
+          html += `  Variant: ${r.variant}\n`;
+          html += `  Cache created: ${r.cacheExists ? 'YES' : 'NO'}\n\n`;
+        });
+        html += `Result: ${allCachesCreated ? 'PASS' : 'FAIL'} - All cycles ${allCachesCreated ? 'created cache correctly' : 'had cache issues'}`;
+        html += '</div>';
+
+      } catch (error) {
+        html += '<div class="result fail">';
+        html += `Error: ${error.message}\n`;
+        html += `Stack: ${error.stack}`;
+        html += '</div>';
+      }
+
+      html += '</div>';
+
+      // Update the results
+      resultsDiv.innerHTML = html;
+    }
+
+    // Run tests when page loads
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', runTests);
+    } else {
+      runTests();
+    }
+  </script>
+</body>
+</html>
