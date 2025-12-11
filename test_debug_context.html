@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Feature Flags - Debug Context Object Test</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      line-height: 1.6;
+      padding: 20px;
+      background: #f5f5f5;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      background: white;
+      padding: 30px;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    h1 {
+      color: #0678be;
+      margin-bottom: 10px;
+      padding-bottom: 10px;
+      border-bottom: 3px solid #0678be;
+    }
+
+    .test-info {
+      background: #e7f5ff;
+      padding: 20px;
+      margin: 20px 0;
+      border-radius: 4px;
+      border-left: 4px solid #0678be;
+    }
+
+    .test-info h2 {
+      margin-bottom: 15px;
+      color: #333;
+    }
+
+    .test-info ul {
+      margin-left: 20px;
+    }
+
+    .test-info li {
+      margin: 5px 0;
+    }
+
+    .test-section {
+      margin: 30px 0;
+      padding: 20px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+    }
+
+    .test-section h2 {
+      color: #333;
+      margin-bottom: 15px;
+      padding-bottom: 10px;
+      border-bottom: 2px solid #eee;
+    }
+
+    .test-section h3 {
+      color: #666;
+      font-size: 16px;
+      font-style: italic;
+      margin-bottom: 15px;
+    }
+
+    .result {
+      margin: 15px 0;
+      padding: 15px;
+      border-radius: 4px;
+      font-family: 'Courier New', monospace;
+      font-size: 14px;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+    }
+
+    .result.pass {
+      background: #d4edda;
+      border: 1px solid #c3e6cb;
+      color: #155724;
+    }
+
+    .result.fail {
+      background: #f8d7da;
+      border: 1px solid #f5c6cb;
+      color: #721c24;
+    }
+
+    .instruction {
+      background: #fff3cd;
+      border: 1px solid #ffeaa7;
+      padding: 15px;
+      margin: 15px 0;
+      border-radius: 4px;
+      color: #856404;
+    }
+
+    .instruction strong {
+      display: block;
+      margin-bottom: 5px;
+    }
+
+    code {
+      background: #f4f4f4;
+      padding: 2px 6px;
+      border-radius: 3px;
+      font-family: 'Courier New', monospace;
+    }
+
+    .console-output {
+      background: #1e1e1e;
+      color: #d4d4d4;
+      padding: 15px;
+      border-radius: 4px;
+      font-family: 'Courier New', monospace;
+      font-size: 13px;
+      margin: 15px 0;
+      max-height: 400px;
+      overflow-y: auto;
+    }
+
+    .console-output .debug {
+      color: #4ec9b0;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Feature Flags - Debug Context Object Test</h1>
+
+    <div class="test-info">
+      <h2>Test #74: Debug logs show context object values</h2>
+      <p>This test verifies that when debug mode is enabled, the context object is logged with all provided keys and values.</p>
+      <ul>
+        <li><strong>Feature flag:</strong> "test_context" with 2 variants</li>
+        <li><strong>Context provided:</strong> { user_id: "test-user-456", user_tier: "premium", custom_field: "value123", another_key: 42 }</li>
+        <li><strong>Debug mode:</strong> Enabled</li>
+        <li><strong>Expected:</strong> Debug log contains "Context:" followed by object with all keys</li>
+      </ul>
+    </div>
+
+    <div class="instruction">
+      <strong>Context Object Verification:</strong>
+      The test will verify that the debug log includes the complete context object with all provided keys and values.
+    </div>
+
+    <!-- Test 1 -->
+    <div class="test-section">
+      <h2>Test 1: Context log contains all provided keys</h2>
+      <h3>Expected: Debug log shows user_id, user_tier, custom_field, and another_key</h3>
+      <div id="test1-result" class="result">Running...</div>
+    </div>
+
+    <!-- Test 2 -->
+    <div class="test-section">
+      <h2>Test 2: Context log appears in correct order</h2>
+      <h3>Expected: "Context:" log appears after "Resolving flag:" and before "Evaluating algorithm:"</h3>
+      <div id="test2-result" class="result">Running...</div>
+    </div>
+
+    <!-- Test 3 -->
+    <div class="test-section">
+      <h2>Test 3: Context shows correct data types</h2>
+      <h3>Expected: String values as strings, numeric values as numbers</h3>
+      <div id="test3-result" class="result">Running...</div>
+    </div>
+
+    <!-- Test 4 -->
+    <div class="test-section">
+      <h2>Test 4: Multiple flags show different contexts</h2>
+      <h3>Expected: Each resolution logs its own context object</h3>
+      <div id="test4-result" class="result">Running...</div>
+    </div>
+
+    <!-- Test 5 -->
+    <div class="test-section">
+      <h2>Test 5: Empty initial context still logs context</h2>
+      <h3>Expected: Even with no initial context, a context object is logged (with auto-generated user_id)</h3>
+      <div id="test5-result" class="result">Running...</div>
+    </div>
+
+    <div class="instruction">
+      <strong>Console Output Capture:</strong>
+      The area below shows captured console.debug() calls with the context objects.
+    </div>
+
+    <div id="console-capture" class="console-output">
+      Waiting for test execution...
+    </div>
+  </div>
+
+  <!-- Load dependencies -->
+  <script src="js/base/FeatureFlagConfig.js"></script>
+  <script src="js/base/FeatureFlagResult.js"></script>
+  <script src="js/base/BaseAlgorithm.js"></script>
+  <script src="js/base/BaseCondition.js"></script>
+  <script src="js/algorithm/PercentageRollout.js"></script>
+  <script src="js/condition/UserId.js"></script>
+  <script src="js/base/FeatureFlagManager.js"></script>
+
+  <script>
+    // Capture console.debug calls
+    const debugLogs = [];
+    const originalDebug = console.debug;
+    console.debug = function(...args) {
+      debugLogs.push(args);
+      originalDebug.apply(console, args);
+    };
+
+    // Mock drupalSettings
+    window.drupalSettings = {
+      featureFlags: {
+        settings: {
+          debug_mode: true,  // Debug mode ENABLED
+          persist: false
+        },
+        flags: {
+          test_context: {
+            id: 'test_context',
+            label: 'Context Test Flag',
+            description: 'Feature flag for testing context logging',
+            status: true,
+            variants: [
+              {
+                uuid: 'variant-x-uuid-111',
+                label: 'Variant X',
+                weight: 0
+              },
+              {
+                uuid: 'variant-y-uuid-222',
+                label: 'Variant Y',
+                weight: 1
+              }
+            ],
+            algorithms: [
+              {
+                uuid: 'algo-uuid-444',
+                pluginId: 'percentage_rollout',
+                jsClass: 'PercentageRollout',
+                weight: 0,
+                configuration: {
+                  percentages: {
+                    'variant-x-uuid-111': 50,
+                    'variant-y-uuid-222': 50
+                  }
+                },
+                conditions: []
+              }
+            ]
+          }
+        },
+        libraries: {}
+      }
+    };
+
+    // Helper function to display result
+    function showResult(testId, passed, message) {
+      const resultDiv = document.getElementById(testId);
+      resultDiv.className = `result ${passed ? 'pass' : 'fail'}`;
+      resultDiv.textContent = `Result: ${passed ? 'PASS' : 'FAIL'} - ${message}`;
+    }
+
+    // Helper function to update console capture display
+    function updateConsoleCapture() {
+      const captureDiv = document.getElementById('console-capture');
+      let output = '';
+
+      debugLogs.forEach((args, index) => {
+        const timestamp = new Date().toISOString().substr(11, 12);
+        output += `<span class="timestamp">[${index + 1}]</span> <span class="debug">`;
+
+        args.forEach((arg, i) => {
+          if (i > 0) output += ' ';
+
+          if (typeof arg === 'object') {
+            output += JSON.stringify(arg, null, 2);
+          } else {
+            output += String(arg);
+          }
+        });
+
+        output += '</span>\n';
+      });
+
+      captureDiv.innerHTML = output || 'No debug logs captured...';
+    }
+
+    // Helper to find context log entry
+    function findContextLog() {
+      return debugLogs.find(args => {
+        return args.length >= 2 && String(args[1]) === 'Context:' && typeof args[2] === 'object';
+      });
+    }
+
+    // Run tests
+    async function runTests() {
+      try {
+        // Clear previous logs
+        debugLogs.length = 0;
+        localStorage.clear();
+
+        // Test 1: Create manager with rich context and resolve
+        const richContext = {
+          user_id: 'test-user-456',
+          user_tier: 'premium',
+          custom_field: 'value123',
+          another_key: 42
+        };
+
+        const manager = new FeatureFlagManager(richContext);
+        const result = await manager.resolve('test_context');
+
+        // Update console capture
+        updateConsoleCapture();
+
+        // Find the Context log entry
+        const contextLog = findContextLog();
+
+        // Test 1: Verify all keys are present
+        if (contextLog && contextLog[2]) {
+          const loggedContext = contextLog[2];
+          const hasUserId = 'user_id' in loggedContext && loggedContext.user_id === 'test-user-456';
+          const hasTier = 'user_tier' in loggedContext && loggedContext.user_tier === 'premium';
+          const hasCustom = 'custom_field' in loggedContext && loggedContext.custom_field === 'value123';
+          const hasAnother = 'another_key' in loggedContext && loggedContext.another_key === 42;
+
+          const allKeysPresent = hasUserId && hasTier && hasCustom && hasAnother;
+
+          showResult(
+            'test1-result',
+            allKeysPresent,
+            allKeysPresent
+              ? 'All context keys present: user_id, user_tier, custom_field, another_key'
+              : `Missing keys. Found: ${Object.keys(loggedContext).join(', ')}`
+          );
+        } else {
+          showResult('test1-result', false, 'Context log not found');
+        }
+
+        // Test 2: Verify log order
+        const resolvingIndex = debugLogs.findIndex(args => String(args).includes('Resolving flag:'));
+        const contextIndex = debugLogs.findIndex(args => String(args[1]) === 'Context:');
+        const algorithmIndex = debugLogs.findIndex(args => String(args).includes('Evaluating algorithm:'));
+
+        const correctOrder = resolvingIndex >= 0 &&
+                            contextIndex > resolvingIndex &&
+                            (algorithmIndex < 0 || contextIndex < algorithmIndex);
+
+        showResult(
+          'test2-result',
+          correctOrder,
+          correctOrder
+            ? `Correct order: Resolving(${resolvingIndex}) → Context(${contextIndex}) → Algorithm(${algorithmIndex})`
+            : `Incorrect order: Resolving(${resolvingIndex}), Context(${contextIndex}), Algorithm(${algorithmIndex})`
+        );
+
+        // Test 3: Verify data types
+        if (contextLog && contextLog[2]) {
+          const loggedContext = contextLog[2];
+          const userIdIsString = typeof loggedContext.user_id === 'string';
+          const tierIsString = typeof loggedContext.user_tier === 'string';
+          const customIsString = typeof loggedContext.custom_field === 'string';
+          const anotherIsNumber = typeof loggedContext.another_key === 'number';
+
+          const correctTypes = userIdIsString && tierIsString && customIsString && anotherIsNumber;
+
+          showResult(
+            'test3-result',
+            correctTypes,
+            correctTypes
+              ? 'All data types correct: strings and numbers preserved'
+              : `Type mismatch. Types: ${JSON.stringify({
+                  user_id: typeof loggedContext.user_id,
+                  user_tier: typeof loggedContext.user_tier,
+                  custom_field: typeof loggedContext.custom_field,
+                  another_key: typeof loggedContext.another_key
+                })}`
+          );
+        } else {
+          showResult('test3-result', false, 'Context log not found');
+        }
+
+        // Test 4: Multiple resolutions with different contexts
+        debugLogs.length = 0;  // Clear logs
+        const manager2 = new FeatureFlagManager({ user_id: 'user-111', plan: 'basic' });
+        await manager2.resolve('test_context');
+
+        const contextLog1 = findContextLog();
+
+        debugLogs.length = 0;  // Clear logs again
+        const manager3 = new FeatureFlagManager({ user_id: 'user-222', plan: 'enterprise' });
+        await manager3.resolve('test_context');
+
+        const contextLog2 = findContextLog();
+
+        const differentContexts = contextLog1 && contextLog2 &&
+                                 contextLog1[2].user_id === 'user-111' &&
+                                 contextLog2[2].user_id === 'user-222';
+
+        showResult(
+          'test4-result',
+          differentContexts,
+          differentContexts
+            ? 'Each resolution logged its own context correctly'
+            : 'Context logs not captured correctly for multiple resolutions'
+        );
+
+        // Test 5: Empty initial context
+        debugLogs.length = 0;  // Clear logs
+        const managerEmpty = new FeatureFlagManager({});  // No initial context
+        await managerEmpty.resolve('test_context');
+
+        const emptyContextLog = findContextLog();
+        const hasAutoUserId = emptyContextLog &&
+                             emptyContextLog[2] &&
+                             'user_id' in emptyContextLog[2] &&
+                             typeof emptyContextLog[2].user_id === 'string' &&
+                             emptyContextLog[2].user_id.length > 0;
+
+        showResult(
+          'test5-result',
+          hasAutoUserId,
+          hasAutoUserId
+            ? `Context logged with auto-generated user_id: ${emptyContextLog[2].user_id.substr(0, 8)}...`
+            : 'No context log or missing auto-generated user_id'
+        );
+
+        // Final update of console capture
+        updateConsoleCapture();
+
+      } catch (error) {
+        console.error('Test execution failed:', error);
+        showResult('test1-result', false, `Error: ${error.message}`);
+        showResult('test2-result', false, `Error: ${error.message}`);
+        showResult('test3-result', false, `Error: ${error.message}`);
+        showResult('test4-result', false, `Error: ${error.message}`);
+        showResult('test5-result', false, `Error: ${error.message}`);
+      }
+    }
+
+    // Run tests when page loads
+    window.addEventListener('load', runTests);
+  </script>
+</body>
+</html>
