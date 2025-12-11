@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Feature Flags - Debug Condition Evaluation Test</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      line-height: 1.6;
+      padding: 20px;
+      background: #f5f5f5;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      background: white;
+      padding: 30px;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    h1 {
+      color: #0678be;
+      margin-bottom: 10px;
+      padding-bottom: 10px;
+      border-bottom: 3px solid #0678be;
+    }
+
+    .test-info {
+      background: #e7f5ff;
+      padding: 20px;
+      margin: 20px 0;
+      border-radius: 4px;
+      border-left: 4px solid #0678be;
+    }
+
+    .test-info h2 {
+      margin-bottom: 15px;
+      color: #333;
+    }
+
+    .test-info ul {
+      margin-left: 20px;
+    }
+
+    .test-info li {
+      margin: 5px 0;
+    }
+
+    .test-section {
+      margin: 30px 0;
+      padding: 20px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+    }
+
+    .test-section h2 {
+      color: #333;
+      margin-bottom: 15px;
+      padding-bottom: 10px;
+      border-bottom: 2px solid #eee;
+    }
+
+    .test-section h3 {
+      color: #666;
+      font-size: 16px;
+      font-style: italic;
+      margin-bottom: 15px;
+    }
+
+    .result {
+      margin: 15px 0;
+      padding: 15px;
+      border-radius: 4px;
+      font-family: 'Courier New', monospace;
+      font-size: 14px;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+    }
+
+    .result.pass {
+      background: #d4edda;
+      border: 1px solid #c3e6cb;
+      color: #155724;
+    }
+
+    .result.fail {
+      background: #f8d7da;
+      border: 1px solid #f5c6cb;
+      color: #721c24;
+    }
+
+    .instruction {
+      background: #fff3cd;
+      border: 1px solid #ffeaa7;
+      padding: 15px;
+      margin: 15px 0;
+      border-radius: 4px;
+      color: #856404;
+    }
+
+    .instruction strong {
+      display: block;
+      margin-bottom: 5px;
+    }
+
+    code {
+      background: #f4f4f4;
+      padding: 2px 6px;
+      border-radius: 3px;
+      font-family: 'Courier New', monospace;
+    }
+
+    .console-output {
+      background: #1e1e1e;
+      color: #d4d4d4;
+      padding: 15px;
+      border-radius: 4px;
+      font-family: 'Courier New', monospace;
+      font-size: 13px;
+      margin: 15px 0;
+      max-height: 400px;
+      overflow-y: auto;
+    }
+
+    .console-output .debug {
+      color: #4ec9b0;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Feature Flags - Debug Condition Evaluation Test</h1>
+
+    <div class="test-info">
+      <h2>Test #76: Debug logs show condition evaluation results</h2>
+      <p>This test verifies that when debug mode is enabled, the system logs individual condition evaluation results including the condition ID, operator, and result (true/false).</p>
+      <ul>
+        <li><strong>Feature flag:</strong> "test_conditions" with 2 variants</li>
+        <li><strong>Algorithm:</strong> Percentage rollout with multiple conditions</li>
+        <li><strong>Debug mode:</strong> Enabled</li>
+        <li><strong>Expected log format:</strong> "Condition {pluginId} ({operator}): {true/false}"</li>
+      </ul>
+    </div>
+
+    <div class="instruction">
+      <strong>Condition Evaluation Verification:</strong>
+      The test will verify that debug logs show each condition being evaluated with its plugin ID, operator (AND/OR/NOT), and evaluation result.
+    </div>
+
+    <!-- Test 1 -->
+    <div class="test-section">
+      <h2>Test 1: Logs show condition plugin ID</h2>
+      <h3>Expected: "Condition user_id ..." appears in logs when user_id condition is evaluated</h3>
+      <div id="test1-result" class="result">Running...</div>
+    </div>
+
+    <!-- Test 2 -->
+    <div class="test-section">
+      <h2>Test 2: Logs show condition operator</h2>
+      <h3>Expected: "Condition {id} (AND): ..." format shows operator in parentheses</h3>
+      <div id="test2-result" class="result">Running...</div>
+    </div>
+
+    <!-- Test 3 -->
+    <div class="test-section">
+      <h2>Test 3: Logs show condition evaluation result (true/false)</h2>
+      <h3>Expected: Log ends with ": true" or ": false" based on evaluation</h3>
+      <div id="test3-result" class="result">Running...</div>
+    </div>
+
+    <!-- Test 4 -->
+    <div class="test-section">
+      <h2>Test 4: Multiple conditions are logged separately</h2>
+      <h3>Expected: When algorithm has 2+ conditions, each gets its own log entry</h3>
+      <div id="test4-result" class="result">Running...</div>
+    </div>
+
+    <!-- Test 5 -->
+    <div class="test-section">
+      <h2>Test 5: Condition logs appear after algorithm evaluation starts</h2>
+      <h3>Expected: "Evaluating algorithm" appears before condition logs</h3>
+      <div id="test5-result" class="result">Running...</div>
+    </div>
+
+    <div class="instruction">
+      <strong>Console Output Capture:</strong>
+      The area below shows captured console.debug() calls with condition evaluation details.
+    </div>
+
+    <div id="console-capture" class="console-output">
+      Waiting for test execution...
+    </div>
+  </div>
+
+  <!-- Load dependencies -->
+  <script src="js/base/FeatureFlagConfig.js"></script>
+  <script src="js/base/FeatureFlagResult.js"></script>
+  <script src="js/base/BaseAlgorithm.js"></script>
+  <script src="js/base/BaseCondition.js"></script>
+  <script src="js/algorithm/PercentageRollout.js"></script>
+  <script src="js/condition/UserId.js"></script>
+  <script src="js/condition/UserTier.js"></script>
+  <script src="js/base/FeatureFlagManager.js"></script>
+
+  <script>
+    // Capture console.debug calls
+    const debugLogs = [];
+    const originalDebug = console.debug;
+    console.debug = function(...args) {
+      debugLogs.push(args);
+      originalDebug.apply(console, args);
+    };
+
+    // Mock drupalSettings with algorithm that has conditions
+    window.drupalSettings = {
+      featureFlags: {
+        settings: {
+          debug_mode: true,  // Debug mode ENABLED
+          persist: false
+        },
+        flags: {
+          test_conditions: {
+            id: 'test_conditions',
+            label: 'Condition Test Flag',
+            description: 'Feature flag for testing condition evaluation logging',
+            status: true,
+            variants: [
+              {
+                uuid: 'variant-a-uuid-123',
+                label: 'Variant A',
+                weight: 0
+              },
+              {
+                uuid: 'variant-b-uuid-456',
+                label: 'Variant B',
+                weight: 1
+              }
+            ],
+            algorithms: [
+              {
+                uuid: 'algorithm-1-uuid',
+                pluginId: 'percentage_rollout',
+                jsClass: 'PercentageRollout',
+                label: 'Premium Users',
+                weight: 0,
+                configuration: {
+                  percentages: {
+                    'variant-a-uuid-123': 50,
+                    'variant-b-uuid-456': 50
+                  }
+                },
+                conditions: [
+                  {
+                    uuid: 'condition-1-uuid',
+                    pluginId: 'user_id',
+                    jsClass: 'UserIdCondition',
+                    operator: 'AND',
+                    configuration: {
+                      user_ids: ['user-999', 'user-888']
+                    }
+                  },
+                  {
+                    uuid: 'condition-2-uuid',
+                    pluginId: 'user_tier',
+                    jsClass: 'UserTierCondition',
+                    operator: 'OR',
+                    configuration: {
+                      values: ['premium', 'enterprise']
+                    }
+                  }
+                ]
+              },
+              {
+                uuid: 'algorithm-2-uuid',
+                pluginId: 'percentage_rollout',
+                jsClass: 'PercentageRollout',
+                label: 'Catch All',
+                weight: 1,
+                configuration: {
+                  percentages: {
+                    'variant-a-uuid-123': 30,
+                    'variant-b-uuid-456': 70
+                  }
+                },
+                conditions: []  // No conditions - catch all
+              }
+            ]
+          }
+        }
+      }
+    };
+
+    // Create Feature Flag Manager
+    const manager = new FeatureFlagManager();
+
+    // Helper to get logs as text
+    function getLogsAsText() {
+      return debugLogs.map(log => log.join(' ')).join('\n');
+    }
+
+    // Helper to check if log contains text
+    function logContains(text) {
+      return debugLogs.some(log => log.join(' ').includes(text));
+    }
+
+    // Helper to find log index
+    function findLogIndex(text) {
+      return debugLogs.findIndex(log => log.join(' ').includes(text));
+    }
+
+    // Test 1: Logs show condition plugin ID
+    async function test1() {
+      debugLogs.length = 0;  // Clear previous logs
+      localStorage.clear();  // Clear any cached decisions
+
+      // Create new manager instance for this test
+      const testManager = new FeatureFlagManager({ user_tier: 'premium' });
+      const result = await testManager.resolve('test_conditions');
+
+      const hasUserIdLog = logContains('Condition user_id');
+      const hasUserTierLog = logContains('Condition user_tier');
+
+      const pass = hasUserIdLog && hasUserTierLog;
+      const resultDiv = document.getElementById('test1-result');
+      resultDiv.className = `result ${pass ? 'pass' : 'fail'}`;
+      resultDiv.textContent = pass
+        ? 'Result: PASS - Both condition plugin IDs appear in logs\n\nFound logs:\n' +
+          debugLogs.filter(log => log.join(' ').includes('Condition')).map(log => '- ' + log.join(' ')).join('\n')
+        : 'Result: FAIL - Condition plugin IDs not found in logs\n\n' + getLogsAsText();
+    }
+
+    // Test 2: Logs show condition operator
+    async function test2() {
+      debugLogs.length = 0;
+      localStorage.clear();
+
+      const testManager = new FeatureFlagManager({ user_tier: 'premium' });
+      const result = await testManager.resolve('test_conditions');
+
+      const hasAndOperator = logContains('Condition user_id (AND)');
+      const hasOrOperator = logContains('Condition user_tier (OR)');
+
+      const pass = hasAndOperator && hasOrOperator;
+      const resultDiv = document.getElementById('test2-result');
+      resultDiv.className = `result ${pass ? 'pass' : 'fail'}`;
+      resultDiv.textContent = pass
+        ? 'Result: PASS - Operators shown in parentheses\n\nFound logs:\n' +
+          debugLogs.filter(log => log.join(' ').includes('Condition')).map(log => '- ' + log.join(' ')).join('\n')
+        : 'Result: FAIL - Operators not shown correctly\n\n' + getLogsAsText();
+    }
+
+    // Test 3: Logs show evaluation result (true/false)
+    async function test3() {
+      debugLogs.length = 0;
+      localStorage.clear();
+
+      const testManager = new FeatureFlagManager({ user_tier: 'premium' });
+      const result = await testManager.resolve('test_conditions');
+
+      // user_id condition should be false (no matching user_id in context)
+      // user_tier condition should be true (premium tier matches)
+      const userIdLog = debugLogs.find(log => log.join(' ').includes('Condition user_id'));
+      const userTierLog = debugLogs.find(log => log.join(' ').includes('Condition user_tier'));
+
+      const userIdShowsFalse = userIdLog && userIdLog.join(' ').endsWith(': false');
+      const userTierShowsTrue = userTierLog && userTierLog.join(' ').endsWith(': true');
+
+      const pass = userIdShowsFalse && userTierShowsTrue;
+      const resultDiv = document.getElementById('test3-result');
+      resultDiv.className = `result ${pass ? 'pass' : 'fail'}`;
+      resultDiv.textContent = pass
+        ? 'Result: PASS - Evaluation results shown correctly\n\n' +
+          'user_id: false (correct - no matching ID)\n' +
+          'user_tier: true (correct - premium matches)\n\n' +
+          debugLogs.filter(log => log.join(' ').includes('Condition')).map(log => '- ' + log.join(' ')).join('\n')
+        : 'Result: FAIL - Evaluation results incorrect\n\n' + getLogsAsText();
+    }
+
+    // Test 4: Multiple conditions logged separately
+    async function test4() {
+      debugLogs.length = 0;
+      localStorage.clear();
+
+      const testManager = new FeatureFlagManager({ user_tier: 'premium' });
+      const result = await testManager.resolve('test_conditions');
+
+      const conditionLogs = debugLogs.filter(log => log.join(' ').includes('Condition'));
+      const hasAtLeastTwoConditionLogs = conditionLogs.length >= 2;
+
+      const pass = hasAtLeastTwoConditionLogs;
+      const resultDiv = document.getElementById('test4-result');
+      resultDiv.className = `result ${pass ? 'pass' : 'fail'}`;
+      resultDiv.textContent = pass
+        ? `Result: PASS - Found ${conditionLogs.length} separate condition log entries\n\n` +
+          conditionLogs.map((log, i) => `${i+1}. ${log.join(' ')}`).join('\n')
+        : 'Result: FAIL - Not enough condition logs\n\n' + getLogsAsText();
+    }
+
+    // Test 5: Condition logs appear after algorithm evaluation starts
+    async function test5() {
+      debugLogs.length = 0;
+      localStorage.clear();
+
+      const testManager = new FeatureFlagManager({ user_tier: 'premium' });
+      const result = await testManager.resolve('test_conditions');
+
+      const algorithmLogIndex = findLogIndex('Evaluating algorithm:');
+      const firstConditionLogIndex = findLogIndex('Condition user_id');
+
+      const pass = algorithmLogIndex !== -1 &&
+                   firstConditionLogIndex !== -1 &&
+                   algorithmLogIndex < firstConditionLogIndex;
+
+      const resultDiv = document.getElementById('test5-result');
+      resultDiv.className = `result ${pass ? 'pass' : 'fail'}`;
+      resultDiv.textContent = pass
+        ? 'Result: PASS - Condition logs appear after algorithm evaluation log\n\n' +
+          `Algorithm log at index ${algorithmLogIndex}\n` +
+          `First condition log at index ${firstConditionLogIndex}\n\n` +
+          'Log order:\n' +
+          debugLogs.slice(algorithmLogIndex, firstConditionLogIndex + 2).map(log => '- ' + log.join(' ')).join('\n')
+        : 'Result: FAIL - Incorrect log ordering\n\n' + getLogsAsText();
+    }
+
+    // Run all tests
+    async function runAllTests() {
+      try {
+        await test1();
+        await test2();
+        await test3();
+        await test4();
+        await test5();
+
+        // Display console capture
+        const consoleDiv = document.getElementById('console-capture');
+        consoleDiv.innerHTML = '<div class="debug">' +
+          debugLogs.map(log => log.join(' ')).join('</div>\n<div class="debug">') +
+          '</div>';
+      }
+      catch (error) {
+        console.error('Test execution failed:', error);
+        alert('Test execution failed: ' + error.message);
+      }
+    }
+
+    // Run tests when page loads
+    window.addEventListener('load', runAllTests);
+  </script>
+</body>
+</html>

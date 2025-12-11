@@ -982,7 +982,7 @@
       "Step 3: Resolve flag",
       "Step 4: Verify logs show 'Condition {id} ({operator}): {true/false}' for each condition"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
