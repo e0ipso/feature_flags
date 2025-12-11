@@ -1184,7 +1184,7 @@
       "Step 2: Resolve flag multiple times",
       "Step 3: Verify result.result contains proper JavaScript types (boolean, number, string)"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
