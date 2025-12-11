@@ -1164,7 +1164,7 @@
       "Step 3: Resolve flag",
       "Step 4: Verify result.result contains properly parsed nested object"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
