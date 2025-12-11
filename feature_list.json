@@ -1216,7 +1216,7 @@
       "Step 2: Resolve flag multiple times with different contexts",
       "Step 3: Verify first variant is always selected"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -1238,7 +1238,7 @@
       "Step 4: Verify each variant has valid UUID v4",
       "Step 5: Verify UUIDs are unique"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -1250,7 +1250,7 @@
       "Step 4: Verify each algorithm has valid UUID v4",
       "Step 5: Verify UUIDs are unique"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -1273,7 +1273,7 @@
       "Step 4: Save flag",
       "Step 5: Verify UUIDs haven't changed"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
