@@ -1174,7 +1174,7 @@
       "Step 2: Resolve flag",
       "Step 3: Verify result.result is an array with 3 elements"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
