@@ -861,7 +861,7 @@
       "Step 7: Provide context with user_id '2'",
       "Step 8: Verify second algorithm (catch-all) is used"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
