@@ -1886,7 +1886,7 @@
       "Step 3: Verify feature_flags/algorithm.percentage_rollout is loaded",
       "Step 4: Verify feature_flags/condition.user_id is NOT loaded (optimization)"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "style",
