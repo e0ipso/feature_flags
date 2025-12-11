@@ -93,21 +93,37 @@ class FeatureFlagManager {
   /**
    * Builds the context object by dispatching the context event.
    *
+   * Supports both synchronous and asynchronous context providers.
+   * Async providers can return Promises that will be awaited.
+   *
    * @return {Promise<Object>} The context object.
    */
   async buildContext() {
     const context = { ...this.initialContext };
+    const promises = [];
 
     // Dispatch context event to allow other code to add context.
     const event = new CustomEvent('featureFlags:provideContext', {
       detail: {
         addContext: (key, value) => {
-          context[key] = value;
+          // Support both sync values and promises
+          if (value && typeof value.then === 'function') {
+            promises.push(value.then(resolvedValue => {
+              context[key] = resolvedValue;
+            }));
+          } else {
+            context[key] = value;
+          }
         }
       }
     });
 
     document.dispatchEvent(event);
+
+    // Wait for all async context providers to complete.
+    if (promises.length > 0) {
+      await Promise.all(promises);
+    }
 
     // Provide default user_id if not set.
     if (!context.user_id) {

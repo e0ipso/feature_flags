@@ -1107,7 +1107,7 @@
       "Step 2: Verify constructor parameter properties are promoted where appropriate",
       "Step 3: Verify syntax is valid PHP 8.2+"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -1118,7 +1118,7 @@
       "Step 3: Verify resolution waits for async context provider",
       "Step 4: Verify context from async provider is used"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
