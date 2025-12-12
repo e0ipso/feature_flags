@@ -28,6 +28,11 @@
   border-radius: 4px;
 }
 
+/* Specific algorithm spacing */
+table[data-drupal-selector='edit-algorithms'] .algorithm-item {
+  margin-bottom: 1em;
+}
+
 /* Condition items styling */
 .condition-item {
   margin-bottom: 1em;
@@ -63,43 +68,6 @@
 /* Conditions section styling */
 details.conditions-section {
   margin-top: 1em;
-}
-
-/* Add variant/algorithm buttons */
-input[type='submit'][value='Add variant'],
-input[type='submit'][value='Add algorithm'],
-input[type='submit'][value='Add condition'] {
-  background-color: #0074bd;
-  color: white;
-  border: none;
-  padding: 0.5em 1em;
-  border-radius: 3px;
-  cursor: pointer;
-}
-
-input[type='submit'][value='Add variant']:hover,
-input[type='submit'][value='Add algorithm']:hover,
-input[type='submit'][value='Add condition']:hover {
-  background-color: #005a8e;
-}
-
-/* Remove buttons */
-input[type='submit'][value='Remove'],
-input[type='submit'][value='Remove algorithm'],
-input[type='submit'][value='Remove condition'] {
-  background-color: #d9534f;
-  color: white;
-  border: none;
-  padding: 0.4em 0.8em;
-  border-radius: 3px;
-  cursor: pointer;
-  font-size: 0.9em;
-}
-
-input[type='submit'][value='Remove']:hover,
-input[type='submit'][value='Remove algorithm']:hover,
-input[type='submit'][value='Remove condition']:hover {
-  background-color: #c9302c;
 }
 
 /* Empty state styling - centered and clear */
@@ -171,4 +139,184 @@ select[name*='[operator]'] {
 select.operator-select option,
 select[name*='[operator]'] option {
   padding: 0.5em;
+}
+
+/* Fix for tabledrag table layout to prevent overlapping */
+
+/* Use data-drupal-selector to match dynamically generated IDs */
+table[data-drupal-selector='edit-algorithms'] {
+  width: 100%;
+  max-width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  table-layout: fixed;
+  position: relative;
+  box-sizing: border-box;
+}
+
+table[data-drupal-selector='edit-algorithms'] tbody {
+  display: table-row-group;
+  width: 100%;
+}
+
+table[data-drupal-selector='edit-algorithms'] tr.draggable {
+  display: table-row;
+  height: auto;
+}
+
+table[data-drupal-selector='edit-algorithms'] tr.draggable > td.tabledrag-cell {
+  display: table-cell;
+  width: 100%;
+  padding: 0.5em 0;
+  vertical-align: top;
+  height: auto;
+  overflow: visible;
+  max-height: none;
+}
+
+/* Fix the nested wrapper divs that contain the algorithm content */
+table[data-drupal-selector='edit-algorithms'] .tabledrag-cell-content,
+table[data-drupal-selector='edit-algorithms'] .js-tabledrag-cell-content {
+  width: 100%;
+  max-width: 100%;
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  gap: 0.5em;
+  overflow: visible;
+  height: auto;
+  max-height: none;
+  box-sizing: border-box;
+}
+
+table[data-drupal-selector='edit-algorithms'] .tabledrag-cell-content__item {
+  flex: 1;
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+/* Tabledrag handle styling - override core's display: table-cell */
+table[data-drupal-selector='edit-algorithms'] .tabledrag-handle {
+  display: block !important;
+  flex-shrink: 0;
+  align-self: flex-start;
+  margin-top: 0.5em;
+  position: static !important;
+}
+
+/* Ensure content within details is properly contained - most specific first */
+table[data-drupal-selector='edit-algorithms'] details details {
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+/* Override Claro's td .claro-details { width: min-content } */
+table[data-drupal-selector='edit-algorithms'] td details,
+table[data-drupal-selector='edit-algorithms'] td .claro-details {
+  width: 100% !important;
+  max-width: 100%;
+  min-width: 0;
+  display: block;
+  margin: 0;
+  overflow: visible;
+  position: static;
+  box-sizing: border-box;
+}
+
+table[data-drupal-selector='edit-algorithms'] td details[open],
+table[data-drupal-selector='edit-algorithms'] td .claro-details[open] {
+  overflow: visible;
+  position: static;
+}
+
+/* Details element should take remaining width */
+table[data-drupal-selector='edit-algorithms']
+  .tabledrag-cell-content__item
+  > details {
+  flex: 1;
+  min-width: 0;
+}
+
+/* Less specific selectors first - .js-form-item before details .js-form-item */
+table[data-drupal-selector='edit-algorithms'] .js-form-item,
+table[data-drupal-selector='edit-algorithms'] .form-item {
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+/* More specific selectors after - details .js-form-item after .js-form-item */
+table[data-drupal-selector='edit-algorithms'] details .js-form-item,
+table[data-drupal-selector='edit-algorithms'] details fieldset,
+table[data-drupal-selector='edit-algorithms'] details .fieldset,
+table[data-drupal-selector='edit-algorithms'] details .js-form-wrapper {
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+table[data-drupal-selector='edit-algorithms'] details .claro-details__wrapper,
+table[data-drupal-selector='edit-algorithms'] details .details-wrapper {
+  max-width: 100%;
+  overflow: visible;
+  box-sizing: border-box;
+}
+
+table[data-drupal-selector='edit-algorithms'] details .fieldset-wrapper,
+table[data-drupal-selector='edit-algorithms'] details .fieldset__wrapper {
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+table[data-drupal-selector='edit-algorithms']
+  details
+  details
+  .claro-details__wrapper {
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+/* Ensure the vertical tabs pane takes full width */
+.vertical-tabs__pane {
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  overflow: visible;
+}
+
+/* Ensure the Decision Algorithms tab content area is full width */
+#edit-algorithms-tab {
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+/* Fix for "Add Algorithm" section positioning */
+#algorithms-wrapper,
+#edit-algorithms-wrapper {
+  width: 100%;
+  max-width: 100%;
+  display: block;
+  position: relative;
+  overflow: visible;
+  box-sizing: border-box;
+}
+
+/* More specific selector first */
+details#edit-add-algorithm {
+  width: 100%;
+  max-width: 100%;
+  margin-top: 1.5em;
+  display: block;
+  clear: both;
+  position: relative;
+  z-index: 0;
+}
+
+#algorithms-wrapper > div > details#edit-add-algorithm {
+  width: 100%;
+  max-width: 100%;
+  margin-top: 1.5em;
+  display: block;
+  clear: both;
+  position: relative;
+  z-index: 0;
 }

@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Drupal\feature_flags\Form;
 
-use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityForm;
+use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Form\SubformState;
 use Drupal\feature_flags\Entity\FeatureFlag;
@@ -138,8 +138,16 @@ class FeatureFlagForm extends EntityForm {
       // Ensure we have at least 2 empty variants for new entities.
       if (empty($variants)) {
         $variants = [
-          ['uuid' => $this->uuidService->generate(), 'label' => '', 'value' => '{}'],
-          ['uuid' => $this->uuidService->generate(), 'label' => '', 'value' => '{}'],
+          [
+            'uuid' => $this->uuidService->generate(),
+            'label' => '',
+            'value' => '{}',
+          ],
+          [
+            'uuid' => $this->uuidService->generate(),
+            'label' => '',
+            'value' => '{}',
+          ],
         ];
       }
       $form_state->set('variants', $variants);
@@ -193,6 +201,8 @@ class FeatureFlagForm extends EntityForm {
       if (count($variants) > 2) {
         $form['variants_tab']['variants_wrapper']['variants'][$delta]['remove'] = [
           '#type' => 'submit',
+          '#button_type' => 'danger',
+          '#attributes' => ['class' => ['button--small']],
           '#value' => $this->t('Remove'),
           '#name' => 'remove_variant_' . $delta,
           '#submit' => ['::removeVariantSubmit'],
@@ -208,6 +218,7 @@ class FeatureFlagForm extends EntityForm {
 
     $form['variants_tab']['variants_wrapper']['add_variant'] = [
       '#type' => 'submit',
+      '#attributes' => ['class' => ['button--small']],
       '#value' => $this->t('Add variant'),
       '#submit' => ['::addVariantSubmit'],
       '#ajax' => [
@@ -363,6 +374,8 @@ class FeatureFlagForm extends EntityForm {
 
       $form['algorithms_tab']['algorithms_wrapper']['algorithms'][$delta]['content']['remove'] = [
         '#type' => 'submit',
+        '#button_type' => 'danger',
+        '#attributes' => ['class' => ['button--small']],
         '#value' => $this->t('Remove algorithm'),
         '#name' => 'remove_algorithm_' . $delta,
         '#submit' => ['::removeAlgorithmSubmit'],
@@ -396,6 +409,7 @@ class FeatureFlagForm extends EntityForm {
 
     $form['algorithms_tab']['algorithms_wrapper']['add_algorithm']['add_algorithm_button'] = [
       '#type' => 'submit',
+      '#attributes' => ['class' => ['button--small']],
       '#value' => $this->t('Add algorithm'),
       '#submit' => ['::addAlgorithmSubmit'],
       '#ajax' => [
@@ -531,6 +545,8 @@ class FeatureFlagForm extends EntityForm {
 
       $form['conditions_section']['conditions'][$condition_delta]['remove'] = [
         '#type' => 'submit',
+        '#button_type' => 'danger',
+        '#attributes' => ['class' => ['button--small']],
         '#value' => $this->t('Remove condition'),
         '#name' => 'remove_condition_' . $algorithm_delta . '_' . $condition_delta,
         '#submit' => ['::removeConditionSubmit'],
@@ -563,6 +579,7 @@ class FeatureFlagForm extends EntityForm {
 
     $form['conditions_section']['add_condition']['add_condition_button'] = [
       '#type' => 'submit',
+      '#attributes' => ['class' => ['button--small']],
       '#value' => $this->t('Add condition'),
       '#name' => 'add_condition_' . $algorithm_delta,
       '#submit' => ['::addConditionSubmit'],
@@ -572,7 +589,13 @@ class FeatureFlagForm extends EntityForm {
       ],
       // Limit validation but allow the condition selection to be processed.
       '#limit_validation_errors' => [
-        ['algorithms', $algorithm_delta, 'conditions_section', 'add_condition', 'condition_plugin_select'],
+        [
+          'algorithms',
+          $algorithm_delta,
+          'conditions_section',
+          'add_condition',
+          'condition_plugin_select',
+        ],
       ],
       '#algorithm_delta' => $algorithm_delta,
     ];
@@ -833,14 +856,16 @@ class FeatureFlagForm extends EntityForm {
     $status = $feature_flag->save();
 
     if ($status === SAVED_NEW) {
-      $this->messenger()->addStatus($this->t('Created the %label feature flag.', [
-        '%label' => $feature_flag->label(),
-      ]));
+      $this->messenger()
+        ->addStatus($this->t('Created the %label feature flag.', [
+          '%label' => $feature_flag->label(),
+        ]));
     }
     else {
-      $this->messenger()->addStatus($this->t('Updated the %label feature flag.', [
-        '%label' => $feature_flag->label(),
-      ]));
+      $this->messenger()
+        ->addStatus($this->t('Updated the %label feature flag.', [
+          '%label' => $feature_flag->label(),
+        ]));
     }
 
     $form_state->setRedirectUrl($feature_flag->toUrl('collection'));
