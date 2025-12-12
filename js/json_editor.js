@@ -22,6 +22,9 @@
         return;
       }
 
+      // Store all editor instances for batch refresh.
+      const editors = [];
+
       // Initialize CodeMirror on all textareas with data-json-editor attribute.
       once('json-editor', 'textarea[data-json-editor="true"]', context).forEach(
         function initializeCodeMirror(textarea) {
@@ -45,37 +48,10 @@
 
           // Store the editor instance on the textarea for later access.
           textarea.codemirrorInstance = editor;
+          editors.push(editor);
 
           // Explicitly set the value and refresh to ensure proper display.
-          // This fixes a race condition where the initial value may not render correctly.
           editor.setValue(initialValue);
-
-          // Refresh the editor when it becomes visible.
-          // CodeMirror doesn't render correctly in hidden containers (like collapsed vertical tabs).
-          function refreshWhenVisible() {
-            editor.refresh();
-          }
-
-          // Listen for the details element (vertical tab) being opened.
-          const detailsElement = textarea.closest('details');
-          if (detailsElement) {
-            once(
-              'json-editor-details-listener',
-              detailsElement,
-              context,
-            ).forEach(function attachDetailsListener(details) {
-              details.addEventListener('toggle', function onDetailsToggle() {
-                if (details.open) {
-                  // Details was opened, refresh all CodeMirror instances inside.
-                  setTimeout(refreshWhenVisible, 10);
-                }
-              });
-            });
-          }
-
-          // Initial refresh with a delay to ensure the editor is fully rendered.
-          // Use a longer delay to ensure CDN resources are loaded and DOM is ready.
-          setTimeout(refreshWhenVisible, 100);
 
           // Sync CodeMirror content back to textarea on change.
           editor.on('change', function syncCodeMirrorContent() {
@@ -98,6 +74,30 @@
           editor.setSize(null, '200px');
         },
       );
+
+      // Refresh all editors when they become visible.
+      function refreshAllEditors() {
+        editors.forEach(function (editor) {
+          editor.refresh();
+        });
+      }
+
+      // Listen for vertical tabs being opened.
+      once(
+        'json-editor-vertical-tabs',
+        '.vertical-tabs__menu-item a',
+        context,
+      ).forEach(function (tabLink) {
+        tabLink.addEventListener('click', function () {
+          // Refresh all editors after a short delay to ensure tab is visible.
+          setTimeout(refreshAllEditors, 50);
+        });
+      });
+
+      // Initial refresh with increasing delays to handle CDN loading.
+      setTimeout(refreshAllEditors, 100);
+      setTimeout(refreshAllEditors, 250);
+      setTimeout(refreshAllEditors, 500);
     },
   };
 })(Drupal, once);
