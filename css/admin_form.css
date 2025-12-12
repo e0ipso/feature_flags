@@ -97,7 +97,7 @@ table[data-drupal-selector='edit-algorithms'] .form-item {
 }
 
 /* Remove button - X icon in top-right corner */
-.condition-item .form-submit {
+.condition-item .form-submit.button--danger {
   position: absolute;
   top: 0.5em;
   right: 0.5em;
@@ -115,9 +115,10 @@ table[data-drupal-selector='edit-algorithms'] .form-item {
   cursor: pointer;
   text-indent: -9999px;
   overflow: hidden;
+  box-shadow: none;
 }
 
-.condition-item .form-submit::before {
+.condition-item .form-submit.button--danger::before {
   content: '×';
   position: absolute;
   inset: 0;
@@ -127,15 +128,15 @@ table[data-drupal-selector='edit-algorithms'] .form-item {
   justify-content: center;
   font-size: 24px;
   font-weight: bold;
+  color: #999;
 }
 
-.condition-item .form-submit:hover {
-  color: #d32f2f;
+.condition-item .form-submit.button--danger:hover {
   background: #ffebee;
   border-radius: 4px;
 }
 
-.condition-item .form-submit:hover::before {
+.condition-item .form-submit.button--danger:hover::before {
   color: #d32f2f;
 }
 

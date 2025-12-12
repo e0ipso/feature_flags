@@ -80,6 +80,19 @@
         "import/no-extraneous-dependencies": "off",
         "valid-jsdoc": "warn"
       }
+    },
+    {
+      "files": ["tests/js/**/*.js"],
+      "env": {
+        "jest": true
+      },
+      "rules": {
+        "import/no-extraneous-dependencies": "off",
+        "valid-jsdoc": "warn",
+        "max-nested-callbacks": ["warn", 5],
+        "no-await-in-loop": "off",
+        "no-plusplus": "off"
+      }
     }
   ]
 }
