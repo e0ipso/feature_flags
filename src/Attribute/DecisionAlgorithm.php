@@ -35,7 +35,7 @@ final class DecisionAlgorithm extends Plugin {
    *   A description of the decision algorithm displayed in admin interface.
    * @param string $js_library
    *   The Drupal library name containing JavaScript implementation.
-   *   Format: 'feature_flags/algorithm.{plugin_id}'
+   *   Format: 'feature_flags/algorithm.{plugin_id}'.
    * @param string $js_class
    *   The JavaScript class name that implements this algorithm.
    *   Must extend BaseAlgorithm and implement decide() method.

@@ -6,9 +6,7 @@ namespace Drupal\feature_flags\EventSubscriber;
 
 use Drupal\Core\Config\ConfigEvents;
 use Drupal\Core\Config\ConfigFactoryInterface;
-use Drupal\Core\Config\ConfigManagerInterface;
 use Drupal\Core\Config\StorageTransformEvent;
-use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 /**
@@ -22,16 +20,10 @@ final class ConfigExcludeSubscriber implements EventSubscriberInterface {
   /**
    * Constructs a ConfigExcludeSubscriber object.
    *
-   * @param \Drupal\Core\Config\ConfigManagerInterface $configManager
-   *   The config manager.
-   * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entityTypeManager
-   *   The entity type manager.
    * @param \Drupal\Core\Config\ConfigFactoryInterface $configFactory
    *   The config factory.
    */
   public function __construct(
-    private readonly ConfigManagerInterface $configManager,
-    private readonly EntityTypeManagerInterface $entityTypeManager,
     private readonly ConfigFactoryInterface $configFactory,
   ) {}
 

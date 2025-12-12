@@ -121,6 +121,7 @@ final class FeatureFlagKernelTest extends KernelTestBase {
     $expected_interface = match ($plugin_type) {
       'decision_algorithm' => DecisionAlgorithmInterface::class,
       'algorithm_condition' => AlgorithmConditionInterface::class,
+      default => throw new \InvalidArgumentException("Unknown plugin type: {$plugin_type}"),
     };
 
     $manager = $this->container->get($service_name);
@@ -159,11 +160,13 @@ final class FeatureFlagKernelTest extends KernelTestBase {
 
     // Verify the subscriber exists and is registered.
     $subscriber = $this->container->get('feature_flags.config_exclude_subscriber');
+    // @phpstan-ignore-next-line method.alreadyNarrowedType
     $this->assertNotNull($subscriber, 'Config exclude subscriber should be available');
 
     // Rebuild container to get a fresh ManagedStorage instance.
     // This ensures the export event is fired again with updated settings.
     $this->container->get('kernel')->rebuildContainer();
+    // @phpstan-ignore-next-line assign.propertyType
     $this->container = \Drupal::getContainer();
 
     $export_storage = $this->container->get('config.storage.export');

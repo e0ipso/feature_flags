@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace Drupal\feature_flags;
 
 use Drupal\Core\Config\ConfigFactoryInterface;
-use Drupal\Core\Config\ImmutableConfig;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Logger\LoggerChannelFactoryInterface;
+use Drupal\feature_flags\Entity\FeatureFlag;
 use Psr\Log\LoggerInterface;
 
 /**
@@ -117,7 +117,7 @@ final class FeatureFlagAttachmentBuilder {
   /**
    * Builds data array for a single feature flag.
    *
-   * @param \Drupal\feature_flags\Entity\FeatureFlagInterface $flag
+   * @param \Drupal\feature_flags\Entity\FeatureFlag $flag
    *   The feature flag entity.
    * @param array $libraries
    *   Array to populate with required libraries.
@@ -125,7 +125,7 @@ final class FeatureFlagAttachmentBuilder {
    * @return array
    *   Flag data for drupalSettings.
    */
-  private function buildFlagData($flag, array &$libraries): array {
+  private function buildFlagData(FeatureFlag $flag, array &$libraries): array {
     $flag_data = [
       'id' => $flag->id(),
       'label' => $flag->label(),

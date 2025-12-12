@@ -49,6 +49,7 @@ abstract class DecisionAlgorithmPluginBase extends PluginBase implements Decisio
     $plugin_id,
     $plugin_definition,
   ): static {
+    // @phpstan-ignore-next-line new.static
     return new static(
       $configuration,
       $plugin_id,

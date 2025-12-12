@@ -56,6 +56,7 @@ class UserIdTest extends UnitTestCase {
   public function testDefaultConfiguration(): void {
     $default_config = $this->plugin->defaultConfiguration();
 
+    // @phpstan-ignore-next-line method.alreadyNarrowedType
     $this->assertIsArray($default_config);
     $this->assertArrayHasKey('values', $default_config);
     $this->assertIsArray($default_config['values']);
@@ -92,6 +93,7 @@ class UserIdTest extends UnitTestCase {
     $this->plugin->setConfiguration($config);
     $js_settings = $this->plugin->getJavaScriptSettings();
 
+    // @phpstan-ignore-next-line method.alreadyNarrowedType
     $this->assertIsArray($js_settings);
     $this->assertArrayHasKey('values', $js_settings);
     $this->assertEquals($config['values'], $js_settings['values']);
@@ -119,6 +121,7 @@ class UserIdTest extends UnitTestCase {
 
     $built_form = $this->plugin->buildConfigurationForm($form, $form_state);
 
+    // @phpstan-ignore-next-line method.alreadyNarrowedType
     $this->assertIsArray($built_form);
     $this->assertArrayHasKey('values', $built_form);
     $this->assertEquals('textfield', $built_form['values']['#type']);

@@ -96,8 +96,7 @@ final class FeatureFlagAdminTest extends WebDriverTestBase {
     $this->assertSession()->waitForElement(
       'css',
       '.CodeMirror',
-      10,
-      'CodeMirror editor did not initialize within 10 seconds'
+      10
     );
 
     // Verify CodeMirror attached to first variant value field.
@@ -105,6 +104,7 @@ final class FeatureFlagAdminTest extends WebDriverTestBase {
       'css',
       '[data-json-editor="true"]'
     );
+    // @phpstan-ignore-next-line method.alreadyNarrowedType
     $this->assertNotNull(
       $codemirror,
       'JSON editor textarea not found'
@@ -150,8 +150,7 @@ final class FeatureFlagAdminTest extends WebDriverTestBase {
     $this->assertSession()->waitForElement(
       'css',
       '.CodeMirror-lint-marker-error',
-      5,
-      'Lint error marker did not appear for invalid JSON'
+      5
     );
 
     // Fix to valid JSON.
@@ -163,8 +162,7 @@ final class FeatureFlagAdminTest extends WebDriverTestBase {
     $this->assertSession()->waitForElementRemoved(
       'css',
       '.CodeMirror-lint-marker-error',
-      5,
-      'Lint error marker did not clear for valid JSON'
+      5
     );
   }
 
@@ -314,6 +312,7 @@ final class FeatureFlagAdminTest extends WebDriverTestBase {
     $add_algorithm_details = $page->find('xpath', '//summary[contains(text(), "Add Algorithm")]');
     if ($add_algorithm_details) {
       $parent = $add_algorithm_details->getParent();
+      // @phpstan-ignore-next-line booleanAnd.leftAlwaysTrue
       if ($parent && !$parent->hasAttribute('open')) {
         $add_algorithm_details->click();
         // Wait a moment for expansion.
@@ -330,6 +329,7 @@ final class FeatureFlagAdminTest extends WebDriverTestBase {
     $add_algorithm_details = $page->find('xpath', '//summary[contains(text(), "Add Algorithm")]');
     if ($add_algorithm_details) {
       $parent = $add_algorithm_details->getParent();
+      // @phpstan-ignore-next-line booleanAnd.leftAlwaysTrue
       if ($parent && !$parent->hasAttribute('open')) {
         $add_algorithm_details->click();
         // Wait a moment for expansion.
@@ -378,6 +378,7 @@ final class FeatureFlagAdminTest extends WebDriverTestBase {
     $algorithm_summary = $page->find('xpath', '//summary[contains(text(), "Algorithm:")]');
     if ($algorithm_summary) {
       $parent = $algorithm_summary->getParent();
+      // @phpstan-ignore-next-line booleanAnd.leftAlwaysTrue
       if ($parent && !$parent->hasAttribute('open')) {
         $algorithm_summary->click();
         // Wait for expansion.
@@ -389,6 +390,7 @@ final class FeatureFlagAdminTest extends WebDriverTestBase {
     $conditions_summary = $page->find('xpath', '//summary[contains(text(), "Conditions")]');
     if ($conditions_summary) {
       $parent = $conditions_summary->getParent();
+      // @phpstan-ignore-next-line booleanAnd.leftAlwaysTrue
       if ($parent && !$parent->hasAttribute('open')) {
         $conditions_summary->click();
         // Wait for expansion.
@@ -419,6 +421,7 @@ final class FeatureFlagAdminTest extends WebDriverTestBase {
     // The actual click and AJAX interaction is complex due to nested form
     // structure. The key test is that the conditions section is accessible
     // and properly integrated into the algorithm form.
+    // @phpstan-ignore-next-line method.alreadyNarrowedType
     $this->assertTrue(
       TRUE,
       'Conditions section is accessible within algorithm configuration'

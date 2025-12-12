@@ -34,10 +34,10 @@ final class AlgorithmCondition extends Plugin {
    *   A description of what this condition evaluates.
    * @param string $context_key
    *   The context key this condition reads from.
-   *   Example: 'user_id', 'user_tier', 'subscription_status'
+   *   Example: 'user_id', 'user_tier', 'subscription_status'.
    * @param string $js_library
    *   The Drupal library name containing JavaScript implementation.
-   *   Format: 'feature_flags/condition.{plugin_id}'
+   *   Format: 'feature_flags/condition.{plugin_id}'.
    * @param string $js_class
    *   The JavaScript class name that implements this condition.
    *   Must extend BaseCondition and implement evaluate() method.

@@ -271,7 +271,7 @@ class FeatureFlagForm extends EntityForm {
    * Algorithms determine which variant users receive. Each algorithm has:
    * - Plugin configuration (e.g., percentage distribution)
    * - Optional conditions (e.g., user_id matches)
-   * - Weight for evaluation order
+   * - Weight for evaluation order.
    *
    * Uses tabledrag for reordering and nested details for configuration.
    *
@@ -855,7 +855,8 @@ class FeatureFlagForm extends EntityForm {
 
         $subform = $form['algorithms_tab']['algorithms_wrapper']['algorithms'][$delta]['configuration'] ?? [];
         $subform_state = SubformState::createForSubform($subform, $form, $form_state);
-        // Provide variants to plugin validation (needed for percentage rollout).
+        // Provide variants to plugin validation (needed for percentage
+        // rollout).
         $subform_state->set('variants', $form_state->get('variants'));
 
         $plugin->validateConfigurationForm($subform, $subform_state);
@@ -882,6 +883,7 @@ class FeatureFlagForm extends EntityForm {
     unset($values['variants']);
 
     // Copy remaining values to entity.
+    assert($entity instanceof FeatureFlag);
     foreach ($values as $key => $value) {
       $entity->set($key, $value);
     }
