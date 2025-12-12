@@ -46,7 +46,8 @@
     "fieldset",
     "jsonlint",
     "textareas",
-    "jsdom"
+    "jsdom",
+    "codemirrors"
   ],
   "ignorePaths": [
     "node_modules/**",

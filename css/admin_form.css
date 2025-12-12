@@ -33,19 +33,60 @@ table[data-drupal-selector='edit-algorithms'] .algorithm-item {
   margin-bottom: 1em;
 }
 
-/* Condition items styling */
+/* Conditions wrapper (details element) - distinct visual style */
+.algorithm-item details.conditions-wrapper {
+  margin-top: 1em;
+  padding: 0.5em;
+  border: 2px solid #4a90e2;
+  border-left: 5px solid #2563eb;
+  border-radius: 6px;
+  background: linear-gradient(to right, #f0f7ff 0%, #fff 20%);
+  box-shadow: 0 2px 4px rgb(0 0 0 / 5%);
+  position: relative;
+}
+
+/* Subtle pattern indicator for conditions wrapper */
+.algorithm-item details.conditions-wrapper::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 5px;
+  background: linear-gradient(180deg, #2563eb 0%, #4a90e2 50%, #2563eb 100%);
+  border-radius: 6px 0 0 6px;
+}
+
+/* Individual condition items - simple horizontal layout */
 .condition-item {
   margin-bottom: 1em;
-  padding: 1em;
+  padding: 0.75em 2em 0.75em 0.75em;
   border: 1px solid #e0e0e0;
   border-radius: 4px;
   background: #fafafa;
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: flex-end;
+  gap: 0.75em;
+  position: relative;
 }
 
-/* JSON editor specific styles */
-.json-editor-textarea {
-  font-family: 'Courier New', Courier, monospace;
-  font-size: 14px;
+.condition-item .form-item {
+  margin-bottom: 0;
+  flex: 0 1 auto;
+}
+
+/* Less specific algorithm table selectors must come first */
+table[data-drupal-selector='edit-algorithms'] .js-form-item,
+table[data-drupal-selector='edit-algorithms'] .form-item {
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+/* Configuration fields (e.g., User IDs input) - max 200px width */
+.condition-item .form-item:has(textarea),
+.condition-item .form-item:has(input[type='text']) {
+  max-width: 200px;
 }
 
 /* Add/Remove button spacing */
@@ -53,6 +94,55 @@ table[data-drupal-selector='edit-algorithms'] .algorithm-item {
 .algorithm-item .form-submit,
 .condition-item .form-submit {
   margin-top: 0.5em;
+}
+
+/* Remove button - X icon in top-right corner */
+.condition-item .form-submit {
+  position: absolute;
+  top: 0.5em;
+  right: 0.5em;
+  margin: 0;
+  padding: 0;
+  min-width: 24px;
+  min-height: 24px;
+  width: 24px;
+  height: 24px;
+  border: none;
+  background: transparent;
+  color: #999;
+  font-size: 20px;
+  line-height: 1;
+  cursor: pointer;
+  text-indent: -9999px;
+  overflow: hidden;
+}
+
+.condition-item .form-submit::before {
+  content: '×';
+  position: absolute;
+  inset: 0;
+  text-indent: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  font-weight: bold;
+}
+
+.condition-item .form-submit:hover {
+  color: #d32f2f;
+  background: #ffebee;
+  border-radius: 4px;
+}
+
+.condition-item .form-submit:hover::before {
+  color: #d32f2f;
+}
+
+/* JSON editor specific styles */
+.json-editor-textarea {
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 14px;
 }
 
 /* Vertical tabs enhancement */
@@ -63,11 +153,6 @@ table[data-drupal-selector='edit-algorithms'] .algorithm-item {
 /* Improve spacing in algorithm configuration */
 .algorithm-item .form-item-weight {
   max-width: 150px;
-}
-
-/* Conditions section styling */
-details.conditions-section {
-  margin-top: 1em;
 }
 
 /* Empty state styling - centered and clear */
@@ -132,7 +217,6 @@ details.conditions-section {
 /* Operator dropdown clarity */
 select.operator-select,
 select[name*='[operator]'] {
-  min-width: 200px;
   font-weight: 500;
 }
 
@@ -237,14 +321,7 @@ table[data-drupal-selector='edit-algorithms']
   min-width: 0;
 }
 
-/* Less specific selectors first - .js-form-item before details .js-form-item */
-table[data-drupal-selector='edit-algorithms'] .js-form-item,
-table[data-drupal-selector='edit-algorithms'] .form-item {
-  max-width: 100%;
-  box-sizing: border-box;
-}
-
-/* More specific selectors after - details .js-form-item after .js-form-item */
+/* More specific selectors for nested elements in algorithm table */
 table[data-drupal-selector='edit-algorithms'] details .js-form-item,
 table[data-drupal-selector='edit-algorithms'] details fieldset,
 table[data-drupal-selector='edit-algorithms'] details .fieldset,
