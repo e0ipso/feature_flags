@@ -38,9 +38,6 @@ async function createUniqueAdminUser(testName = 'default') {
  * @return {Object} User credentials used
  */
 async function setupUniqueAdminUser(page, testName = 'default') {
-  // Enable proxy_block module first
-  await execDrushInTestSite('pm:enable proxy_block -y');
-
   // Create unique user
   const user = await createUniqueAdminUser(testName);
 
@@ -60,7 +57,7 @@ async function setupUniqueAdminUser(page, testName = 'default') {
  */
 async function cleanupTestUser(username) {
   try {
-    await execDrushInTestSite(`user:delete ${username}`);
+    await execDrushInTestSite(`user:cancel ${username} -y`);
   } catch (error) {
     // Ignore errors if user doesn't exist
     console.log(`Could not delete user ${username}: ${error.message}`);

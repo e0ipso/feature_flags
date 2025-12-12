@@ -33,8 +33,8 @@ table[data-drupal-selector='edit-algorithms'] .algorithm-item {
   margin-bottom: 1em;
 }
 
-/* Conditions wrapper (details element) - distinct visual style */
-.algorithm-item details.conditions-wrapper {
+/* Conditions wrapper - apply blue styling to Conditions details only */
+details.conditions-wrapper {
   margin-top: 1em;
   padding: 0.5em;
   border: 2px solid #4a90e2;
@@ -46,7 +46,7 @@ table[data-drupal-selector='edit-algorithms'] .algorithm-item {
 }
 
 /* Subtle pattern indicator for conditions wrapper */
-.algorithm-item details.conditions-wrapper::before {
+details.conditions-wrapper::before {
   content: '';
   position: absolute;
   left: 0;
@@ -57,30 +57,32 @@ table[data-drupal-selector='edit-algorithms'] .algorithm-item {
   border-radius: 6px 0 0 6px;
 }
 
+/* Percentage input styling - must come before more specific label selectors */
+.percentage-input-wrapper label {
+  flex: 1;
+  margin: 0;
+}
+
 /* Individual condition items - simple horizontal layout */
 .condition-item {
   margin-bottom: 1em;
-  padding: 0.75em 2em 0.75em 0.75em;
+  padding: 0.75em 2.5em 0.75em 0.75em;
   border: 1px solid #e0e0e0;
   border-radius: 4px;
   background: #fafafa;
   display: flex;
   flex-wrap: nowrap;
-  align-items: flex-end;
+  align-items: flex-start;
   gap: 0.75em;
   position: relative;
 }
 
+/* Align all form inputs to the same baseline */
 .condition-item .form-item {
   margin-bottom: 0;
   flex: 0 1 auto;
-}
-
-/* Less specific algorithm table selectors must come first */
-table[data-drupal-selector='edit-algorithms'] .js-form-item,
-table[data-drupal-selector='edit-algorithms'] .form-item {
-  max-width: 100%;
-  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
 }
 
 /* Configuration fields (e.g., User IDs input) - max 200px width */
@@ -89,55 +91,36 @@ table[data-drupal-selector='edit-algorithms'] .form-item {
   max-width: 200px;
 }
 
-/* Add/Remove button spacing */
-.variant-item .form-submit,
-.algorithm-item .form-submit,
-.condition-item .form-submit {
-  margin-top: 0.5em;
+.condition-item .form-item label {
+  margin-bottom: 0.25em;
 }
 
-/* Remove button - X icon in top-right corner */
-.condition-item .form-submit.button--danger {
+/* Remove button - circular X in top-right corner */
+.condition-item .condition-remove-button {
   position: absolute;
-  top: 0.5em;
-  right: 0.5em;
-  margin: 0;
+  top: 0.25em;
+  right: 0.25em;
+  width: 28px;
+  height: 28px;
+  min-width: 28px;
   padding: 0;
-  min-width: 24px;
-  min-height: 24px;
-  width: 24px;
-  height: 24px;
-  border: none;
-  background: transparent;
-  color: #999;
-  font-size: 20px;
-  line-height: 1;
-  cursor: pointer;
-  text-indent: -9999px;
-  overflow: hidden;
-  box-shadow: none;
-}
-
-.condition-item .form-submit.button--danger::before {
-  content: '×';
-  position: absolute;
-  inset: 0;
-  text-indent: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  margin: 0;
+  border: 1px solid #ccc;
+  border-radius: 50%;
+  background: #fff;
   font-size: 24px;
-  font-weight: bold;
-  color: #999;
+  line-height: 26px;
+  color: #666;
+  font-weight: 700;
+  text-align: center;
+  box-shadow: 0 1px 3px rgb(0 0 0 / 10%);
+  cursor: pointer;
 }
 
-.condition-item .form-submit.button--danger:hover {
-  background: #ffebee;
-  border-radius: 4px;
-}
-
-.condition-item .form-submit.button--danger:hover::before {
-  color: #d32f2f;
+.condition-item .condition-remove-button:hover {
+  color: #fff;
+  background: #d32f2f;
+  border-color: #d32f2f;
 }
 
 /* JSON editor specific styles */
@@ -172,17 +155,12 @@ table[data-drupal-selector='edit-algorithms'] .form-item {
   margin: 0;
 }
 
-/* Percentage input styling */
+/* Percentage input wrapper styling */
 .percentage-input-wrapper {
   display: flex;
   align-items: center;
   gap: 0.5em;
   margin-bottom: 0.75em;
-}
-
-.percentage-input-wrapper label {
-  flex: 1;
-  margin: 0;
 }
 
 .percentage-input-wrapper input[type='number'] {

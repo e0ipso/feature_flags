@@ -462,6 +462,7 @@ class FeatureFlagForm extends EntityForm {
       '#title' => $this->t('Conditions'),
       '#open' => !empty($conditions),
       '#description' => $this->t('If no conditions are specified, this algorithm will always apply (catch-all).'),
+      '#attributes' => ['class' => ['conditions-wrapper']],
     ];
 
     $form['conditions_section']['conditions'] = [
@@ -505,9 +506,9 @@ class FeatureFlagForm extends EntityForm {
         '#type' => 'select',
         '#title' => $this->t('Operator'),
         '#options' => [
-          'AND' => $this->t('AND (all values must match)'),
-          'OR' => $this->t('OR (any value must match)'),
-          'NOT' => $this->t('NOT (none of the values must match)'),
+          'AND' => $this->t('AND'),
+          'OR' => $this->t('OR'),
+          'NOT' => $this->t('NOT'),
         ],
         '#default_value' => $condition['operator'] ?? 'OR',
         '#required' => TRUE,
@@ -546,8 +547,8 @@ class FeatureFlagForm extends EntityForm {
       $form['conditions_section']['conditions'][$condition_delta]['remove'] = [
         '#type' => 'submit',
         '#button_type' => 'danger',
-        '#attributes' => ['class' => ['button--small']],
-        '#value' => $this->t('Remove condition'),
+        '#attributes' => ['class' => ['button--small', 'condition-remove-button']],
+        '#value' => '×',
         '#name' => 'remove_condition_' . $algorithm_delta . '_' . $condition_delta,
         '#submit' => ['::removeConditionSubmit'],
         '#ajax' => [
@@ -592,6 +593,7 @@ class FeatureFlagForm extends EntityForm {
         [
           'algorithms',
           $algorithm_delta,
+          'content',
           'conditions_section',
           'add_condition',
           'condition_plugin_select',
@@ -668,6 +670,7 @@ class FeatureFlagForm extends EntityForm {
     $condition_plugin_id = $form_state->getValue([
       'algorithms',
       $algorithm_delta,
+      'content',
       'conditions_section',
       'add_condition',
       'condition_plugin_select',
@@ -816,7 +819,7 @@ class FeatureFlagForm extends EntityForm {
 
     // Clean up algorithms structure and process plugin configurations.
     $processed_algorithms = [];
-    foreach ($algorithms as $algorithm) {
+    foreach ($algorithms as $delta => $algorithm) {
       // Tabledrag wraps the actual data in a 'content' key.
       $algorithm_data = $algorithm['content'] ?? $algorithm;
 
@@ -825,26 +828,60 @@ class FeatureFlagForm extends EntityForm {
         continue;
       }
 
+      // Process algorithm plugin configuration through submitConfigurationForm().
+      $algorithm_configuration = $algorithm_data['configuration'] ?? [];
+      try {
+        $algorithm_plugin = $this->algorithmPluginManager->createInstance($plugin_id, []);
+        $subform = $form['algorithms_tab']['algorithms_wrapper']['algorithms'][$delta]['content']['configuration'] ?? [];
+        $subform_state = SubformState::createForSubform($subform, $form, $form_state);
+        $algorithm_plugin->submitConfigurationForm($subform, $subform_state);
+        $algorithm_configuration = $algorithm_plugin->getConfiguration();
+      }
+      catch (\Exception $e) {
+        // If submit fails, use the raw configuration.
+        $this->messenger()->addWarning(
+          $this->t('Failed to process algorithm configuration: @message', ['@message' => $e->getMessage()])
+        );
+      }
+
       $processed_algorithm = [
         'uuid' => $algorithm_data['uuid'],
         'plugin_id' => $plugin_id,
         'weight' => $algorithm['weight'] ?? 0,
-        'configuration' => $algorithm_data['configuration'] ?? [],
+        'configuration' => $algorithm_configuration,
         'conditions' => [],
       ];
 
       // Process conditions.
       $conditions = $algorithm_data['conditions_section']['conditions'] ?? [];
-      foreach ($conditions as $condition) {
+      foreach ($conditions as $condition_delta => $condition) {
         if (empty($condition['plugin_id'])) {
           continue;
         }
 
+        $condition_plugin_id = $condition['plugin_id'];
+        $condition_configuration = $condition['configuration'] ?? [];
+
+        // Process condition plugin configuration through submitConfigurationForm().
+        try {
+          $condition_plugin = $this->conditionPluginManager->createInstance($condition_plugin_id, []);
+          $subform = $form['algorithms_tab']['algorithms_wrapper']['algorithms'][$delta]['content']['conditions_section']['conditions'][$condition_delta]['configuration'] ?? [];
+          $subform_state = SubformState::createForSubform($subform, $form, $form_state);
+          $condition_plugin->submitConfigurationForm($subform, $subform_state);
+          $condition_configuration = $condition_plugin->getConfiguration();
+        }
+        catch (\Exception $e) {
+          // If submit fails, use the raw configuration.
+          $this->messenger()->addWarning(
+            $this->t('Failed to process condition configuration: @message', ['@message' => $e->getMessage()])
+          );
+        }
+
         $processed_algorithm['conditions'][] = [
           'uuid' => $condition['uuid'],
-          'plugin_id' => $condition['plugin_id'],
+          'plugin_id' => $condition_plugin_id,
           'operator' => $condition['operator'] ?? 'OR',
-          'configuration' => $condition['configuration'] ?? [],
+          'configuration' => $condition_configuration,
         ];
       }
 
