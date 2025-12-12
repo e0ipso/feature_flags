@@ -6,6 +6,9 @@ node_modules/
 npm-debug.log
 yarn-error.log
 
+# Composer
+/vendor
+
 # IDE files
 .idea/
 .vscode/
@@ -29,3 +32,21 @@ core
 test_*.php
 verify_module.php
 test_via_drush.sh
+
+# Ignore local Claude files.
+/.claude/settings.local.json
+/.claude/settings.local.json
+/CLAUDE.local.md
+/.ai/agent-context.local.md
+
+# Playwrigt
+test-results/
+playwright-report/
+package-lock.json
+
+# AI Task Manager
+.claude/commands/
+.gemini/commands/
+.ai/task-manager
+
+/.mcp.json

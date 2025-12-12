@@ -4,8 +4,7 @@ declare(strict_types=1);
 
 namespace Drupal\feature_flags\Form;
 
-use Drupal\Core\Ajax\AjaxResponse;
-use Drupal\Core\Ajax\ReplaceCommand;
+use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityForm;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Form\SubformState;
@@ -32,12 +31,20 @@ class FeatureFlagForm extends EntityForm {
   protected $conditionPluginManager;
 
   /**
+   * The UUID service.
+   *
+   * @var \Drupal\Component\Uuid\UuidInterface
+   */
+  protected $uuidService;
+
+  /**
    * {@inheritdoc}
    */
   public static function create(ContainerInterface $container): static {
     $instance = parent::create($container);
     $instance->algorithmPluginManager = $container->get('plugin.manager.feature_flags.decision_algorithm');
     $instance->conditionPluginManager = $container->get('plugin.manager.feature_flags.algorithm_condition');
+    $instance->uuidService = $container->get('uuid');
     return $instance;
   }
 
@@ -131,8 +138,8 @@ class FeatureFlagForm extends EntityForm {
       // Ensure we have at least 2 empty variants for new entities.
       if (empty($variants)) {
         $variants = [
-          ['uuid' => \Drupal::service('uuid')->generate(), 'label' => '', 'value' => '{}'],
-          ['uuid' => \Drupal::service('uuid')->generate(), 'label' => '', 'value' => '{}'],
+          ['uuid' => $this->uuidService->generate(), 'label' => '', 'value' => '{}'],
+          ['uuid' => $this->uuidService->generate(), 'label' => '', 'value' => '{}'],
         ];
       }
       $form_state->set('variants', $variants);
@@ -217,7 +224,7 @@ class FeatureFlagForm extends EntityForm {
   public function addVariantSubmit(array &$form, FormStateInterface $form_state): void {
     $variants = $form_state->get('variants');
     $variants[] = [
-      'uuid' => \Drupal::service('uuid')->generate(),
+      'uuid' => $this->uuidService->generate(),
       'label' => '',
       'value' => '{}',
     ];
@@ -396,7 +403,8 @@ class FeatureFlagForm extends EntityForm {
         'wrapper' => 'algorithms-wrapper',
       ],
       // Limit validation but allow the algorithm selection to be processed.
-      // Since algorithms_wrapper has #tree => FALSE, the element name is just 'algorithm_plugin_select'.
+      // Since algorithms_wrapper has #tree => FALSE, the element name is
+      // just 'algorithm_plugin_select'.
       '#limit_validation_errors' => [
         ['algorithm_plugin_select'],
       ],
@@ -586,7 +594,7 @@ class FeatureFlagForm extends EntityForm {
 
     $algorithms = $form_state->get('algorithms');
     $algorithms[] = [
-      'uuid' => \Drupal::service('uuid')->generate(),
+      'uuid' => $this->uuidService->generate(),
       'plugin_id' => $plugin_id,
       'configuration' => [],
       'conditions' => [],
@@ -639,11 +647,11 @@ class FeatureFlagForm extends EntityForm {
       $algorithm_delta,
       'conditions_section',
       'add_condition',
-      'condition_plugin_select'
+      'condition_plugin_select',
     ]);
 
     $algorithms[$algorithm_delta]['conditions'][] = [
-      'uuid' => \Drupal::service('uuid')->generate(),
+      'uuid' => $this->uuidService->generate(),
       'plugin_id' => $condition_plugin_id,
       'operator' => 'OR',
       'configuration' => [],
@@ -754,7 +762,7 @@ class FeatureFlagForm extends EntityForm {
   /**
    * {@inheritdoc}
    */
-  protected function copyFormValuesToEntity(\Drupal\Core\Entity\EntityInterface $entity, array $form, FormStateInterface $form_state): void {
+  protected function copyFormValuesToEntity(EntityInterface $entity, array $form, FormStateInterface $form_state): void {
     // Get all form values.
     $values = $form_state->getValues();
 
@@ -785,7 +793,7 @@ class FeatureFlagForm extends EntityForm {
 
     // Clean up algorithms structure and process plugin configurations.
     $processed_algorithms = [];
-    foreach ($algorithms as $delta => $algorithm) {
+    foreach ($algorithms as $algorithm) {
       // Tabledrag wraps the actual data in a 'content' key.
       $algorithm_data = $algorithm['content'] ?? $algorithm;
 
@@ -841,7 +849,7 @@ class FeatureFlagForm extends EntityForm {
   }
 
   /**
-   * Helper function to check whether a Feature Flag configuration entity exists.
+   * Check whether a Feature Flag configuration entity exists.
    */
   public function exist(string $id): bool {
     $entity = $this->entityTypeManager

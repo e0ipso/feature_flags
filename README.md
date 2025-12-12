@@ -47,6 +47,7 @@ cd web/modules/contrib/feature_flags
 ```
 
 The `init.sh` script will:
+
 - Install all dependencies
 - Enable the module
 - Set up the testing environment
@@ -80,7 +81,7 @@ In the **Variants** tab:
 2. Give each variant a label (e.g., "Control", "Variant A")
 3. Set each variant's value as valid JSON:
    ```json
-   {"enabled": false, "color": "blue"}
+   { "enabled": false, "color": "blue" }
    ```
 4. The CodeMirror editor provides syntax highlighting and validation
 
@@ -159,6 +160,7 @@ Drupal.featureFlags = new FeatureFlagManager()
 ```
 
 **Resolution Flow**:
+
 1. Call `Drupal.featureFlags.resolve('flag_id')`
 2. Check localStorage cache (if persistence enabled)
 3. Fire `featureFlags:provideContext` event to gather context
@@ -220,7 +222,7 @@ This module uses `feature_list.json` to track implementation progress:
     "category": "functional",
     "description": "Feature description",
     "steps": ["Step 1", "Step 2", "Step 3"],
-    "passes": false  // Change to true when feature is complete and tested
+    "passes": false // Change to true when feature is complete and tested
   }
 ]
 ```
@@ -287,12 +289,12 @@ $algorithms = $flag->get('algorithms');
 const result = await Drupal.featureFlags.resolve('flag_id');
 
 // FeatureFlagResult properties
-result.featureFlag  // FeatureFlagConfig instance
-result.result       // Parsed JSON value (object, array, scalar)
-result.variant      // Variant object {uuid, label, value}
+result.featureFlag; // FeatureFlagConfig instance
+result.result; // Parsed JSON value (object, array, scalar)
+result.variant; // Variant object {uuid, label, value}
 
 // Provide context
-document.addEventListener('featureFlags:provideContext', (event) => {
+document.addEventListener('featureFlags:provideContext', event => {
   event.detail.addContext('key', value);
 });
 ```

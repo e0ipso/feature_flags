@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Drupal\feature_flags\EventSubscriber;
 
 use Drupal\Core\Config\ConfigEvents;
+use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Config\ConfigManagerInterface;
 use Drupal\Core\Config\StorageTransformEvent;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
@@ -25,10 +26,13 @@ final class ConfigExcludeSubscriber implements EventSubscriberInterface {
    *   The config manager.
    * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entityTypeManager
    *   The entity type manager.
+   * @param \Drupal\Core\Config\ConfigFactoryInterface $configFactory
+   *   The config factory.
    */
   public function __construct(
     private readonly ConfigManagerInterface $configManager,
     private readonly EntityTypeManagerInterface $entityTypeManager,
+    private readonly ConfigFactoryInterface $configFactory,
   ) {}
 
   /**
@@ -47,7 +51,7 @@ final class ConfigExcludeSubscriber implements EventSubscriberInterface {
    */
   public function onConfigExport(StorageTransformEvent $event): void {
     // Check if exclusion is enabled.
-    $config = \Drupal::config('feature_flags.settings');
+    $config = $this->configFactory->get('feature_flags.settings');
     $exclude = $config->get('exclude_from_config_export') ?? FALSE;
 
     if (!$exclude) {

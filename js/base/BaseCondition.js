@@ -15,7 +15,9 @@ class BaseCondition {
    */
   constructor(config, operator) {
     if (this.constructor === BaseCondition) {
-      throw new Error('BaseCondition is an abstract class and cannot be instantiated directly');
+      throw new Error(
+        'BaseCondition is an abstract class and cannot be instantiated directly',
+      );
     }
 
     this.config = config;

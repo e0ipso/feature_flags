@@ -1,3 +1,5 @@
+/* global BaseAlgorithm */
+
 /**
  * @file
  * Percentage Rollout algorithm implementation.
@@ -12,6 +14,9 @@
 class PercentageRollout extends BaseAlgorithm {
   /**
    * {@inheritdoc}
+   *
+   * @param {Object} context - The context object with user data.
+   * @return {Promise<Object>} The selected variant object.
    */
   async decide(context) {
     const percentages = this.config.percentages || {};
@@ -19,26 +24,30 @@ class PercentageRollout extends BaseAlgorithm {
 
     // Determine the bucket (0-99).
     let bucket;
-    const persist = drupalSettings.featureFlags?.settings?.persist_decisions ||
-                    drupalSettings.featureFlags?.settings?.persist;
+    const persist =
+      drupalSettings.featureFlags?.settings?.persist_decisions ||
+      drupalSettings.featureFlags?.settings?.persist;
 
     if (persist && userId) {
       // Use deterministic hashing for consistent bucketing.
       const hashInput = `${userId}`;
       bucket = this.hashString(hashInput);
-    }
-    else {
+    } else {
       // Use random bucketing.
       bucket = this.getRandomBucket();
     }
 
     // Map bucket to variant based on cumulative percentages.
+    const entries = Object.entries(percentages);
     let cumulative = 0;
-    for (const [variantUuid, percentage] of Object.entries(percentages)) {
+
+    const selectedEntry = entries.find(([, percentage]) => {
       cumulative += percentage;
-      if (bucket < cumulative) {
-        return this.getVariantByUuid(variantUuid);
-      }
+      return bucket < cumulative;
+    });
+
+    if (selectedEntry) {
+      return this.getVariantByUuid(selectedEntry[0]);
     }
 
     // Fallback to first variant (shouldn't happen if percentages sum to 100).

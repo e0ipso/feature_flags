@@ -15,7 +15,9 @@ class BaseAlgorithm {
    */
   constructor(variants, config) {
     if (this.constructor === BaseAlgorithm) {
-      throw new Error('BaseAlgorithm is an abstract class and cannot be instantiated directly');
+      throw new Error(
+        'BaseAlgorithm is an abstract class and cannot be instantiated directly',
+      );
     }
 
     this.variants = variants;
@@ -57,8 +59,12 @@ class BaseAlgorithm {
     let hash = 0;
     for (let i = 0; i < str.length; i++) {
       const char = str.charCodeAt(i);
-      hash = ((hash << 5) - hash) + char;
-      hash = hash & hash; // Convert to 32-bit integer.
+      // Standard hash algorithm requires bitwise left shift for distribution.
+      // eslint-disable-next-line no-bitwise
+      hash = (hash << 5) - hash + char;
+      // Convert to 32-bit integer using bitwise AND (standard JS pattern).
+      // eslint-disable-next-line no-bitwise
+      hash &= hash;
     }
     // Convert to positive number between 0 and 99.
     return Math.abs(hash) % 100;

@@ -66,9 +66,9 @@ details.conditions-section {
 }
 
 /* Add variant/algorithm buttons */
-input[type="submit"][value="Add variant"],
-input[type="submit"][value="Add algorithm"],
-input[type="submit"][value="Add condition"] {
+input[type='submit'][value='Add variant'],
+input[type='submit'][value='Add algorithm'],
+input[type='submit'][value='Add condition'] {
   background-color: #0074bd;
   color: white;
   border: none;
@@ -77,16 +77,16 @@ input[type="submit"][value="Add condition"] {
   cursor: pointer;
 }
 
-input[type="submit"][value="Add variant"]:hover,
-input[type="submit"][value="Add algorithm"]:hover,
-input[type="submit"][value="Add condition"]:hover {
+input[type='submit'][value='Add variant']:hover,
+input[type='submit'][value='Add algorithm']:hover,
+input[type='submit'][value='Add condition']:hover {
   background-color: #005a8e;
 }
 
 /* Remove buttons */
-input[type="submit"][value="Remove"],
-input[type="submit"][value="Remove algorithm"],
-input[type="submit"][value="Remove condition"] {
+input[type='submit'][value='Remove'],
+input[type='submit'][value='Remove algorithm'],
+input[type='submit'][value='Remove condition'] {
   background-color: #d9534f;
   color: white;
   border: none;
@@ -96,9 +96,9 @@ input[type="submit"][value="Remove condition"] {
   font-size: 0.9em;
 }
 
-input[type="submit"][value="Remove"]:hover,
-input[type="submit"][value="Remove algorithm"]:hover,
-input[type="submit"][value="Remove condition"]:hover {
+input[type='submit'][value='Remove']:hover,
+input[type='submit'][value='Remove algorithm']:hover,
+input[type='submit'][value='Remove condition']:hover {
   background-color: #c9302c;
 }
 
@@ -131,7 +131,7 @@ input[type="submit"][value="Remove condition"]:hover {
   margin: 0;
 }
 
-.percentage-input-wrapper input[type="number"] {
+.percentage-input-wrapper input[type='number'] {
   width: 80px;
 }
 
@@ -156,18 +156,19 @@ input[type="submit"][value="Remove condition"]:hover {
 .tabledrag-handle .handle {
   width: 20px;
   height: 20px;
-  background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path fill="%23666" d="M7 2a2 2 0 1 0 .001 4.001A2 2 0 0 0 7 2zm0 6a2 2 0 1 0 .001 4.001A2 2 0 0 0 7 8zm0 6a2 2 0 1 0 .001 4.001A2 2 0 0 0 7 14zm6-8a2 2 0 1 0-.001-4.001A2 2 0 0 0 13 6zm0 2a2 2 0 1 0 .001 4.001A2 2 0 0 0 13 8zm0 6a2 2 0 1 0 .001 4.001A2 2 0 0 0 13 14z"/></svg>') no-repeat center;
+  background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path fill="%23666" d="M7 2a2 2 0 1 0 .001 4.001A2 2 0 0 0 7 2zm0 6a2 2 0 1 0 .001 4.001A2 2 0 0 0 7 8zm0 6a2 2 0 1 0 .001 4.001A2 2 0 0 0 7 14zm6-8a2 2 0 1 0-.001-4.001A2 2 0 0 0 13 6zm0 2a2 2 0 1 0 .001 4.001A2 2 0 0 0 13 8zm0 6a2 2 0 1 0 .001 4.001A2 2 0 0 0 13 14z"/></svg>')
+    no-repeat center;
   display: inline-block;
 }
 
 /* Operator dropdown clarity */
 select.operator-select,
-select[name*="[operator]"] {
+select[name*='[operator]'] {
   min-width: 200px;
   font-weight: 500;
 }
 
 select.operator-select option,
-select[name*="[operator]"] option {
+select[name*='[operator]'] option {
   padding: 0.5em;
 }

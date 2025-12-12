@@ -20,9 +20,11 @@ class FeatureFlagResult {
     // Parse the JSON value.
     try {
       this.result = JSON.parse(variant.value);
-    }
-    catch (e) {
-      console.error(`[Feature Flags] Failed to parse variant value for ${featureFlag.id}:`, e);
+    } catch (e) {
+      console.error(
+        `[Feature Flags] Failed to parse variant value for ${featureFlag.id}:`,
+        e,
+      );
       this.result = variant.value;
     }
   }

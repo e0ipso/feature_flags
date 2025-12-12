@@ -6,7 +6,6 @@ namespace Drupal\feature_flags\Entity;
 
 use Drupal\Core\Config\Entity\ConfigEntityBase;
 use Drupal\Core\Entity\EntityStorageInterface;
-use Drupal\Component\Uuid\Uuid;
 
 /**
  * Defines the Feature Flag entity.
@@ -76,7 +75,7 @@ class FeatureFlag extends ConfigEntityBase {
    * Each variant has:
    * - uuid: Unique identifier (auto-generated)
    * - label: Human-readable label
-   * - value: JSON-encoded value
+   * - value: JSON-encoded value.
    */
   protected array $variants = [];
 
@@ -88,7 +87,7 @@ class FeatureFlag extends ConfigEntityBase {
    * - plugin_id: The plugin ID
    * - configuration: Plugin-specific configuration
    * - conditions: Array of conditions
-   * - weight: Order weight
+   * - weight: Order weight.
    */
   protected array $algorithms = [];
 
@@ -285,8 +284,8 @@ class FeatureFlag extends ConfigEntityBase {
     // Add dependencies for algorithm plugins.
     foreach ($this->algorithms as $algorithm) {
       if (!empty($algorithm['plugin_id'])) {
-        // Algorithm plugins don't create module dependencies in this simple case,
-        // but if they were provided by other modules, we'd add them here.
+        // Algorithm plugins don't create module dependencies in this simple
+        // case, but if they were provided by other modules, we'd add them here.
       }
     }
 

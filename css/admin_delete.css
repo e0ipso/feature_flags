@@ -16,10 +16,10 @@ form.confirmation-form .description {
 }
 
 /* Style the Delete button as dangerous */
-form input[type="submit"][value="Delete"],
-form button[value="Delete"],
-.confirmation input[type="submit"][value="Delete"],
-.confirmation button[value="Delete"] {
+form input[type='submit'][value='Delete'],
+form button[value='Delete'],
+.confirmation input[type='submit'][value='Delete'],
+.confirmation button[value='Delete'] {
   background-color: #dc3545 !important;
   color: white !important;
   border: 1px solid #dc3545 !important;
@@ -29,10 +29,10 @@ form button[value="Delete"],
   cursor: pointer;
 }
 
-form input[type="submit"][value="Delete"]:hover,
-form button[value="Delete"]:hover,
-.confirmation input[type="submit"][value="Delete"]:hover,
-.confirmation button[value="Delete"]:hover {
+form input[type='submit'][value='Delete']:hover,
+form button[value='Delete']:hover,
+.confirmation input[type='submit'][value='Delete']:hover,
+.confirmation button[value='Delete']:hover {
   background-color: #c82333 !important;
   border-color: #c82333 !important;
 }

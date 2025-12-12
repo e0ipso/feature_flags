@@ -1,3 +1,5 @@
+/* global FeatureFlagConfig, FeatureFlagResult, generateUuid */
+
 /**
  * @file
  * Feature Flag Manager - main entry point for resolving feature flags.
@@ -42,7 +44,9 @@ class FeatureFlagManager {
       if (cached) {
         const variant = featureFlag.getVariant(cached.variantUuid);
         if (variant) {
-          this.debugLog(`Using cached decision for ${flagId}: variant ${variant.label}`);
+          this.debugLog(
+            `Using cached decision for ${flagId}: variant ${variant.label}`,
+          );
           return new FeatureFlagResult(featureFlag, variant);
         }
       }
@@ -52,38 +56,59 @@ class FeatureFlagManager {
     const context = await this.buildContext();
     this.debugLog('Context:', context);
 
-    // Evaluate algorithms in order.
+    // Evaluate algorithms in order until one returns a variant.
+    // Must be sequential to respect weight-based ordering and early exit.
     const algorithms = featureFlag.getAlgorithms();
-    for (const algorithmConfig of algorithms) {
-      this.debugLog(`Evaluating algorithm: ${algorithmConfig.pluginId}`);
+    const variant = await algorithms.reduce(
+      async (previousPromise, algorithmConfig) => {
+        // Wait for previous iteration (maintains sequential execution).
+        const previousResult = await previousPromise;
 
-      // Check if all conditions pass.
-      const conditionsPassed = await this.evaluateConditions(
-        algorithmConfig.conditions || [],
-        context
-      );
+        // If we already found a variant, skip further evaluation.
+        if (previousResult) {
+          return previousResult;
+        }
 
-      this.debugLog(`Algorithm ${algorithmConfig.pluginId} conditions met: ${conditionsPassed}`);
+        this.debugLog(`Evaluating algorithm: ${algorithmConfig.pluginId}`);
 
-      if (conditionsPassed) {
-        // Execute this algorithm.
-        const variant = await this.executeAlgorithm(
-          algorithmConfig,
-          featureFlag.getVariants(),
-          context
+        // Check if all conditions pass.
+        const conditionsPassed = await this.evaluateConditions(
+          algorithmConfig.conditions || [],
+          context,
         );
 
-        if (variant) {
-          this.debugLog(`Decision: variant ${variant.label} (${variant.uuid})`);
+        this.debugLog(
+          `Algorithm ${algorithmConfig.pluginId} conditions met: ${conditionsPassed}`,
+        );
 
-          // Cache the decision if persistence is enabled.
-          if (this.settings.persist) {
-            this.cacheDecision(flagId, variant.uuid);
+        if (conditionsPassed) {
+          // Execute this algorithm.
+          const selectedVariant = await this.executeAlgorithm(
+            algorithmConfig,
+            featureFlag.getVariants(),
+            context,
+          );
+
+          if (selectedVariant) {
+            this.debugLog(
+              `Decision: variant ${selectedVariant.label} (${selectedVariant.uuid})`,
+            );
+            return selectedVariant;
           }
-
-          return new FeatureFlagResult(featureFlag, variant);
         }
+
+        return null;
+      },
+      Promise.resolve(null),
+    );
+
+    if (variant) {
+      // Cache the decision if persistence is enabled.
+      if (this.settings.persist) {
+        this.cacheDecision(flagId, variant.uuid);
       }
+
+      return new FeatureFlagResult(featureFlag, variant);
     }
 
     // No algorithm matched - this shouldn't happen if validation is correct.
@@ -108,14 +133,16 @@ class FeatureFlagManager {
         addContext: (key, value) => {
           // Support both sync values and promises
           if (value && typeof value.then === 'function') {
-            promises.push(value.then(resolvedValue => {
-              context[key] = resolvedValue;
-            }));
+            promises.push(
+              value.then(resolvedValue => {
+                context[key] = resolvedValue;
+              }),
+            );
           } else {
             context[key] = value;
           }
-        }
-      }
+        },
+      },
     });
 
     document.dispatchEvent(event);
@@ -128,7 +155,7 @@ class FeatureFlagManager {
     // Provide default user_id if not set.
     if (!context.user_id) {
       // Generate a random UUID for anonymous users.
-      context.user_id = this.generateUuid();
+      context.user_id = generateUuid();
     }
 
     return context;
@@ -148,18 +175,19 @@ class FeatureFlagManager {
     }
 
     // Multiple conditions use OR logic - any passing condition is sufficient.
-    for (const conditionConfig of conditions) {
-      const result = await this.evaluateCondition(conditionConfig, context);
-      this.debugLog(`Condition ${conditionConfig.pluginId} (${conditionConfig.operator}): ${result}`);
+    // Evaluate all conditions in parallel and check if any passed.
+    const conditionResults = await Promise.all(
+      conditions.map(async conditionConfig => {
+        const result = await this.evaluateCondition(conditionConfig, context);
+        this.debugLog(
+          `Condition ${conditionConfig.pluginId} (${conditionConfig.operator}): ${result}`,
+        );
+        return result;
+      }),
+    );
 
-      if (result) {
-        // At least one condition passed, so the algorithm applies.
-        return true;
-      }
-    }
-
-    // No conditions passed.
-    return false;
+    // Return true if at least one condition passed.
+    return conditionResults.some(result => result);
   }
 
   /**
@@ -180,7 +208,7 @@ class FeatureFlagManager {
 
     const condition = new ConditionClass(
       conditionConfig.configuration,
-      conditionConfig.operator
+      conditionConfig.operator,
     );
 
     return condition.evaluate(context);
@@ -203,8 +231,11 @@ class FeatureFlagManager {
       return null;
     }
 
-    const algorithm = new AlgorithmClass(variants, algorithmConfig.configuration);
-    return await algorithm.decide(context);
+    const algorithm = new AlgorithmClass(
+      variants,
+      algorithmConfig.configuration,
+    );
+    return algorithm.decide(context);
   }
 
   /**
@@ -220,8 +251,7 @@ class FeatureFlagManager {
       if (cached) {
         return JSON.parse(cached);
       }
-    }
-    catch (e) {
+    } catch (e) {
       // Ignore localStorage errors.
     }
     return null;
@@ -237,12 +267,11 @@ class FeatureFlagManager {
     try {
       const key = `feature_flags:${flagId}`;
       const data = {
-        variantUuid: variantUuid,
-        timestamp: Date.now()
+        variantUuid,
+        timestamp: Date.now(),
       };
       localStorage.setItem(key, JSON.stringify(data));
-    }
-    catch (e) {
+    } catch (e) {
       // Ignore localStorage errors.
     }
   }
@@ -256,19 +285,6 @@ class FeatureFlagManager {
     if (this.settings.debug_mode || this.settings.debug) {
       console.debug('[Feature Flags]', ...args);
     }
-  }
-
-  /**
-   * Generates a simple UUID v4.
-   *
-   * @return {string} A UUID string.
-   */
-  generateUuid() {
-    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
-      const r = Math.random() * 16 | 0;
-      const v = c === 'x' ? r : (r & 0x3 | 0x8);
-      return v.toString(16);
-    });
   }
 }
 

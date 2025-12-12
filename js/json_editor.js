@@ -1,11 +1,11 @@
+/* global CodeMirror */
+
 /**
  * @file
  * JSON Editor integration using CodeMirror.
  */
 
-(function (Drupal, once) {
-  'use strict';
-
+(function initJsonEditor(Drupal, once) {
   /**
    * Initialize CodeMirror JSON editors.
    *
@@ -15,7 +15,7 @@
    *   Attaches the JSON editor behavior.
    */
   Drupal.behaviors.featureFlagsJsonEditor = {
-    attach: function (context, settings) {
+    attach(context, settings) {
       // Check if CodeMirror is available.
       if (typeof CodeMirror === 'undefined') {
         console.warn('[Feature Flags] CodeMirror library not loaded');
@@ -23,46 +23,47 @@
       }
 
       // Initialize CodeMirror on all textareas with data-json-editor attribute.
-      once('json-editor', 'textarea[data-json-editor="true"]', context).forEach(function (textarea) {
-        // Create CodeMirror instance.
-        const editor = CodeMirror.fromTextArea(textarea, {
-          mode: 'application/json',
-          lineNumbers: true,
-          lineWrapping: true,
-          matchBrackets: true,
-          autoCloseBrackets: true,
-          gutters: ['CodeMirror-lint-markers'],
-          lint: true,
-          theme: 'default',
-          indentUnit: 2,
-          tabSize: 2,
-          indentWithTabs: false
-        });
+      once('json-editor', 'textarea[data-json-editor="true"]', context).forEach(
+        function initializeCodeMirror(textarea) {
+          // Create CodeMirror instance.
+          const editor = CodeMirror.fromTextArea(textarea, {
+            mode: 'application/json',
+            lineNumbers: true,
+            lineWrapping: true,
+            matchBrackets: true,
+            autoCloseBrackets: true,
+            gutters: ['CodeMirror-lint-markers'],
+            lint: true,
+            theme: 'default',
+            indentUnit: 2,
+            tabSize: 2,
+            indentWithTabs: false,
+          });
 
-        // Store the editor instance on the textarea for later access.
-        textarea.codemirrorInstance = editor;
+          // Store the editor instance on the textarea for later access.
+          textarea.codemirrorInstance = editor;
 
-        // Sync CodeMirror content back to textarea on change.
-        editor.on('change', function () {
-          editor.save();
-        });
-
-        // Ensure content is synced on form submit.
-        const form = textarea.closest('form');
-        if (form) {
-          form.addEventListener('submit', function () {
+          // Sync CodeMirror content back to textarea on change.
+          editor.on('change', function syncCodeMirrorContent() {
             editor.save();
           });
-        }
 
-        // Add a class to the wrapper for styling.
-        const wrapper = editor.getWrapperElement();
-        wrapper.classList.add('feature-flags-json-editor');
+          // Ensure content is synced on form submit.
+          const form = textarea.closest('form');
+          if (form) {
+            form.addEventListener('submit', function saveCodeMirrorOnSubmit() {
+              editor.save();
+            });
+          }
 
-        // Set a reasonable height.
-        editor.setSize(null, '200px');
-      });
-    }
+          // Add a class to the wrapper for styling.
+          const wrapper = editor.getWrapperElement();
+          wrapper.classList.add('feature-flags-json-editor');
+
+          // Set a reasonable height.
+          editor.setSize(null, '200px');
+        },
+      );
+    },
   };
-
 })(Drupal, once);

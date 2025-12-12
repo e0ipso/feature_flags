@@ -1,3 +1,5 @@
+/* global BaseCondition */
+
 /**
  * @file
  * User ID condition implementation.
@@ -11,6 +13,9 @@
 class UserIdCondition extends BaseCondition {
   /**
    * {@inheritdoc}
+   *
+   * @param {Object} context - The context object with user data.
+   * @return {boolean} True if the condition passes.
    */
   evaluate(context) {
     const userId = this.getContextValue(context, 'user_id');

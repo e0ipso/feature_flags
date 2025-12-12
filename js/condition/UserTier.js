@@ -1,3 +1,5 @@
+/* global BaseCondition */
+
 /**
  * @file
  * User Tier condition implementation.
@@ -12,6 +14,9 @@
 class UserTierCondition extends BaseCondition {
   /**
    * {@inheritdoc}
+   *
+   * @param {Object} context - The context object with user data.
+   * @return {boolean} True if the condition passes.
    */
   evaluate(context) {
     const userTier = this.getContextValue(context, 'user_tier');
