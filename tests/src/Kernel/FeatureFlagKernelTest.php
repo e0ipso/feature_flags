@@ -158,11 +158,6 @@ final class FeatureFlagKernelTest extends KernelTestBase {
     $settings->set('exclude_from_config_export', !$should_export);
     $settings->save();
 
-    // Verify the subscriber exists and is registered.
-    $subscriber = $this->container->get('feature_flags.config_exclude_subscriber');
-    // @phpstan-ignore-next-line method.alreadyNarrowedType
-    $this->assertNotNull($subscriber, 'Config exclude subscriber should be available');
-
     // Rebuild container to get a fresh ManagedStorage instance.
     // This ensures the export event is fired again with updated settings.
     $this->container->get('kernel')->rebuildContainer();

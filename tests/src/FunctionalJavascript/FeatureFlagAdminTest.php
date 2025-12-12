@@ -100,14 +100,9 @@ final class FeatureFlagAdminTest extends WebDriverTestBase {
     );
 
     // Verify CodeMirror attached to first variant value field.
-    $codemirror = $this->assertSession()->elementExists(
+    $this->assertSession()->elementExists(
       'css',
       '[data-json-editor="true"]'
-    );
-    // @phpstan-ignore-next-line method.alreadyNarrowedType
-    $this->assertNotNull(
-      $codemirror,
-      'JSON editor textarea not found'
     );
 
     // Verify CodeMirror UI elements present (gutters container).
@@ -312,8 +307,7 @@ final class FeatureFlagAdminTest extends WebDriverTestBase {
     $add_algorithm_details = $page->find('xpath', '//summary[contains(text(), "Add Algorithm")]');
     if ($add_algorithm_details) {
       $parent = $add_algorithm_details->getParent();
-      // @phpstan-ignore-next-line booleanAnd.leftAlwaysTrue
-      if ($parent && !$parent->hasAttribute('open')) {
+      if (!$parent->hasAttribute('open')) {
         $add_algorithm_details->click();
         // Wait a moment for expansion.
         sleep(1);
@@ -329,8 +323,7 @@ final class FeatureFlagAdminTest extends WebDriverTestBase {
     $add_algorithm_details = $page->find('xpath', '//summary[contains(text(), "Add Algorithm")]');
     if ($add_algorithm_details) {
       $parent = $add_algorithm_details->getParent();
-      // @phpstan-ignore-next-line booleanAnd.leftAlwaysTrue
-      if ($parent && !$parent->hasAttribute('open')) {
+      if (!$parent->hasAttribute('open')) {
         $add_algorithm_details->click();
         // Wait a moment for expansion.
         sleep(1);
@@ -378,8 +371,7 @@ final class FeatureFlagAdminTest extends WebDriverTestBase {
     $algorithm_summary = $page->find('xpath', '//summary[contains(text(), "Algorithm:")]');
     if ($algorithm_summary) {
       $parent = $algorithm_summary->getParent();
-      // @phpstan-ignore-next-line booleanAnd.leftAlwaysTrue
-      if ($parent && !$parent->hasAttribute('open')) {
+      if (!$parent->hasAttribute('open')) {
         $algorithm_summary->click();
         // Wait for expansion.
         sleep(1);
@@ -390,8 +382,7 @@ final class FeatureFlagAdminTest extends WebDriverTestBase {
     $conditions_summary = $page->find('xpath', '//summary[contains(text(), "Conditions")]');
     if ($conditions_summary) {
       $parent = $conditions_summary->getParent();
-      // @phpstan-ignore-next-line booleanAnd.leftAlwaysTrue
-      if ($parent && !$parent->hasAttribute('open')) {
+      if (!$parent->hasAttribute('open')) {
         $conditions_summary->click();
         // Wait for expansion.
         sleep(1);
@@ -417,15 +408,10 @@ final class FeatureFlagAdminTest extends WebDriverTestBase {
       'Add condition button should exist'
     );
 
-    // Verify the button is accessible (testing visibility and interaction).
-    // The actual click and AJAX interaction is complex due to nested form
-    // structure. The key test is that the conditions section is accessible
-    // and properly integrated into the algorithm form.
-    // @phpstan-ignore-next-line method.alreadyNarrowedType
-    $this->assertTrue(
-      TRUE,
-      'Conditions section is accessible within algorithm configuration'
-    );
+    // Verify the button is accessible - this confirms the conditions section
+    // is properly integrated into the algorithm form structure.
+    // The actual click and AJAX interaction is complex due to nested forms,
+    // but presence of the button validates the section is accessible.
   }
 
   /**
