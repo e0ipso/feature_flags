@@ -5,7 +5,6 @@ namespace Drupal\Tests\feature_flags\Unit\Plugin\DecisionAlgorithm;
 use Drupal\Tests\UnitTestCase;
 use Drupal\feature_flags\Plugin\DecisionAlgorithm\PercentageRollout;
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\Core\Form\SubformStateInterface;
 
 /**
  * Tests the PercentageRollout decision algorithm plugin.
@@ -43,6 +42,9 @@ class PercentageRolloutTest extends UnitTestCase {
       plugin_id: $plugin_id,
       plugin_definition: $plugin_definition
     );
+
+    // Mock string translation for $this->t() calls.
+    $this->plugin->setStringTranslation($this->getStringTranslationStub());
   }
 
   /**
@@ -107,12 +109,11 @@ class PercentageRolloutTest extends UnitTestCase {
    */
   public function testBuildConfigurationForm(): void {
     $form = [];
-    $form_state = $this->createMock(SubformStateInterface::class);
+    $form_state = $this->createMock(FormStateInterface::class);
 
-    // Mock the complete form state with variants.
-    $complete_form_state = $this->createMock(FormStateInterface::class);
-    $complete_form_state->expects($this->once())
-      ->method('getValue')
+    // Mock form state with variants stored using ->get().
+    $form_state->expects($this->once())
+      ->method('get')
       ->with('variants')
       ->willReturn([
         [
@@ -127,15 +128,11 @@ class PercentageRolloutTest extends UnitTestCase {
         ],
       ]);
 
-    $form_state->expects($this->once())
-      ->method('getCompleteFormState')
-      ->willReturn($complete_form_state);
-
     $built_form = $this->plugin->buildConfigurationForm($form, $form_state);
 
     $this->assertIsArray($built_form);
     $this->assertArrayHasKey('percentages', $built_form);
-    $this->assertEquals('table', $built_form['percentages']['#type']);
+    $this->assertEquals('fieldset', $built_form['percentages']['#type']);
     $this->assertArrayHasKey('variant-uuid-1', $built_form['percentages']);
     $this->assertArrayHasKey('variant-uuid-2', $built_form['percentages']);
   }
@@ -147,10 +144,7 @@ class PercentageRolloutTest extends UnitTestCase {
    */
   public function testValidateConfigurationFormInvalidSum(): void {
     $form = [
-      'percentages' => [
-        'variant-uuid-1' => ['percentage' => ['#parents' => ['percentages', 'variant-uuid-1', 'percentage']]],
-        'variant-uuid-2' => ['percentage' => ['#parents' => ['percentages', 'variant-uuid-2', 'percentage']]],
-      ],
+      'percentages' => [],
     ];
 
     $form_state = $this->createMock(FormStateInterface::class);
@@ -158,15 +152,17 @@ class PercentageRolloutTest extends UnitTestCase {
       ->method('getValue')
       ->with('percentages')
       ->willReturn([
-        'variant-uuid-1' => ['percentage' => 60],
-        'variant-uuid-2' => ['percentage' => 30],
+        'variant-uuid-1' => 60,
+        'variant-uuid-2' => 30,
       ]);
 
     $form_state->expects($this->once())
       ->method('setError')
       ->with(
-        $this->anything(),
-        $this->stringContains('must add up to exactly 100')
+        $form['percentages'],
+        $this->callback(function ($message) {
+          return str_contains((string) $message, 'must equal exactly 100%');
+        })
       );
 
     $this->plugin->validateConfigurationForm($form, $form_state);
@@ -179,10 +175,7 @@ class PercentageRolloutTest extends UnitTestCase {
    */
   public function testValidateConfigurationFormValidSum(): void {
     $form = [
-      'percentages' => [
-        'variant-uuid-1' => ['percentage' => ['#parents' => ['percentages', 'variant-uuid-1', 'percentage']]],
-        'variant-uuid-2' => ['percentage' => ['#parents' => ['percentages', 'variant-uuid-2', 'percentage']]],
-      ],
+      'percentages' => [],
     ];
 
     $form_state = $this->createMock(FormStateInterface::class);
@@ -190,8 +183,8 @@ class PercentageRolloutTest extends UnitTestCase {
       ->method('getValue')
       ->with('percentages')
       ->willReturn([
-        'variant-uuid-1' => ['percentage' => 60],
-        'variant-uuid-2' => ['percentage' => 40],
+        'variant-uuid-1' => 60,
+        'variant-uuid-2' => 40,
       ]);
 
     // Should not call setError for valid sum.
@@ -213,8 +206,8 @@ class PercentageRolloutTest extends UnitTestCase {
       ->method('getValue')
       ->with('percentages')
       ->willReturn([
-        'variant-uuid-1' => ['percentage' => 70],
-        'variant-uuid-2' => ['percentage' => 30],
+        'variant-uuid-1' => 70,
+        'variant-uuid-2' => 30,
       ]);
 
     $this->plugin->submitConfigurationForm($form, $form_state);
