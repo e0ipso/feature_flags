@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace Drupal\feature_flags\Plugin\DecisionAlgorithm;
 
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\StringTranslation\TranslatableMarkup;
+use Drupal\feature_flags\Attribute\DecisionAlgorithm;
 
 /**
  * Percentage rollout decision algorithm.
@@ -12,15 +14,14 @@ use Drupal\Core\Form\FormStateInterface;
  * Distributes users across variants based on configurable percentages.
  * Uses deterministic hashing when persistence is enabled to ensure
  * users consistently receive the same variant.
- *
- * @DecisionAlgorithm(
- *   id = "percentage_rollout",
- *   label = @Translation("Percentage Rollout"),
- *   description = @Translation("Distribute users across variants based on configurable percentages. When persistence is enabled, users consistently receive the same variant."),
- *   js_library = "feature_flags/algorithm.percentage_rollout",
- *   js_class = "PercentageRollout"
- * )
  */
+#[DecisionAlgorithm(
+  id: 'percentage_rollout',
+  label: new TranslatableMarkup('Percentage Rollout'),
+  description: new TranslatableMarkup('Distribute users across variants based on configurable percentages. When persistence is enabled, users consistently receive the same variant.'),
+  js_library: 'feature_flags/algorithm.percentage_rollout',
+  js_class: 'PercentageRollout',
+)]
 class PercentageRollout extends DecisionAlgorithmPluginBase {
 
   /**
@@ -38,9 +39,9 @@ class PercentageRollout extends DecisionAlgorithmPluginBase {
   public function buildConfigurationForm(array $form, FormStateInterface $form_state): array {
     $form = parent::buildConfigurationForm($form, $form_state);
 
-    // Get variants from the parent form state.
     $variants = $this->getVariantsFromFormState($form_state);
 
+    // Prevent configuration without variants to avoid confusing empty form.
     if (empty($variants)) {
       $form['no_variants'] = [
         '#markup' => '<p>' . $this->t('Please add variants in the Variants tab before configuring this algorithm.') . '</p>',

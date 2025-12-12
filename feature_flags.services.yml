@@ -9,6 +9,15 @@ services:
     autowire: true
     parent: default_plugin_manager
 
+  feature_flags.attachment_builder:
+    class: Drupal\feature_flags\FeatureFlagAttachmentBuilder
+    arguments:
+      - '@entity_type.manager'
+      - '@config.factory'
+      - '@plugin.manager.feature_flags.decision_algorithm'
+      - '@plugin.manager.feature_flags.algorithm_condition'
+      - '@logger.factory'
+
   feature_flags.config_exclude_subscriber:
     class: Drupal\feature_flags\EventSubscriber\ConfigExcludeSubscriber
     arguments: ['@config.manager', '@entity_type.manager', '@config.factory']

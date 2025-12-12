@@ -5,21 +5,22 @@ declare(strict_types=1);
 namespace Drupal\feature_flags\Plugin\AlgorithmCondition;
 
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\StringTranslation\TranslatableMarkup;
+use Drupal\feature_flags\Attribute\AlgorithmCondition;
 
 /**
  * User Tier condition plugin.
  *
  * Matches against user tier values provided via page context.
- *
- * @AlgorithmCondition(
- *   id = "user_tier",
- *   label = @Translation("User Tier"),
- *   description = @Translation("Match against user tier values provided via page context"),
- *   context_key = "user_tier",
- *   js_library = "feature_flags/condition.user_tier",
- *   js_class = "UserTierCondition"
- * )
  */
+#[AlgorithmCondition(
+  id: 'user_tier',
+  label: new TranslatableMarkup('User Tier'),
+  description: new TranslatableMarkup('Match against user tier values provided via page context'),
+  context_key: 'user_tier',
+  js_library: 'feature_flags/condition.user_tier',
+  js_class: 'UserTierCondition',
+)]
 class UserTier extends AlgorithmConditionPluginBase {
 
   /**

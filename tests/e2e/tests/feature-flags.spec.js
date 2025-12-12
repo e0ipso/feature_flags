@@ -32,6 +32,13 @@ test.describe('Feature Flags End-to-End Workflow', () => {
   });
 
   test.afterEach(async () => {
+    // Cleanup test feature flag
+    await execDrushInTestSite(
+      'config:delete feature_flag.feature_flag.test_e2e_flag -y',
+    ).catch(() => {
+      // Feature flag may not exist if test failed before creation
+    });
+
     // Cleanup test user
     if (adminUser) {
       await cleanupTestUser(adminUser.username);
@@ -56,6 +63,87 @@ test.describe('Feature Flags End-to-End Workflow', () => {
     // Verify settings saved
     const savedMessage = await page.locator('.messages').first();
     expect(await savedMessage.isVisible()).toBe(true);
+
+    // ===============================================
+    // SECTION 1.5: Create a Test Feature Flag
+    // ===============================================
+    await page.goto('/admin/config/services/feature-flags/add');
+    await page.waitForLoadState('networkidle');
+
+    // Fill in basic information
+    await page.fill('#edit-label', 'Test E2E Flag');
+    // Machine name will auto-generate as 'test_e2e_flag'
+    await page.waitForTimeout(500); // Wait for machine name generation
+
+    // Enable the feature flag
+    await page.check('#edit-status');
+
+    // Click variants tab
+    await page.click('a[href="#edit-variants-tab"]');
+    await page.waitForTimeout(500);
+
+    // Fill in first variant (default)
+    await page.fill('[name="variants[0][label]"]', 'Control');
+    await page.evaluate(() => {
+      const editor = document.querySelector('[name="variants[0][value]"]');
+      if (editor && editor.nextSibling && editor.nextSibling.CodeMirror) {
+        editor.nextSibling.CodeMirror.setValue('{"enabled": false}');
+      }
+    });
+
+    // Fill in second variant (default)
+    await page.fill('[name="variants[1][label]"]', 'Treatment');
+    await page.evaluate(() => {
+      const editor = document.querySelector('[name="variants[1][value]"]');
+      if (editor && editor.nextSibling && editor.nextSibling.CodeMirror) {
+        editor.nextSibling.CodeMirror.setValue('{"enabled": true}');
+      }
+    });
+
+    // Click algorithms tab
+    await page.click('a[href="#edit-algorithms-tab"]');
+    await page.waitForTimeout(500);
+
+    // Expand "Add Algorithm" details if collapsed
+    const addAlgorithmSummary = await page.locator(
+      'summary:has-text("Add Algorithm")',
+    );
+    const isExpanded = await addAlgorithmSummary.getAttribute('aria-expanded');
+    if (isExpanded !== 'true') {
+      await addAlgorithmSummary.click();
+      await page.waitForTimeout(300);
+    }
+
+    // Select percentage_rollout algorithm type (radio button)
+    await page.check(
+      'input[name="algorithm_plugin_select"][value="percentage_rollout"]',
+    );
+
+    // Click "Add algorithm" button (use value selector)
+    await page.click('input[value="Add algorithm"]');
+    await page.waitForLoadState('networkidle');
+
+    // Fill in percentage values (50/50 split)
+    // Wait for the percentage fields to appear after AJAX
+    await page.waitForSelector('input[type="number"][name*="percentage"]', {
+      timeout: 5000,
+    });
+    const percentageInputs = await page.locator(
+      'input[type="number"][name*="percentage"]',
+    );
+    const count = await percentageInputs.count();
+    if (count >= 2) {
+      await percentageInputs.nth(0).fill('50');
+      await percentageInputs.nth(1).fill('50');
+    }
+
+    // Save the feature flag
+    await page.click('#edit-submit');
+    await page.waitForLoadState('networkidle');
+
+    // Verify feature flag was created
+    const createMessage = await page.locator('.messages').first();
+    expect(await createMessage.isVisible()).toBe(true);
 
     // ===============================================
     // SECTION 2: Verify drupalSettings Contains Flags

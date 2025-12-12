@@ -40,6 +40,9 @@ class BaseAlgorithm {
   /**
    * Gets a variant by UUID.
    *
+   * Uses find() to locate variant, which is more efficient than filter()
+   * for single results.
+   *
    * @param {string} uuid - The variant UUID.
    * @return {Object|null} The variant object or null if not found.
    */

@@ -21,13 +21,6 @@ abstract class AlgorithmConditionPluginBase extends PluginBase implements Algori
   use StringTranslationTrait;
 
   /**
-   * The plugin configuration.
-   *
-   * @var array
-   */
-  protected $configuration;
-
-  /**
    * Constructs an AlgorithmConditionPluginBase object.
    *
    * @param array $configuration

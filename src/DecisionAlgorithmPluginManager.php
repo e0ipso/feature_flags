@@ -7,7 +7,7 @@ namespace Drupal\feature_flags;
 use Drupal\Core\Cache\CacheBackendInterface;
 use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Core\Plugin\DefaultPluginManager;
-use Drupal\feature_flags\Annotation\DecisionAlgorithm as DecisionAlgorithmAnnotation;
+use Drupal\feature_flags\Attribute\DecisionAlgorithm as DecisionAlgorithmAttribute;
 use Drupal\feature_flags\Plugin\DecisionAlgorithm\DecisionAlgorithmInterface;
 
 /**
@@ -24,7 +24,7 @@ final class DecisionAlgorithmPluginManager extends DefaultPluginManager {
       $namespaces,
       $module_handler,
       DecisionAlgorithmInterface::class,
-      DecisionAlgorithmAnnotation::class,
+      DecisionAlgorithmAttribute::class,
     );
     $this->alterInfo('decision_algorithm_info');
     $this->setCacheBackend($cache_backend, 'decision_algorithm_plugins');

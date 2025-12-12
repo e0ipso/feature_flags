@@ -7,7 +7,7 @@ namespace Drupal\feature_flags;
 use Drupal\Core\Cache\CacheBackendInterface;
 use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Core\Plugin\DefaultPluginManager;
-use Drupal\feature_flags\Annotation\AlgorithmCondition as AlgorithmConditionAnnotation;
+use Drupal\feature_flags\Attribute\AlgorithmCondition as AlgorithmConditionAttribute;
 use Drupal\feature_flags\Plugin\AlgorithmCondition\AlgorithmConditionInterface;
 
 /**
@@ -24,7 +24,7 @@ final class AlgorithmConditionPluginManager extends DefaultPluginManager {
       $namespaces,
       $module_handler,
       AlgorithmConditionInterface::class,
-      AlgorithmConditionAnnotation::class,
+      AlgorithmConditionAttribute::class,
     );
     $this->alterInfo('algorithm_condition_info');
     $this->setCacheBackend($cache_backend, 'algorithm_condition_plugins');

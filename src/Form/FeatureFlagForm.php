@@ -121,6 +121,16 @@ class FeatureFlagForm extends EntityForm {
 
   /**
    * Builds the variants form section.
+   *
+   * Variants define the possible values a feature flag can resolve to. Each
+   * variant has a UUID (for algorithm references), label, and JSON value.
+   *
+   * @param array $form
+   *   Form array to modify.
+   * @param \Drupal\Core\Form\FormStateInterface $form_state
+   *   Form state for storing variants during AJAX operations.
+   * @param \Drupal\feature_flags\Entity\FeatureFlag $feature_flag
+   *   Feature flag entity being edited.
    */
   protected function buildVariantsForm(array &$form, FormStateInterface $form_state, FeatureFlag $feature_flag): void {
     $form['variants_tab'] = [
@@ -131,25 +141,16 @@ class FeatureFlagForm extends EntityForm {
       '#description' => $this->t('Define the possible values this feature flag can resolve to. Minimum 2 variants required.'),
     ];
 
-    // Get variants from form state or entity.
+    // Get variants from form state (during AJAX rebuilds) or entity (initial).
     $variants = $form_state->get('variants');
     if ($variants === NULL) {
       $variants = $feature_flag->getVariants();
-      // Ensure we have at least 2 empty variants for new entities.
+
+      // Initialize with 2 empty variants for new entities to meet minimum.
       if (empty($variants)) {
-        $variants = [
-          [
-            'uuid' => $this->uuidService->generate(),
-            'label' => '',
-            'value' => '{}',
-          ],
-          [
-            'uuid' => $this->uuidService->generate(),
-            'label' => '',
-            'value' => '{}',
-          ],
-        ];
+        $variants = $this->createDefaultVariants();
       }
+
       $form_state->set('variants', $variants);
     }
 
@@ -266,6 +267,20 @@ class FeatureFlagForm extends EntityForm {
 
   /**
    * Builds the algorithms form section.
+   *
+   * Algorithms determine which variant users receive. Each algorithm has:
+   * - Plugin configuration (e.g., percentage distribution)
+   * - Optional conditions (e.g., user_id matches)
+   * - Weight for evaluation order
+   *
+   * Uses tabledrag for reordering and nested details for configuration.
+   *
+   * @param array $form
+   *   Form array to modify.
+   * @param \Drupal\Core\Form\FormStateInterface $form_state
+   *   Form state for storing algorithms during AJAX operations.
+   * @param \Drupal\feature_flags\Entity\FeatureFlag $feature_flag
+   *   Feature flag entity being edited.
    */
   protected function buildAlgorithmsForm(array &$form, FormStateInterface $form_state, FeatureFlag $feature_flag): void {
     $form['algorithms_tab'] = [
@@ -276,13 +291,10 @@ class FeatureFlagForm extends EntityForm {
       '#description' => $this->t('Configure algorithms that determine which variant a user receives. Algorithms are evaluated in order; the first one whose conditions are met will be used. At least one algorithm without conditions is required as a catch-all.'),
     ];
 
-    // Get algorithms from form state or entity.
+    // Get algorithms from form state (during AJAX) or entity (initial load).
     $algorithms = $form_state->get('algorithms');
     if ($algorithms === NULL) {
-      $algorithms = $feature_flag->getAlgorithms();
-      if (empty($algorithms)) {
-        $algorithms = [];
-      }
+      $algorithms = $feature_flag->getAlgorithms() ?: [];
       $form_state->set('algorithms', $algorithms);
     }
 
@@ -715,63 +727,135 @@ class FeatureFlagForm extends EntityForm {
       return;
     }
 
-    // Validate variants.
+    $this->validateVariants($form, $form_state);
+    $this->validateAlgorithms($form, $form_state);
+  }
+
+  /**
+   * Validates variant configuration.
+   *
+   * Ensures minimum 2 variants and valid JSON values.
+   *
+   * @param array $form
+   *   Complete form array.
+   * @param \Drupal\Core\Form\FormStateInterface $form_state
+   *   Form state.
+   */
+  protected function validateVariants(array &$form, FormStateInterface $form_state): void {
     $variants = $form_state->getValue('variants', []);
+
+    // Minimum 2 variants required for A/B testing functionality.
     if (count($variants) < 2) {
       $form_state->setErrorByName('variants', $this->t('At least 2 variants are required.'));
     }
 
-    // Validate JSON values.
+    // Validate JSON syntax for each variant value.
     foreach ($variants as $delta => $variant) {
-      if (!empty($variant['value'])) {
-        json_decode($variant['value']);
-        if (json_last_error() !== JSON_ERROR_NONE) {
-          $form_state->setErrorByName(
-            "variants][{$delta}][value",
-            $this->t('Variant @delta has invalid JSON: @error', [
-              '@delta' => $delta + 1,
-              '@error' => json_last_error_msg(),
-            ])
-          );
-        }
+      if (empty($variant['value'])) {
+        continue;
+      }
+
+      json_decode($variant['value']);
+      if (json_last_error() !== JSON_ERROR_NONE) {
+        $form_state->setErrorByName(
+          "variants][{$delta}][value",
+          $this->t('Variant @delta has invalid JSON: @error', [
+            '@delta' => $delta + 1,
+            '@error' => json_last_error_msg(),
+          ])
+        );
       }
     }
+  }
 
-    // Validate algorithms.
+  /**
+   * Validates algorithm configuration.
+   *
+   * Ensures at least one algorithm exists, at least one catch-all (no
+   * conditions) exists, and algorithm plugin configurations are valid.
+   *
+   * @param array $form
+   *   Complete form array.
+   * @param \Drupal\Core\Form\FormStateInterface $form_state
+   *   Form state.
+   */
+  protected function validateAlgorithms(array &$form, FormStateInterface $form_state): void {
     $algorithms = $form_state->getValue('algorithms', []);
+
     if (empty($algorithms)) {
       $form_state->setErrorByName('algorithms', $this->t('At least one algorithm is required.'));
+      return;
     }
 
-    // Ensure $algorithms is an array before iterating.
+    // Guard clause - ensure algorithms is an array before iteration.
     if (!is_array($algorithms)) {
       return;
     }
 
-    // Validate catch-all algorithm (one with no conditions).
+    $this->validateCatchAllAlgorithm($algorithms, $form_state);
+    $this->validateAlgorithmPluginConfigurations($algorithms, $form, $form_state);
+  }
+
+  /**
+   * Validates that at least one catch-all algorithm exists.
+   *
+   * Catch-all algorithms (algorithms without conditions) ensure every user
+   * receives a variant even if no conditional algorithms match.
+   *
+   * @param array $algorithms
+   *   Algorithms from form values.
+   * @param \Drupal\Core\Form\FormStateInterface $form_state
+   *   Form state.
+   */
+  protected function validateCatchAllAlgorithm(array $algorithms, FormStateInterface $form_state): void {
     $has_catch_all = FALSE;
+
     foreach ($algorithms as $algorithm) {
       if (empty($algorithm['conditions_section']['conditions'])) {
         $has_catch_all = TRUE;
         break;
       }
     }
-    if (!$has_catch_all) {
-      $form_state->setErrorByName('algorithms', $this->t('At least one algorithm without conditions (catch-all) is required.'));
-    }
 
-    // Validate algorithm plugin configurations.
+    if (!$has_catch_all) {
+      $form_state->setErrorByName(
+        'algorithms',
+        $this->t('At least one algorithm without conditions (catch-all) is required.')
+      );
+    }
+  }
+
+  /**
+   * Validates algorithm plugin configurations.
+   *
+   * Calls validateConfigurationForm() on each algorithm plugin to ensure
+   * plugin-specific validation (e.g., percentages sum to 100%).
+   *
+   * @param array $algorithms
+   *   Algorithms from form values.
+   * @param array $form
+   *   Complete form array.
+   * @param \Drupal\Core\Form\FormStateInterface $form_state
+   *   Form state.
+   */
+  protected function validateAlgorithmPluginConfigurations(array $algorithms, array &$form, FormStateInterface $form_state): void {
     foreach ($algorithms as $delta => $algorithm) {
       $plugin_id = $algorithm['plugin_id'] ?? NULL;
+
+      // Skip algorithms without plugin_id (shouldn't happen but defensive).
       if (!$plugin_id) {
         continue;
       }
 
       try {
-        $plugin = $this->algorithmPluginManager->createInstance($plugin_id, $algorithm['configuration'] ?? []);
+        $plugin = $this->algorithmPluginManager->createInstance(
+          $plugin_id,
+          $algorithm['configuration'] ?? []
+        );
 
         $subform = $form['algorithms_tab']['algorithms_wrapper']['algorithms'][$delta]['configuration'] ?? [];
         $subform_state = SubformState::createForSubform($subform, $form, $form_state);
+        // Provide variants to plugin validation (needed for percentage rollout).
         $subform_state->set('variants', $form_state->get('variants'));
 
         $plugin->validateConfigurationForm($subform, $subform_state);
@@ -816,98 +900,257 @@ class FeatureFlagForm extends EntityForm {
 
     // Process algorithms from form state.
     $algorithms = $form_state->getValue('algorithms', []);
+    $processed_algorithms = $this->processAlgorithms($algorithms, $form, $form_state);
+    $feature_flag->setAlgorithms($processed_algorithms);
 
-    // Clean up algorithms structure and process plugin configurations.
+    $status = $feature_flag->save();
+
+    $message_args = ['%label' => $feature_flag->label()];
+    $message = $status === SAVED_NEW
+      ? $this->t('Created the %label feature flag.', $message_args)
+      : $this->t('Updated the %label feature flag.', $message_args);
+    $this->messenger()->addStatus($message);
+
+    $form_state->setRedirectUrl($feature_flag->toUrl('collection'));
+
+    return $status;
+  }
+
+  /**
+   * Processes algorithms from form values into entity storage structure.
+   *
+   * Extracts algorithm data from tabledrag wrapper, processes plugin
+   * configuration through submitConfigurationForm(), and processes nested
+   * conditions.
+   *
+   * @param array $algorithms
+   *   Raw algorithm values from form state.
+   * @param array $form
+   *   Complete form array for subform state creation.
+   * @param \Drupal\Core\Form\FormStateInterface $form_state
+   *   Form state for subform state creation.
+   *
+   * @return array
+   *   Processed algorithms ready for entity storage.
+   */
+  protected function processAlgorithms(array $algorithms, array $form, FormStateInterface $form_state): array {
     $processed_algorithms = [];
+
     foreach ($algorithms as $delta => $algorithm) {
-      // Tabledrag wraps the actual data in a 'content' key.
-      $algorithm_data = $algorithm['content'] ?? $algorithm;
+      $processed_algorithm = $this->processAlgorithm($algorithm, $delta, $form, $form_state);
 
-      $plugin_id = $algorithm_data['plugin_id'] ?? NULL;
-      if (!$plugin_id) {
+      // Skip algorithms that failed to process (missing plugin_id).
+      if ($processed_algorithm === NULL) {
         continue;
-      }
-
-      // Process algorithm plugin configuration through submitConfigurationForm().
-      $algorithm_configuration = $algorithm_data['configuration'] ?? [];
-      try {
-        $algorithm_plugin = $this->algorithmPluginManager->createInstance($plugin_id, []);
-        $subform = $form['algorithms_tab']['algorithms_wrapper']['algorithms'][$delta]['content']['configuration'] ?? [];
-        $subform_state = SubformState::createForSubform($subform, $form, $form_state);
-        $algorithm_plugin->submitConfigurationForm($subform, $subform_state);
-        $algorithm_configuration = $algorithm_plugin->getConfiguration();
-      }
-      catch (\Exception $e) {
-        // If submit fails, use the raw configuration.
-        $this->messenger()->addWarning(
-          $this->t('Failed to process algorithm configuration: @message', ['@message' => $e->getMessage()])
-        );
-      }
-
-      $processed_algorithm = [
-        'uuid' => $algorithm_data['uuid'],
-        'plugin_id' => $plugin_id,
-        'weight' => $algorithm['weight'] ?? 0,
-        'configuration' => $algorithm_configuration,
-        'conditions' => [],
-      ];
-
-      // Process conditions.
-      $conditions = $algorithm_data['conditions_section']['conditions'] ?? [];
-      foreach ($conditions as $condition_delta => $condition) {
-        if (empty($condition['plugin_id'])) {
-          continue;
-        }
-
-        $condition_plugin_id = $condition['plugin_id'];
-        $condition_configuration = $condition['configuration'] ?? [];
-
-        // Process condition plugin configuration through submitConfigurationForm().
-        try {
-          $condition_plugin = $this->conditionPluginManager->createInstance($condition_plugin_id, []);
-          $subform = $form['algorithms_tab']['algorithms_wrapper']['algorithms'][$delta]['content']['conditions_section']['conditions'][$condition_delta]['configuration'] ?? [];
-          $subform_state = SubformState::createForSubform($subform, $form, $form_state);
-          $condition_plugin->submitConfigurationForm($subform, $subform_state);
-          $condition_configuration = $condition_plugin->getConfiguration();
-        }
-        catch (\Exception $e) {
-          // If submit fails, use the raw configuration.
-          $this->messenger()->addWarning(
-            $this->t('Failed to process condition configuration: @message', ['@message' => $e->getMessage()])
-          );
-        }
-
-        $processed_algorithm['conditions'][] = [
-          'uuid' => $condition['uuid'],
-          'plugin_id' => $condition_plugin_id,
-          'operator' => $condition['operator'] ?? 'OR',
-          'configuration' => $condition_configuration,
-        ];
       }
 
       $processed_algorithms[] = $processed_algorithm;
     }
 
-    $feature_flag->setAlgorithms($processed_algorithms);
+    return $processed_algorithms;
+  }
 
-    $status = $feature_flag->save();
+  /**
+   * Processes a single algorithm from form values.
+   *
+   * @param array $algorithm
+   *   Raw algorithm data from form.
+   * @param int $delta
+   *   Algorithm index for form path construction.
+   * @param array $form
+   *   Complete form array.
+   * @param \Drupal\Core\Form\FormStateInterface $form_state
+   *   Form state.
+   *
+   * @return array|null
+   *   Processed algorithm data or NULL if plugin_id missing.
+   */
+  protected function processAlgorithm(array $algorithm, int $delta, array $form, FormStateInterface $form_state): ?array {
+    // Tabledrag wraps the actual data in a 'content' key.
+    $algorithm_data = $algorithm['content'] ?? $algorithm;
 
-    if ($status === SAVED_NEW) {
-      $this->messenger()
-        ->addStatus($this->t('Created the %label feature flag.', [
-          '%label' => $feature_flag->label(),
-        ]));
+    $plugin_id = $algorithm_data['plugin_id'] ?? NULL;
+    if (!$plugin_id) {
+      return NULL;
     }
-    else {
-      $this->messenger()
-        ->addStatus($this->t('Updated the %label feature flag.', [
-          '%label' => $feature_flag->label(),
-        ]));
+
+    // Process algorithm plugin configuration through submitConfigurationForm().
+    $algorithm_configuration = $this->processAlgorithmConfiguration(
+      $plugin_id,
+      $algorithm_data['configuration'] ?? [],
+      $delta,
+      $form,
+      $form_state
+    );
+
+    $processed_algorithm = [
+      'uuid' => $algorithm_data['uuid'],
+      'plugin_id' => $plugin_id,
+      'weight' => $algorithm['weight'] ?? 0,
+      'configuration' => $algorithm_configuration,
+      'conditions' => [],
+    ];
+
+    // Process nested conditions.
+    $conditions = $algorithm_data['conditions_section']['conditions'] ?? [];
+    $processed_algorithm['conditions'] = $this->processConditions(
+      $conditions,
+      $delta,
+      $form,
+      $form_state
+    );
+
+    return $processed_algorithm;
+  }
+
+  /**
+   * Processes algorithm plugin configuration through submitConfigurationForm.
+   *
+   * Plugins need their submitConfigurationForm() called to transform form
+   * values into configuration storage format (e.g., percentage string to
+   * integer).
+   *
+   * @param string $plugin_id
+   *   Algorithm plugin ID.
+   * @param array $configuration
+   *   Raw configuration from form values.
+   * @param int $delta
+   *   Algorithm index for form path construction.
+   * @param array $form
+   *   Complete form array.
+   * @param \Drupal\Core\Form\FormStateInterface $form_state
+   *   Form state.
+   *
+   * @return array
+   *   Processed configuration or original if processing failed.
+   */
+  protected function processAlgorithmConfiguration(string $plugin_id, array $configuration, int $delta, array $form, FormStateInterface $form_state): array {
+    try {
+      $algorithm_plugin = $this->algorithmPluginManager->createInstance($plugin_id, []);
+      $subform = $form['algorithms_tab']['algorithms_wrapper']['algorithms'][$delta]['content']['configuration'] ?? [];
+      $subform_state = SubformState::createForSubform($subform, $form, $form_state);
+      $algorithm_plugin->submitConfigurationForm($subform, $subform_state);
+      return $algorithm_plugin->getConfiguration();
+    }
+    catch (\Exception $e) {
+      // Fallback to raw configuration if submit fails to avoid data loss.
+      $this->messenger()->addWarning(
+        $this->t('Failed to process algorithm configuration: @message', ['@message' => $e->getMessage()])
+      );
+      return $configuration;
+    }
+  }
+
+  /**
+   * Processes conditions from form values into entity storage structure.
+   *
+   * @param array $conditions
+   *   Raw condition values from form.
+   * @param int $algorithm_delta
+   *   Parent algorithm index for form path construction.
+   * @param array $form
+   *   Complete form array.
+   * @param \Drupal\Core\Form\FormStateInterface $form_state
+   *   Form state.
+   *
+   * @return array
+   *   Processed conditions ready for entity storage.
+   */
+  protected function processConditions(array $conditions, int $algorithm_delta, array $form, FormStateInterface $form_state): array {
+    $processed_conditions = [];
+
+    foreach ($conditions as $condition_delta => $condition) {
+      // Skip conditions without plugin_id to handle incomplete form state.
+      if (empty($condition['plugin_id'])) {
+        continue;
+      }
+
+      $processed_condition = $this->processCondition(
+        $condition,
+        $algorithm_delta,
+        $condition_delta,
+        $form,
+        $form_state
+      );
+
+      $processed_conditions[] = $processed_condition;
     }
 
-    $form_state->setRedirectUrl($feature_flag->toUrl('collection'));
+    return $processed_conditions;
+  }
 
-    return $status;
+  /**
+   * Processes a single condition from form values.
+   *
+   * @param array $condition
+   *   Raw condition data from form.
+   * @param int $algorithm_delta
+   *   Parent algorithm index.
+   * @param int $condition_delta
+   *   Condition index.
+   * @param array $form
+   *   Complete form array.
+   * @param \Drupal\Core\Form\FormStateInterface $form_state
+   *   Form state.
+   *
+   * @return array
+   *   Processed condition data.
+   */
+  protected function processCondition(array $condition, int $algorithm_delta, int $condition_delta, array $form, FormStateInterface $form_state): array {
+    $condition_plugin_id = $condition['plugin_id'];
+    $condition_configuration = $this->processConditionConfiguration(
+      $condition_plugin_id,
+      $condition['configuration'] ?? [],
+      $algorithm_delta,
+      $condition_delta,
+      $form,
+      $form_state
+    );
+
+    return [
+      'uuid' => $condition['uuid'],
+      'plugin_id' => $condition_plugin_id,
+      'operator' => $condition['operator'] ?? 'OR',
+      'configuration' => $condition_configuration,
+    ];
+  }
+
+  /**
+   * Processes condition plugin configuration through submitConfigurationForm.
+   *
+   * Similar to algorithm configuration processing but with different form path.
+   *
+   * @param string $condition_plugin_id
+   *   Condition plugin ID.
+   * @param array $configuration
+   *   Raw configuration from form values.
+   * @param int $algorithm_delta
+   *   Parent algorithm index.
+   * @param int $condition_delta
+   *   Condition index.
+   * @param array $form
+   *   Complete form array.
+   * @param \Drupal\Core\Form\FormStateInterface $form_state
+   *   Form state.
+   *
+   * @return array
+   *   Processed configuration or original if processing failed.
+   */
+  protected function processConditionConfiguration(string $condition_plugin_id, array $configuration, int $algorithm_delta, int $condition_delta, array $form, FormStateInterface $form_state): array {
+    try {
+      $condition_plugin = $this->conditionPluginManager->createInstance($condition_plugin_id, []);
+      $subform = $form['algorithms_tab']['algorithms_wrapper']['algorithms'][$algorithm_delta]['content']['conditions_section']['conditions'][$condition_delta]['configuration'] ?? [];
+      $subform_state = SubformState::createForSubform($subform, $form, $form_state);
+      $condition_plugin->submitConfigurationForm($subform, $subform_state);
+      return $condition_plugin->getConfiguration();
+    }
+    catch (\Exception $e) {
+      // Fallback to raw configuration if submit fails to avoid data loss.
+      $this->messenger()->addWarning(
+        $this->t('Failed to process condition configuration: @message', ['@message' => $e->getMessage()])
+      );
+      return $configuration;
+    }
   }
 
   /**
@@ -921,6 +1164,29 @@ class FeatureFlagForm extends EntityForm {
       ->accessCheck(FALSE)
       ->execute();
     return (bool) $entity;
+  }
+
+  /**
+   * Creates default variants for new feature flags.
+   *
+   * Initializes 2 empty variants with UUIDs to meet minimum requirement.
+   *
+   * @return array
+   *   Array of 2 default variant structures.
+   */
+  protected function createDefaultVariants(): array {
+    return [
+      [
+        'uuid' => $this->uuidService->generate(),
+        'label' => '',
+        'value' => '{}',
+      ],
+      [
+        'uuid' => $this->uuidService->generate(),
+        'label' => '',
+        'value' => '{}',
+      ],
+    ];
   }
 
 }

@@ -22,13 +22,6 @@ abstract class DecisionAlgorithmPluginBase extends PluginBase implements Decisio
   use StringTranslationTrait;
 
   /**
-   * The plugin configuration.
-   *
-   * @var array
-   */
-  protected $configuration;
-
-  /**
    * Constructs a DecisionAlgorithmPluginBase object.
    *
    * @param array $configuration
@@ -127,6 +120,8 @@ abstract class DecisionAlgorithmPluginBase extends PluginBase implements Decisio
   /**
    * Helper method to get variants from the complete form state.
    *
+   * Subforms need to access the complete state to retrieve variants.
+   *
    * @param \Drupal\Core\Form\FormStateInterface $form_state
    *   The form state, which may be a subform state.
    *
@@ -134,10 +129,12 @@ abstract class DecisionAlgorithmPluginBase extends PluginBase implements Decisio
    *   The variants array.
    */
   protected function getVariantsFromFormState(FormStateInterface $form_state): array {
-    // Get the complete form state (in case we're in a subform).
-    $complete_form_state = $form_state instanceof SubformState
-      ? $form_state->getCompleteFormState()
-      : $form_state;
+    $complete_form_state = $form_state;
+
+    // Navigate to complete state if we're in a subform.
+    if ($form_state instanceof SubformState) {
+      $complete_form_state = $form_state->getCompleteFormState();
+    }
 
     return $complete_form_state->get('variants') ?? [];
   }
