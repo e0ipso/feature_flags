@@ -37,24 +37,12 @@ table[data-drupal-selector='edit-algorithms'] .algorithm-item {
 details.conditions-wrapper {
   margin-top: 1em;
   padding: 0.5em;
-  border: 2px solid #4a90e2;
-  border-left: 5px solid #2563eb;
+  border: 2px solid #9635a1;
+  border-left: 5px solid #a11a96;
   border-radius: 6px;
   background: linear-gradient(to right, #f0f7ff 0%, #fff 20%);
   box-shadow: 0 2px 4px rgb(0 0 0 / 5%);
   position: relative;
-}
-
-/* Subtle pattern indicator for conditions wrapper */
-details.conditions-wrapper::before {
-  content: '';
-  position: absolute;
-  left: 0;
-  top: 0;
-  bottom: 0;
-  width: 5px;
-  background: linear-gradient(180deg, #2563eb 0%, #4a90e2 50%, #2563eb 100%);
-  border-radius: 6px 0 0 6px;
 }
 
 /* Percentage input styling - must come before more specific label selectors */
@@ -96,7 +84,7 @@ details.conditions-wrapper::before {
 }
 
 /* Remove button - circular X in top-right corner */
-.condition-item .condition-remove-button {
+.condition-item .condition-remove-button.button--small {
   position: absolute;
   top: 0.25em;
   right: 0.25em;
@@ -105,22 +93,13 @@ details.conditions-wrapper::before {
   min-width: 28px;
   padding: 0;
   margin: 0;
-  border: 1px solid #ccc;
   border-radius: 50%;
   background: #fff;
-  font-size: 24px;
-  line-height: 26px;
   color: #666;
   font-weight: 700;
   text-align: center;
   box-shadow: 0 1px 3px rgb(0 0 0 / 10%);
-  cursor: pointer;
-}
-
-.condition-item .condition-remove-button:hover {
-  color: #fff;
-  background: #d32f2f;
-  border-color: #d32f2f;
+  font-size: var(--font-size-base);
 }
 
 /* JSON editor specific styles */
