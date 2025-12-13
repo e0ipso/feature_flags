@@ -13,6 +13,8 @@ use Drupal\FunctionalJavascriptTests\WebDriverTestBase;
  * drag-and-drop algorithm reordering, and form state preservation across AJAX
  * interactions.
  *
+ * @method \Drupal\FunctionalJavascriptTests\JSWebAssert assertSession($name = NULL)
+ *
  * @group feature_flags
  */
 final class FeatureFlagAdminTest extends WebDriverTestBase {
@@ -44,19 +46,6 @@ final class FeatureFlagAdminTest extends WebDriverTestBase {
       'administer feature flags',
     ]);
     $this->drupalLogin($this->adminUser);
-  }
-
-  /**
-   * {@inheritdoc}
-   *
-   * Override to provide correct return type for PHPStan analysis.
-   *
-   * @return \Drupal\FunctionalJavascriptTests\JSWebAssert
-   *   The JSWebAssert instance for JavaScript-enabled assertions.
-   */
-  // phpcs:ignore Generic.CodeAnalysis.UselessOverridingMethod.Found
-  public function assertSession($name = NULL) {
-    return parent::assertSession($name);
   }
 
   /**

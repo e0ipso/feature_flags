@@ -5,50 +5,49 @@ declare(strict_types=1);
 namespace Drupal\feature_flags\Entity;
 
 use Drupal\Core\Config\Entity\ConfigEntityBase;
-use Drupal\Core\Entity\Attribute\ConfigEntityType;
 use Drupal\Core\Entity\EntityStorageInterface;
-use Drupal\Core\StringTranslation\TranslatableMarkup;
 
 /**
  * Defines the Feature Flag entity.
+ *
+ * @ConfigEntityType(
+ *   id = "feature_flag",
+ *   label = @Translation("Feature Flag"),
+ *   label_collection = @Translation("Feature Flags"),
+ *   label_singular = @Translation("feature flag"),
+ *   label_plural = @Translation("feature flags"),
+ *   handlers = {
+ *     "list_builder" = "Drupal\feature_flags\FeatureFlagListBuilder",
+ *     "form" = {
+ *       "add" = "Drupal\feature_flags\Form\FeatureFlagForm",
+ *       "edit" = "Drupal\feature_flags\Form\FeatureFlagForm",
+ *       "delete" = "Drupal\feature_flags\Form\FeatureFlagDeleteForm",
+ *     },
+ *   },
+ *   config_prefix = "feature_flag",
+ *   admin_permission = "administer feature flags",
+ *   entity_keys = {
+ *     "id" = "id",
+ *     "label" = "label",
+ *     "uuid" = "uuid",
+ *     "status" = "status",
+ *   },
+ *   config_export = {
+ *     "id",
+ *     "label",
+ *     "description",
+ *     "status",
+ *     "variants",
+ *     "algorithms",
+ *   },
+ *   links = {
+ *     "add-form" = "/admin/config/services/feature-flags/add",
+ *     "edit-form" = "/admin/config/services/feature-flags/{feature_flag}/edit",
+ *     "delete-form" = "/admin/config/services/feature-flags/{feature_flag}/delete",
+ *     "collection" = "/admin/config/services/feature-flags/list",
+ *   },
+ * )
  */
-#[ConfigEntityType(
-  id: 'feature_flag',
-  label: new TranslatableMarkup('Feature Flag'),
-  label_collection: new TranslatableMarkup('Feature Flags'),
-  label_singular: new TranslatableMarkup('feature flag'),
-  label_plural: new TranslatableMarkup('feature flags'),
-  handlers: [
-    'list_builder' => 'Drupal\feature_flags\FeatureFlagListBuilder',
-    'form' => [
-      'add' => 'Drupal\feature_flags\Form\FeatureFlagForm',
-      'edit' => 'Drupal\feature_flags\Form\FeatureFlagForm',
-      'delete' => 'Drupal\feature_flags\Form\FeatureFlagDeleteForm',
-    ],
-  ],
-  config_prefix: 'feature_flag',
-  admin_permission: 'administer feature flags',
-  entity_keys: [
-    'id' => 'id',
-    'label' => 'label',
-    'uuid' => 'uuid',
-    'status' => 'status',
-  ],
-  config_export: [
-    'id',
-    'label',
-    'description',
-    'status',
-    'variants',
-    'algorithms',
-  ],
-  links: [
-    'add-form' => '/admin/config/services/feature-flags/add',
-    'edit-form' => '/admin/config/services/feature-flags/{feature_flag}/edit',
-    'delete-form' => '/admin/config/services/feature-flags/{feature_flag}/delete',
-    'collection' => '/admin/config/services/feature-flags/list',
-  ],
-)]
 class FeatureFlag extends ConfigEntityBase {
 
   /**
