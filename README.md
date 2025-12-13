@@ -18,23 +18,31 @@ Perfect for high-traffic sites using aggressive caching (Varnish, CDN, BigPipe).
 
 ## See It In Action
 
-### 1. Enable Settings (Debug + Persistence)
+### Video Walkthrough
+
+https://github.com/user-attachments/assets/coin-flip-demo.webm
+
+<sub>👆 30-second walkthrough showing the complete setup and resolution process</sub>
+
+### Step-by-Step with Screenshots
+
+#### 1. Enable Settings (Debug + Persistence)
 
 ![Settings Page](docs/images/settings.png)
 
-_Enable debug mode to see resolution in console. Enable persistence to cache decisions in localStorage._
+<sub>Enable debug mode to see resolution in console. Enable persistence to cache decisions in localStorage.</sub>
 
-### 2. Create Your Feature Flag
+#### 2. Create Your Feature Flag
 
 ![Create Flag](docs/images/create-flag.png)
 
-_Define basic info: label, machine name, description._
+<sub>Define basic info: label, machine name, description.</sub>
 
-### 3. Add Variants (Minimum 2, JSON Values)
+#### 3. Add Variants (Minimum 2, JSON Values)
 
 ![Variants](docs/images/variants.png)
 
-_Each variant has a label and JSON value. CodeMirror editor included._
+<sub>Each variant has a label and JSON value. CodeMirror editor included.</sub>
 
 **Example: "Heads, Tails, or Edge" coin flip**
 
@@ -42,13 +50,13 @@ _Each variant has a label and JSON value. CodeMirror editor included._
 - **Tails**: `{"result": "tails", "color": "#C0C0C0"}`
 - **Edge**: `{"result": "edge", "color": "#FF6B6B"}` (rare!)
 
-### 4. Configure Percentage Rollout
+#### 4. Configure Percentage Rollout
 
 ![Algorithms](docs/images/algorithms.png)
 
-_48% Heads, 48% Tails, 4% Edge. Percentages must sum to 100%._
+<sub>48% Heads, 48% Tails, 4% Edge. Percentages must sum to 100%.</sub>
 
-### 5. Resolve in JavaScript
+#### 5. Resolve in JavaScript
 
 ```javascript
 const result = await Drupal.featureFlags.resolve('coin_flip');
@@ -64,7 +72,7 @@ console.log(result.variant.label);
 
 ![Console Resolution](docs/images/console.png)
 
-_Debug mode shows the full resolution process. Result is cached in localStorage for consistency._
+<sub>Debug mode shows the full resolution process. Result is cached in localStorage for consistency.</sub>
 
 ---
 
