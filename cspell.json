@@ -47,7 +47,8 @@
     "jsonlint",
     "textareas",
     "jsdom",
-    "codemirrors"
+    "codemirrors",
+    "autonumber"
   ],
   "ignorePaths": [
     "node_modules/**",
