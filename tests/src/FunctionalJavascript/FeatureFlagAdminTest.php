@@ -49,8 +49,12 @@ final class FeatureFlagAdminTest extends WebDriverTestBase {
   /**
    * {@inheritdoc}
    *
+   * Override to provide correct return type for PHPStan analysis.
+   *
    * @return \Drupal\FunctionalJavascriptTests\JSWebAssert
+   *   The JSWebAssert instance for JavaScript-enabled assertions.
    */
+  // phpcs:ignore Generic.CodeAnalysis.UselessOverridingMethod.Found
   public function assertSession($name = NULL) {
     return parent::assertSession($name);
   }
