@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Drupal\Tests\feature_flags\Kernel;
 
-use Drupal\Core\Config\StorageInterface;
 use Drupal\feature_flags\Entity\FeatureFlag;
 use Drupal\feature_flags\Plugin\DecisionAlgorithm\DecisionAlgorithmInterface;
 use Drupal\feature_flags\Plugin\AlgorithmCondition\AlgorithmConditionInterface;
