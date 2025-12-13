@@ -47,6 +47,15 @@ final class FeatureFlagAdminTest extends WebDriverTestBase {
   }
 
   /**
+   * {@inheritdoc}
+   *
+   * @return \Drupal\FunctionalJavascriptTests\JSWebAssert
+   */
+  public function assertSession($name = NULL) {
+    return parent::assertSession($name);
+  }
+
+  /**
    * Tests complete admin UI workflow with JavaScript interactions.
    *
    * This single test method comprehensively covers:
