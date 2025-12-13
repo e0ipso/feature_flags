@@ -1,6 +1,16 @@
-# Feature Flags - Drupal Module
+# Feature Flags
 
-A powerful Drupal module for client-side feature flag management and execution. This module enables site administrators to create feature flags with multiple variants, configure decision algorithms with conditions, and resolve variants client-side via JavaScript—allowing personalized experiences even behind caching layers.
+![Drupal](https://img.shields.io/badge/drupal-10.3%20%7C%2010.4%20%7C%2011.x-blue)
+![PHP](https://img.shields.io/badge/php-8.2%2B-blue)
+![License](https://img.shields.io/badge/license-GPL--2.0-green)
+
+**Client-side feature flags with percentage rollouts, conditions, and persistence - built for Drupal's caching layer.**
+
+> **Why client-side?** Unlike server-side feature flags, this module resolves variants in JavaScript, making it fully compatible with aggressive page caching (Varnish, CDN, BigPipe). Perfect for high-traffic Drupal sites.
+
+[Quick Start](#-quick-start) • [Integration with ab_tests](#-feature-flags--ab-tests-better-together) • [How It Works](#how-it-works)
+
+---
 
 ## Overview
 
@@ -14,6 +24,59 @@ The Feature Flags module provides:
 - **Persistence**: Optional localStorage caching for consistent user experiences
 - **Debug Mode**: Console logging for development and troubleshooting
 - **Config Export Control**: Optionally exclude feature flags from configuration exports
+
+## 🔗 Feature Flags + ab_tests: Better Together
+
+The feature_flags module handles **feature rollouts and variant selection**, while [Lullabot's ab_tests module](https://github.com/Lullabot/ab_tests) handles **experiment tracking and analytics**.
+
+### When to Use Each
+
+```mermaid
+flowchart TD
+    Start([Need to control<br/>feature visibility?])
+    Start --> Q1{Need to track<br/>experiment metrics?}
+
+    Q1 -->|Yes| Q2{Need gradual<br/>rollout control?}
+    Q1 -->|No| Q3{Need percentage<br/>distribution?}
+
+    Q2 -->|Yes| Both[Use BOTH<br/>feature_flags + ab_tests]
+    Q2 -->|No| ABOnly[Use ab_tests only<br/>for experiments]
+
+    Q3 -->|Yes| FFOnly[Use feature_flags only<br/>for rollouts]
+    Q3 -->|No| Simple[Use simple<br/>config or env vars]
+
+    Both --> Example1["Example: New checkout flow<br/>• feature_flags: 25% rollout<br/>• ab_tests: track conversions"]
+    ABOnly --> Example2["Example: Button color test<br/>• ab_tests: A/B test tracking<br/>• No gradual rollout needed"]
+    FFOnly --> Example3["Example: Beta feature<br/>• feature_flags: user tier targeting<br/>• No metrics tracking needed"]
+
+    style Both fill:#c8e6c9
+    style ABOnly fill:#fff9c4
+    style FFOnly fill:#b3e5fc
+    style Simple fill:#ffccbc
+```
+
+### Real-World Example: Progressive Checkout Rollout
+
+**Scenario**: Roll out a new checkout flow to 25% of users and track conversion metrics.
+
+```javascript
+// 1. feature_flags controls the rollout
+const checkout = await Drupal.featureFlags.resolve('new_checkout');
+
+if (checkout.result.enabled) {
+  // 2. ab_tests tracks the experiment
+  Drupal.behaviors.abTests.trackExperiment('checkout_experiment', {
+    variant: checkout.variant.label,
+    user_id: drupalSettings.user.uid,
+  });
+
+  loadNewCheckout();
+}
+```
+
+**Result**: Safe, measurable feature deployment with full analytics.
+
+[Learn more about ab_tests integration →](https://github.com/Lullabot/ab_tests)
 
 ## Requirements
 
@@ -53,7 +116,7 @@ The `init.sh` script will:
 - Set up the testing environment
 - Display helpful information about available commands
 
-## Quick Start
+## ⚡ Quick Start
 
 ### 1. Configure Module Settings
 
@@ -68,8 +131,8 @@ Navigate to **Configuration → Services → Feature Flags** (`/admin/config/ser
 1. Go to the **Feature Flags** tab (`/admin/config/services/feature-flags/list`)
 2. Click **Add feature flag**
 3. Fill in basic information:
-   - **Label**: Human-readable name (e.g., "New Checkout Flow")
-   - **Machine name**: Auto-generated from label (e.g., `new_checkout_flow`)
+   - **Label**: Human-readable name (e.g., "Coin Flip")
+   - **Machine name**: Auto-generated from label (e.g., `coin_flip`)
    - **Description**: Internal notes about the flag
    - **Enabled**: Check to activate the flag
 
@@ -77,38 +140,38 @@ Navigate to **Configuration → Services → Feature Flags** (`/admin/config/ser
 
 In the **Variants** tab:
 
-1. Add at least 2 variants
-2. Give each variant a label (e.g., "Control", "Variant A")
-3. Set each variant's value as valid JSON:
-   ```json
-   { "enabled": false, "color": "blue" }
-   ```
-4. The CodeMirror editor provides syntax highlighting and validation
+1. Add at least 2 variants (for this example, we'll add 3)
+2. Give each variant a label and JSON value:
+   - **Heads**: `{"result": "heads", "color": "#FFD700"}`
+   - **Tails**: `{"result": "tails", "color": "#C0C0C0"}`
+   - **Edge**: `{"result": "edge", "color": "#FF6B6B"}`
+3. The CodeMirror editor provides syntax highlighting and validation
 
 ### 4. Configure Decision Algorithms
 
 In the **Decision Algorithms** tab:
 
 1. Click **Add Algorithm** and select **Percentage Rollout**
-2. Distribute percentages across variants (must sum to 100%)
-3. Optionally add conditions:
-   - **User ID**: Target specific user IDs
-   - **User Tier**: Target user tiers (free, premium, etc.)
-4. Add multiple algorithms for sophisticated targeting
-5. Drag to reorder (first matching algorithm wins)
-
-**Important**: At least one algorithm must have no conditions (catch-all) to handle all users.
+2. Distribute percentages across variants:
+   - Heads: 48%
+   - Tails: 48%
+   - Edge: 4% (rare event!)
+3. Percentages must sum to 100%
+4. Leave conditions empty for a catch-all algorithm
 
 ### 5. Use Feature Flags in JavaScript
 
 ```javascript
 // Resolve a feature flag
-const result = await Drupal.featureFlags.resolve('new_checkout_flow');
+const result = await Drupal.featureFlags.resolve('coin_flip');
 
 // Access the variant value (parsed JSON)
-if (result.result.enabled) {
-  console.log('New checkout is enabled!');
-  applyNewCheckoutFlow();
+if (result.result === 'edge') {
+  console.log('Incredible! The coin landed on its edge!');
+  showRareEventAnimation();
+} else {
+  console.log(`The coin landed on: ${result.result}`);
+  applyColor(result.result.color);
 }
 
 // Access variant metadata
@@ -129,6 +192,113 @@ document.addEventListener('featureFlags:provideContext', (event) => {
   event.detail.addContext('subscription', await fetchSubscriptionStatus());
 });
 ```
+
+## How It Works
+
+The module uses a **paired PHP+JavaScript plugin architecture** for client-side feature resolution:
+
+```mermaid
+sequenceDiagram
+    autonumber
+    participant Page as Page Load
+    participant Settings as drupalSettings
+    participant Code as Application Code
+    participant Manager as FeatureFlagManager
+    participant Event as Context Providers
+    participant Algorithm as Decision Algorithm
+    participant Storage as localStorage
+
+    Page->>Settings: Attach feature flags config
+    Code->>Manager: resolve('coin_flip')
+    Manager->>Storage: Check cache (if persistence enabled)
+    alt Cache Hit
+        Storage-->>Manager: Cached variant
+        Manager-->>Code: FeatureFlagResult (cached)
+    else Cache Miss
+        Manager->>Event: Fire 'featureFlags:provideContext'
+        Event-->>Manager: Context {user_id, user_tier, ...}
+        Manager->>Algorithm: evaluate(context)
+        Algorithm->>Algorithm: Check conditions
+        Algorithm->>Algorithm: Execute decide()
+        Algorithm-->>Manager: Selected variant
+        Manager->>Storage: Cache decision (if persistence enabled)
+        Manager-->>Code: FeatureFlagResult (fresh)
+    end
+```
+
+**Key Architecture Points:**
+
+1. **hook_page_attachments()** loads enabled feature flags into drupalSettings
+2. **FeatureFlagManager** orchestrates resolution client-side
+3. **Context providers** supply data via events (user_id, user_tier, etc.)
+4. **Decision algorithms** evaluate conditions and select variants
+5. **localStorage** caches decisions for consistency across page loads
+6. **FeatureFlagResult** returns parsed JSON variant values
+
+## 🎯 Use Cases
+
+### Feature Rollout
+
+**Scenario**: Gradually roll out a new UI component to minimize risk
+
+```javascript
+// Resolve the flag
+const result = await Drupal.featureFlags.resolve('new_header');
+
+// Use the variant value
+if (result.result.enabled) {
+  loadNewHeader();
+} else {
+  loadLegacyHeader();
+}
+```
+
+**When to use**: New features, design changes, risky deployments
+
+### User Tier Targeting
+
+**Scenario**: Enable premium features for specific user segments
+
+```javascript
+// Provide custom context
+document.addEventListener('featureFlags:provideContext', event => {
+  event.detail.addContext('user_tier', drupalSettings.user.tier);
+});
+
+// Feature flag with UserTier condition
+const premium = await Drupal.featureFlags.resolve('premium_dashboard');
+
+if (premium.result.enabled) {
+  loadPremiumDashboard();
+}
+```
+
+**When to use**: User segmentation, beta testing, VIP features
+
+### A/B Testing with ab_tests
+
+**Scenario**: Test button variants and track clicks
+
+```javascript
+// Resolve feature flag for variant selection
+const button = await Drupal.featureFlags.resolve('cta_button');
+
+// Apply variant styling
+applyButtonStyle(button.result.color, button.result.text);
+
+// Track experiment with ab_tests module
+Drupal.behaviors.abTests.trackExperiment('cta_test', {
+  variant: button.variant.label,
+  user_id: drupalSettings.user.uid,
+});
+
+// Track conversion when clicked
+button.addEventListener('click', () => {
+  Drupal.behaviors.abTests.trackConversion('cta_test', 'click');
+});
+```
+
+**When to use**: Experiments requiring metrics, conversion tracking, statistical analysis
 
 ## Architecture
 
@@ -197,6 +367,15 @@ npm run test:watch
 npm run test:coverage
 ```
 
+### End-to-End Tests (Playwright)
+
+```bash
+npm run e2e:test                  # Run E2E tests
+npm run e2e:test:headed           # Run with browser visible
+npm run e2e:test:debug            # Debug mode
+npm run e2e:report                # View report
+```
+
 ### Code Quality
 
 ```bash
@@ -208,95 +387,10 @@ vendor/bin/phpcs --standard=Drupal,DrupalPractice web/modules/contrib/feature_fl
 
 # Auto-fix coding standards
 vendor/bin/phpcbf --standard=Drupal,DrupalPractice web/modules/contrib/feature_flags
-```
 
-## Development Workflow
-
-### Feature Progress Tracking
-
-This module uses `feature_list.json` to track implementation progress:
-
-```json
-[
-  {
-    "category": "functional",
-    "description": "Feature description",
-    "steps": ["Step 1", "Step 2", "Step 3"],
-    "passes": false // Change to true when feature is complete and tested
-  }
-]
-```
-
-**Important**: Never remove or edit features in `feature_list.json`. Only change `"passes": false` to `"passes": true` when a feature is fully implemented and tested.
-
-### Implementation Steps
-
-1. **Module Foundation** - Core files, services, config schema
-2. **Plugin System** - Algorithm and condition plugins
-3. **Config Entity** - FeatureFlag entity class
-4. **Admin Forms** - Settings and feature flag forms with AJAX
-5. **Routing and Menu** - Admin interface navigation
-6. **JavaScript Base Classes** - Core client-side architecture
-7. **JavaScript Implementations** - Algorithm and condition JS classes
-8. **JSON Editor Integration** - CodeMirror for variant values
-9. **drupalSettings Integration** - Attach flags to pages
-10. **Config Export Exclusion** - Optional export control
-11. **PHP Unit Tests** - Complete test coverage
-12. **Jest Tests** - JavaScript test coverage
-13. **Browser Tests** - End-to-end testing
-14. **Polish and Documentation** - Final refinements
-
-### Git Workflow
-
-Always commit with clear, descriptive messages:
-
-```bash
-# Good commit messages
-git commit -m "Add PercentageRollout decision algorithm plugin"
-git commit -m "Implement client-side context provider event system"
-git commit -m "Add validation for minimum 2 variants requirement"
-
-# After code changes, always rebuild cache
-drush cache:rebuild
-```
-
-## API Reference
-
-### PHP APIs
-
-```php
-// Load a feature flag
-$flag = \Drupal::entityTypeManager()
-  ->getStorage('feature_flag')
-  ->load('my_flag_id');
-
-// Check if enabled
-if ($flag->status()) {
-  // Flag is active
-}
-
-// Get variants
-$variants = $flag->get('variants');
-
-// Get algorithms
-$algorithms = $flag->get('algorithms');
-```
-
-### JavaScript APIs
-
-```javascript
-// Resolve a feature flag
-const result = await Drupal.featureFlags.resolve('flag_id');
-
-// FeatureFlagResult properties
-result.featureFlag; // FeatureFlagConfig instance
-result.result; // Parsed JSON value (object, array, scalar)
-result.variant; // Variant object {uuid, label, value}
-
-// Provide context
-document.addEventListener('featureFlags:provideContext', event => {
-  event.detail.addContext('key', value);
-});
+# JavaScript linting
+npm run js:check
+npm run js:fix
 ```
 
 ## Extending the Module
@@ -342,6 +436,51 @@ This is enforced by validation. Adjust percentages so they total exactly 100%.
 3. Check browser console for errors
 4. Try clearing localStorage and resolving again
 
+## API Reference
+
+### PHP APIs
+
+```php
+// Load a feature flag
+$flag = \Drupal::entityTypeManager()
+  ->getStorage('feature_flag')
+  ->load('my_flag_id');
+
+// Check if enabled
+if ($flag->status()) {
+  // Flag is active
+}
+
+// Get variants
+$variants = $flag->get('variants');
+
+// Get algorithms
+$algorithms = $flag->get('algorithms');
+```
+
+### JavaScript APIs
+
+```javascript
+// Resolve a feature flag
+const result = await Drupal.featureFlags.resolve('flag_id');
+
+// FeatureFlagResult properties
+result.featureFlag; // FeatureFlagConfig instance
+result.result; // Parsed JSON value (object, array, scalar)
+result.variant; // Variant object {uuid, label, value}
+
+// Provide context
+document.addEventListener('featureFlags:provideContext', event => {
+  event.detail.addContext('key', value);
+});
+```
+
+## Documentation
+
+- **Architecture**: See [AGENTS.md](AGENTS.md) for complete technical architecture
+- **Diagrams**: See [docs/diagrams.md](docs/diagrams.md) for Mermaid diagram source code
+- **Feature Tracking**: See [feature_list.json](feature_list.json) for implementation status
+
 ## License
 
 This module is licensed under the GPL v2 (or later) license.
@@ -365,7 +504,6 @@ Contributions are welcome! Please:
 ## Support
 
 - Issue queue: [To be created on drupal.org]
-- Documentation: See `app_spec.txt` for complete technical specification
 - Feature tracking: See `feature_list.json` for implementation status
 
 ## Changelog
@@ -378,3 +516,4 @@ Contributions are welcome! Please:
 - User ID and User Tier conditions
 - Client-side resolution with persistence
 - Debug mode and config export control
+- Integration guidance with ab_tests module
