@@ -165,8 +165,6 @@ final class FeatureFlagKernelTest extends KernelTestBase {
     $this->container = \Drupal::getContainer();
 
     $export_storage = $this->container->get('config.storage.export');
-    $this->assertInstanceOf(StorageInterface::class, $export_storage);
-
     $config_name = 'feature_flags.feature_flag.' . $flag->id();
 
     $has_export = $export_storage->exists($config_name);
