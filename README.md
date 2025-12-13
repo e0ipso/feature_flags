@@ -20,9 +20,7 @@ Perfect for high-traffic sites using aggressive caching (Varnish, CDN, BigPipe).
 
 ### Video Walkthrough
 
-<video src="docs/videos/coin-flip-demo.webm" controls width="100%" style="max-width: 800px;">
-  Your browser doesn't support embedded videos. <a href="docs/videos/coin-flip-demo.webm">Download the video</a>.
-</video>
+[coin-flip-demo.webm](https://github.com/user-attachments/assets/5e7271a0-0793-4357-81bd-7bb52093d3dd)
 
 <sub>👆 30-second walkthrough showing the complete setup and resolution process</sub>
 
