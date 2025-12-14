@@ -2,7 +2,7 @@
 
 **Client-side feature flags that work with Varnish, CDN, and BigPipe. Resolve variants in JavaScript, not PHP.**
 
-![Drupal](https://img.shields.io/badge/drupal-10.3%20%7C%2010.4%20%7C%2011.x-blue) ![PHP](https://img.shields.io/badge/php-8.2%2B-blue)
+![Drupal](https://img.shields.io/badge/drupal-10.x%20%7C%2011.x-blue) ![PHP](https://img.shields.io/badge/php-8.2%2B-blue)
 
 ---
 
@@ -79,7 +79,7 @@ console.log(result.variant.label);
 ## Installation
 
 ```bash
-composer require drupal/feature_flags
+composer require e0ipso/feature_flags
 drush pm:enable feature_flags -y
 drush cache:rebuild
 ```
@@ -265,9 +265,7 @@ npm run js:check
 
 ## Documentation
 
-- [AGENTS.md](AGENTS.md) - Complete technical architecture
 - [docs/diagrams.md](docs/diagrams.md) - Mermaid diagram source code
-- [feature_list.json](feature_list.json) - Implementation status
 
 ---
 
