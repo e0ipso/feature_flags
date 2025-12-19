@@ -81,7 +81,6 @@ console.log(result.variant.label);
 ```bash
 composer require e0ipso/feature_flags
 drush pm:enable feature_flags -y
-drush cache:rebuild
 ```
 
 ---
