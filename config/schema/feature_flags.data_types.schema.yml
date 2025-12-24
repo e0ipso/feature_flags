@@ -82,13 +82,3 @@ feature_flags.plugin.algorithm_condition.user_id:
       label: 'User IDs'
       sequence:
         type: string
-
-feature_flags.plugin.algorithm_condition.user_tier:
-  type: mapping
-  label: 'User tier condition configuration'
-  mapping:
-    values:
-      type: sequence
-      label: 'User tier values'
-      sequence:
-        type: string

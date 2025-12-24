@@ -37,6 +37,58 @@ final class FeatureFlagAttachmentBuilder {
   }
 
   /**
+   * Alters the library definitions to set dependencies right.
+   *
+   * @param array &$libraries
+   *   The declared libraries.
+   * @param string $extension
+   *   The extension.
+   */
+  public function alterLibrariesInfo(array &$libraries, string $extension) {
+    if ($extension !== 'feature_flags') {
+      return;
+    }
+    $flags = $this->loadEnabledFlags();
+
+    if (empty($flags) || empty($libraries['feature_flags'])) {
+      return;
+    }
+    // There is no very good way to detect at runtime what the dependencies
+    // should be. Drupal makes it hard to enforce loading order for scripts.
+    // Since feature flags can have configurable algorithms and each algorithm
+    // can have their own JavaScript libraries, we need to ensure that the
+    // algorithm libraries are available for JavaScript when we initialize the
+    // feature flag manager. This is why we have to bite the bullet here and
+    // include all the algorithm libraries inside each request that the feature
+    // flags are going to be used. This is an ideal but there isn't any other
+    // way around it except for fighting the asset system in Drupal which would
+    // have more severe drawbacks.
+    $libraries['feature_flags']['dependencies'] = array_reduce(
+      $flags,
+      function ($deps, FeatureFlag $flag) {
+        // Extract all the configured algorithms.
+        $algorithm_manager = \Drupal::service('plugin.manager.feature_flags.decision_algorithm');
+        assert($algorithm_manager instanceof DecisionAlgorithmPluginManager);
+        $algorithm_ids = array_map(
+          static fn (array $algo) => $algo['plugin_id'],
+          $flag->getAlgorithms(),
+        );
+        $algorithm_defs = array_map(
+          fn ($id) => $algorithm_manager->getDefinition($id),
+          $algorithm_ids,
+        );
+        $algorithm_libs = array_map(
+          static fn (array $def) => $def['js_library'],
+          $algorithm_defs,
+        );
+        $algorithm_libs = array_unique(array_filter($algorithm_libs));
+        return [...$deps, ...$algorithm_libs];
+      },
+      $libraries['feature_flags']['dependencies'] ?? [],
+    );
+  }
+
+  /**
    * Builds page attachments for enabled feature flags.
    *
    * @param array $attachments
@@ -45,7 +97,6 @@ final class FeatureFlagAttachmentBuilder {
   public function buildAttachments(array &$attachments): void {
     $flags = $this->loadEnabledFlags();
 
-    // Early return if no enabled flags.
     if (empty($flags)) {
       return;
     }
@@ -177,7 +228,6 @@ final class FeatureFlagAttachmentBuilder {
       $algorithm_info = [
         'uuid' => $algorithm_data['uuid'] ?? NULL,
         'pluginId' => $plugin_id,
-        'jsClass' => $definition['js_class'] ?? NULL,
         'configuration' => $plugin->getJavaScriptSettings(),
         'conditions' => [],
       ];
@@ -245,7 +295,6 @@ final class FeatureFlagAttachmentBuilder {
       return [
         'uuid' => $condition_data['uuid'] ?? NULL,
         'pluginId' => $condition_plugin_id,
-        'jsClass' => $condition_definition['js_class'] ?? NULL,
         'operator' => $condition_data['operator'] ?? 'OR',
         'configuration' => $condition_plugin->getJavaScriptSettings(),
       ];
