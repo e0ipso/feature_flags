@@ -31,13 +31,3 @@ class UserIdCondition extends BaseCondition {
     return this.applyOperator(matches);
   }
 }
-
-// Make available globally for Drupal.
-if (typeof window !== 'undefined') {
-  window.UserIdCondition = UserIdCondition;
-}
-
-// Export for module usage.
-if (typeof module !== 'undefined' && module.exports) {
-  module.exports = UserIdCondition;
-}
