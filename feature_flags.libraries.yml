@@ -1,8 +1,3 @@
-# UUID utility
-utils.uuid:
-  js:
-    js/utils/uuid.js: {}
-
 # Base JavaScript library with core classes
 base:
   js:
@@ -11,11 +6,12 @@ base:
     js/base/BaseAlgorithm.js: {}
     js/base/BaseCondition.js: {}
     js/base/FeatureFlagManager.js: {}
+    js/base/AlgorithmFactory.js: {}
+    js/base/ConditionFactory.js: {}
   dependencies:
     - core/drupal
     - core/drupalSettings
     - core/once
-    - feature_flags/utils.uuid
 
 # Main feature flags behavior
 feature_flags:
@@ -27,21 +23,18 @@ feature_flags:
 # Algorithm: Percentage Rollout
 algorithm.percentage_rollout:
   js:
+    js/algorithm/percentage-rollout-registration.js: {}
     js/algorithm/PercentageRollout.js: {}
   dependencies:
     - feature_flags/base
+    - core/drupal
+    - core/once
 
 # Condition: User ID
 condition.user_id:
   js:
     js/condition/UserId.js: {}
-  dependencies:
-    - feature_flags/base
-
-# Condition: User Tier
-condition.user_tier:
-  js:
-    js/condition/UserTier.js: {}
+    js/condition/user-id-registration.js: {}
   dependencies:
     - feature_flags/base
 

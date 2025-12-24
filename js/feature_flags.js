@@ -1,11 +1,11 @@
-/* global FeatureFlagManager */
+/* global FeatureFlagManager, AlgorithmFactory, ConditionFactory */
 
 /**
  * @file
  * Drupal behavior for Feature Flags initialization.
  */
 
-(function initFeatureFlags(Drupal, once) {
+(function (Drupal, once) {
   /**
    * Initialize the Feature Flags manager.
    *
@@ -16,29 +16,67 @@
    */
   Drupal.behaviors.featureFlags = {
     attach(context, settings) {
-      once('feature-flags-init', 'html', context).forEach(
-        function initializeFeatureFlagsManager() {
-          // Initialize the global Feature Flag Manager instance.
-          if (!Drupal.featureFlags) {
-            Drupal.featureFlags = new FeatureFlagManager();
+      once('feature-flags-init', 'html', context).forEach(() => {
+        // Early return if already initialized.
+        if (Drupal.featureFlags) {
+          return;
+        }
 
-            if (
-              settings.featureFlags?.settings?.debug_mode ||
-              settings.featureFlags?.settings?.debug
-            ) {
-              console.debug('[Feature Flags] Manager initialized');
-              console.debug(
-                '[Feature Flags] Settings:',
-                settings.featureFlags?.settings,
-              );
-              console.debug(
-                '[Feature Flags] Available flags:',
-                Object.keys(settings.featureFlags?.flags || {}),
-              );
-            }
-          }
-        },
-      );
+        const featureFlagsSettings = settings?.featureFlags || {};
+
+        // Create algorithm instances using factory.
+        let algorithmInstances;
+        try {
+          algorithmInstances =
+            AlgorithmFactory.createInstances(featureFlagsSettings);
+        } catch (error) {
+          console.error(
+            '[Feature Flags] Failed to create algorithm instances:',
+            error,
+          );
+          return;
+        }
+
+        // Create condition instances using factory.
+        let conditionInstances;
+        try {
+          conditionInstances =
+            ConditionFactory.createInstances(featureFlagsSettings);
+        } catch (error) {
+          console.error(
+            '[Feature Flags] Failed to create condition instances:',
+            error,
+          );
+          return;
+        }
+
+        // Initialize the global Feature Flag Manager instance with pre-instantiated plugins.
+        Drupal.featureFlags = new FeatureFlagManager(
+          featureFlagsSettings,
+          {}, // initialContext
+          algorithmInstances,
+          conditionInstances,
+        );
+
+        if (
+          featureFlagsSettings?.settings?.debug_mode ||
+          featureFlagsSettings?.settings?.debug
+        ) {
+          console.debug('[Feature Flags] Manager initialized');
+          console.debug(
+            '[Feature Flags] Algorithm instances:',
+            algorithmInstances.size,
+          );
+          console.debug(
+            '[Feature Flags] Condition instances:',
+            conditionInstances.size,
+          );
+          console.debug(
+            '[Feature Flags] Available flags:',
+            Object.keys(featureFlagsSettings?.flags || {}),
+          );
+        }
+      });
     },
   };
 })(Drupal, once);

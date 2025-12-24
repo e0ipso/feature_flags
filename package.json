@@ -3,9 +3,6 @@
   "version": "1.0.0",
   "description": "Feature Flags Drupal Module - JavaScript Tests",
   "scripts": {
-    "test": "jest",
-    "test:watch": "jest --watch",
-    "test:coverage": "jest --coverage",
     "lint:check": "eslint .",
     "lint:fix": "eslint . --fix",
     "format:fix": "prettier --write .",
@@ -24,8 +21,6 @@
     "prepare": "husky"
   },
   "devDependencies": {
-    "jest": "^29.0.0",
-    "jest-environment-jsdom": "^29.0.0",
     "@commitlint/cli": "^19.8.1",
     "@commitlint/config-conventional": "^19.8.1",
     "@lullabot/playwright-drupal": "github:Lullabot/playwright-drupal",
@@ -50,17 +45,5 @@
   },
   "dependencies": {
     "@playwright/test": "^1.49.1"
-  },
-  "jest": {
-    "testEnvironment": "jsdom",
-    "roots": [
-      "<rootDir>/tests/js"
-    ],
-    "testMatch": [
-      "**/*.test.js"
-    ],
-    "setupFilesAfterEnv": [
-      "<rootDir>/tests/js/setup.js"
-    ]
   }
 }
