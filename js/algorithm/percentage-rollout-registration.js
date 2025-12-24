@@ -1,13 +1,7 @@
 /* global AlgorithmFactory, PercentageRollout */
 
-((Drupal, once) => {
-  Drupal.behaviors.percentageRolloutRegistration = {
-    attach(context, settings) {
-      const [canDo] = once('percentage-rollout-registration', document.body);
-      if (!canDo) {
-        return;
-      }
-      AlgorithmFactory.classMap.set('percentage_rollout', PercentageRollout);
-    },
-  };
-})(Drupal, once);
+// Register immediately when module loads, not in a behavior.
+// This ensures the factory is populated before feature_flags.js tries to use it.
+if (AlgorithmFactory && PercentageRollout) {
+  AlgorithmFactory.classMap.set('percentage_rollout', PercentageRollout);
+}

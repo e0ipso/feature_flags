@@ -23,8 +23,8 @@ feature_flags:
 # Algorithm: Percentage Rollout
 algorithm.percentage_rollout:
   js:
-    js/algorithm/percentage-rollout-registration.js: {}
     js/algorithm/PercentageRollout.js: {}
+    js/algorithm/percentage-rollout-registration.js: {}
   dependencies:
     - feature_flags/base
     - core/drupal
