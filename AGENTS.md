@@ -68,7 +68,7 @@ Determine which variant a user receives:
 
 Filter when algorithms apply:
 
-- **PHP**: `src/Plugin/AlgorithmCondition/` (e.g., `UserId.php`, `UserTier.php`)
+- **PHP**: `src/Plugin/AlgorithmCondition/` (e.g., `UserId.php`)
 - **JS**: `js/condition/` (e.g., `UserId.js` extends `BaseCondition`)
 - **Operators**: AND, OR, NOT applied to condition matches
 
@@ -76,7 +76,7 @@ Filter when algorithms apply:
 
 1. `hook_page_attachments()` loads enabled feature flags into `drupalSettings`
 2. `Drupal.featureFlags.resolve('flag_id')` is called from JavaScript
-3. Fire `featureFlags:provideContext` event to gather context (user_id, user_tier, etc.)
+3. Fire `featureFlags:provideContext` event to gather context (user_id, etc.)
 4. Evaluate algorithms in weight order
 5. First algorithm with all conditions passing executes its `decide()` method
 6. Variant selected and returned as `FeatureFlagResult` with parsed JSON value
@@ -194,7 +194,6 @@ External code provides runtime context via event:
 ```javascript
 document.addEventListener('featureFlags:provideContext', (event) => {
   event.detail.addContext('user_id', drupalSettings.user.uid);
-  event.detail.addContext('user_tier', 'premium');
   // Async providers supported:
   event.detail.addContext('subscription', await fetchStatus());
 });

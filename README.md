@@ -147,12 +147,11 @@ class MyAlgorithm extends Drupal.featureFlags.BaseAlgorithm {
 
 ### Conditions
 
-Conditions filter **when** an algorithm applies. Target specific users, tiers, or custom context.
+Conditions filter **when** an algorithm applies. Target specific users, or custom context.
 
 **Built-in conditions:**
 
 - **User ID**: Match specific user IDs
-- **User Tier**: Match tier values (free, premium, etc.)
 
 <details>
 <summary><strong>How to provide custom context</strong></summary>

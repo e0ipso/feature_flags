@@ -23,7 +23,7 @@ sequenceDiagram
         Manager-->>Code: FeatureFlagResult (cached)
     else Cache Miss
         Manager->>Event: Fire 'featureFlags:provideContext'
-        Event-->>Manager: Context {user_id, user_tier, ...}
+        Event-->>Manager: Context {user_id, ...}
         Manager->>Algorithm: evaluate(context)
         Algorithm->>Algorithm: Check conditions
         Algorithm->>Algorithm: Execute decide()
