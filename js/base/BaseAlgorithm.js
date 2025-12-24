@@ -51,29 +51,6 @@ class BaseAlgorithm {
   }
 
   /**
-   * Generates a deterministic hash for a string.
-   *
-   * Used for consistent bucketing when persistence is enabled.
-   *
-   * @param {string} str - The string to hash.
-   * @return {number} A number between 0 and 99.
-   */
-  hashString(str) {
-    let hash = 0;
-    for (let i = 0; i < str.length; i++) {
-      const char = str.charCodeAt(i);
-      // Standard hash algorithm requires bitwise left shift for distribution.
-      // eslint-disable-next-line no-bitwise
-      hash = (hash << 5) - hash + char;
-      // Convert to 32-bit integer using bitwise AND (standard JS pattern).
-      // eslint-disable-next-line no-bitwise
-      hash &= hash;
-    }
-    // Convert to positive number between 0 and 99.
-    return Math.abs(hash) % 100;
-  }
-
-  /**
    * Gets a random number between 0 and 99.
    *
    * Used for non-persistent random selection.
@@ -83,9 +60,4 @@ class BaseAlgorithm {
   getRandomBucket() {
     return Math.floor(Math.random() * 100);
   }
-}
-
-// Export for module usage.
-if (typeof module !== 'undefined' && module.exports) {
-  module.exports = BaseAlgorithm;
 }

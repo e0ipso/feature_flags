@@ -51,8 +51,3 @@ class FeatureFlagConfig {
     return this.algorithms;
   }
 }
-
-// Export for module usage.
-if (typeof module !== 'undefined' && module.exports) {
-  module.exports = FeatureFlagConfig;
-}

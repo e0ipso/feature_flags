@@ -1,4 +1,4 @@
-/* global FeatureFlagConfig, FeatureFlagResult, generateUuid */
+/* global FeatureFlagConfig, FeatureFlagResult */
 
 /**
  * @file
@@ -12,13 +12,23 @@ class FeatureFlagManager {
   /**
    * Constructs a FeatureFlagManager object.
    *
+   * @param {Object} config - Feature flags drupal settings.
    * @param {Object} initialContext - Optional initial context object.
+   * @param {Map} algorithmInstances - Map of algorithm UUID to instance.
+   * @param {Map} conditionInstances - Map of condition UUID to instance.
    */
-  constructor(initialContext = {}) {
+  constructor(
+    config,
+    initialContext = {},
+    algorithmInstances = new Map(),
+    conditionInstances = new Map(),
+  ) {
     this.initialContext = initialContext;
-    this.settings = drupalSettings.featureFlags?.settings || {};
-    this.flags = drupalSettings.featureFlags?.flags || {};
-    this.libraries = drupalSettings.featureFlags?.libraries || {};
+    this.settings = config?.settings || {};
+    this.flags = config?.flags || {};
+    this.libraries = config?.libraries || {};
+    this.algorithmInstances = algorithmInstances;
+    this.conditionInstances = conditionInstances;
   }
 
   /**
@@ -84,7 +94,8 @@ class FeatureFlagManager {
         if (conditionsPassed) {
           // Execute this algorithm.
           const selectedVariant = await this.executeAlgorithm(
-            algorithmConfig,
+            algorithmConfig.uuid,
+            algorithmConfig.configuration,
             featureFlag.getVariants(),
             context,
           );
@@ -154,8 +165,8 @@ class FeatureFlagManager {
 
     // Provide default user_id if not set.
     if (!context.user_id) {
-      // Generate a random UUID for anonymous users.
-      context.user_id = generateUuid();
+      // Generate a random ID for anonymous users.
+      context.user_id = Math.random().toString(36).substring(2);
     }
 
     return context;
@@ -178,7 +189,12 @@ class FeatureFlagManager {
     // Evaluate all conditions in parallel and check if any passed.
     const conditionResults = await Promise.all(
       conditions.map(async conditionConfig => {
-        const result = await this.evaluateCondition(conditionConfig, context);
+        const result = await this.evaluateCondition(
+          conditionConfig.uuid,
+          conditionConfig.configuration,
+          conditionConfig.operator,
+          context,
+        );
         this.debugLog(
           `Condition ${conditionConfig.pluginId} (${conditionConfig.operator}): ${result}`,
         );
@@ -191,50 +207,44 @@ class FeatureFlagManager {
   }
 
   /**
-   * Evaluates a single condition.
+   * Evaluates a single condition using pre-instantiated plugin.
    *
-   * @param {Object} conditionConfig - The condition configuration.
+   * @param {string} conditionUuid - The condition UUID.
+   * @param {Object} configuration - The condition configuration.
+   * @param {string} operator - The condition operator.
    * @param {Object} context - The context object.
    * @return {Promise<boolean>} True if the condition passes.
    */
-  async evaluateCondition(conditionConfig, context) {
-    const className = conditionConfig.jsClass;
-    const ConditionClass = window[className];
+  async evaluateCondition(conditionUuid, configuration, operator, context) {
+    const condition = this.conditionInstances.get(conditionUuid);
 
-    if (!ConditionClass) {
-      console.error(`[Feature Flags] Condition class "${className}" not found`);
-      return false;
+    if (!condition) {
+      throw new Error(
+        `Condition instance with UUID "${conditionUuid}" not found`,
+      );
     }
-
-    const condition = new ConditionClass(
-      conditionConfig.configuration,
-      conditionConfig.operator,
-    );
 
     return condition.evaluate(context);
   }
 
   /**
-   * Executes an algorithm to select a variant.
+   * Executes an algorithm to select a variant using pre-instantiated plugin.
    *
-   * @param {Object} algorithmConfig - The algorithm configuration.
+   * @param {string} algorithmUuid - The algorithm UUID.
+   * @param {Object} configuration - The algorithm configuration.
    * @param {Array} variants - Array of variants.
    * @param {Object} context - The context object.
    * @return {Promise<Object>} The selected variant.
    */
-  async executeAlgorithm(algorithmConfig, variants, context) {
-    const className = algorithmConfig.jsClass;
-    const AlgorithmClass = window[className];
+  async executeAlgorithm(algorithmUuid, configuration, variants, context) {
+    const algorithm = this.algorithmInstances.get(algorithmUuid);
 
-    if (!AlgorithmClass) {
-      console.error(`[Feature Flags] Algorithm class "${className}" not found`);
-      return null;
+    if (!algorithm) {
+      throw new Error(
+        `Algorithm instance with UUID "${algorithmUuid}" not found`,
+      );
     }
 
-    const algorithm = new AlgorithmClass(
-      variants,
-      algorithmConfig.configuration,
-    );
     return algorithm.decide(context);
   }
 
@@ -286,9 +296,4 @@ class FeatureFlagManager {
       console.debug('[Feature Flags]', ...args);
     }
   }
-}
-
-// Export for module usage.
-if (typeof module !== 'undefined' && module.exports) {
-  module.exports = FeatureFlagManager;
 }

@@ -82,8 +82,3 @@ class BaseCondition {
     return array.some(item => String(item) === valueStr);
   }
 }
-
-// Export for module usage.
-if (typeof module !== 'undefined' && module.exports) {
-  module.exports = BaseCondition;
-}
