@@ -31,7 +31,7 @@ interface AlgorithmConditionInterface extends PluginInspectionInterface, Configu
    * Gets the context key this condition reads from.
    *
    * @return string
-   *   The context key (e.g., 'user_id', 'user_tier').
+   *   The context key (e.g., 'user_id').
    */
   public function getContextKey(): string;
 

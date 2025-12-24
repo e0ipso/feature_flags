@@ -20,7 +20,6 @@ use Drupal\feature_flags\Attribute\DecisionAlgorithm;
   label: new TranslatableMarkup('Percentage Rollout'),
   description: new TranslatableMarkup('Distribute users across variants based on configurable percentages. When persistence is enabled, users consistently receive the same variant.'),
   js_library: 'feature_flags/algorithm.percentage_rollout',
-  js_class: 'PercentageRollout',
 )]
 class PercentageRollout extends DecisionAlgorithmPluginBase {
 

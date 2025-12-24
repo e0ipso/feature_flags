@@ -19,7 +19,6 @@ use Drupal\feature_flags\Attribute\AlgorithmCondition;
   description: new TranslatableMarkup('Match against specific user IDs'),
   context_key: 'user_id',
   js_library: 'feature_flags/condition.user_id',
-  js_class: 'UserIdCondition',
 )]
 class UserId extends AlgorithmConditionPluginBase {
 

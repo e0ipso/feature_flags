@@ -20,22 +20,6 @@ class PercentageRollout extends BaseAlgorithm {
    */
   async decide(context) {
     const percentages = this.config.percentages || {};
-    const userId = context.user_id;
-
-    // Determine the bucket (0-99).
-    let bucket;
-    const persist =
-      drupalSettings.featureFlags?.settings?.persist_decisions ||
-      drupalSettings.featureFlags?.settings?.persist;
-
-    if (persist && userId) {
-      // Use deterministic hashing for consistent bucketing.
-      const hashInput = `${userId}`;
-      bucket = this.hashString(hashInput);
-    } else {
-      // Use random bucketing.
-      bucket = this.getRandomBucket();
-    }
 
     // Map bucket to variant based on cumulative percentages.
     const entries = Object.entries(percentages);
@@ -43,7 +27,7 @@ class PercentageRollout extends BaseAlgorithm {
 
     const selectedEntry = entries.find(([, percentage]) => {
       cumulative += percentage;
-      return bucket < cumulative;
+      return this.getRandomBucket() < cumulative;
     });
 
     if (selectedEntry) {
@@ -51,16 +35,6 @@ class PercentageRollout extends BaseAlgorithm {
     }
 
     // Fallback to first variant (shouldn't happen if percentages sum to 100).
-    return this.variants[0];
+    throw new Error('Percentages in rollout do not sum up to 100.');
   }
-}
-
-// Make available globally for Drupal.
-if (typeof window !== 'undefined') {
-  window.PercentageRollout = PercentageRollout;
-}
-
-// Export for module usage.
-if (typeof module !== 'undefined' && module.exports) {
-  module.exports = PercentageRollout;
 }
