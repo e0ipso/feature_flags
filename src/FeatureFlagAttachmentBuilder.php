@@ -65,25 +65,22 @@ final class FeatureFlagAttachmentBuilder {
     // have more severe drawbacks.
     $libraries['feature_flags']['dependencies'] = array_reduce(
       $flags,
-      function ($deps, FeatureFlag $flag) {
-        // Extract all the configured algorithms.
-        $algorithm_manager = \Drupal::service('plugin.manager.feature_flags.decision_algorithm');
-        assert($algorithm_manager instanceof DecisionAlgorithmPluginManager);
-        $algorithm_ids = array_map(
-          static fn (array $algo) => $algo['plugin_id'],
-          $flag->getAlgorithms(),
-        );
-        $algorithm_defs = array_map(
-          fn ($id) => $algorithm_manager->getDefinition($id),
-          $algorithm_ids,
-        );
-        $algorithm_libs = array_map(
-          static fn (array $def) => $def['js_library'],
-          $algorithm_defs,
-        );
-        $algorithm_libs = array_unique(array_filter($algorithm_libs));
-        return [...$deps, ...$algorithm_libs];
-      },
+      fn ($deps, FeatureFlag $flag) => [
+        ...$deps,
+        ...array_unique(
+          array_filter(
+            array_map(
+              fn (array $def) => $def['js_library'] ?? NULL,
+              array_map(
+                fn (array $algo) => $this->algorithmPluginManager->getDefinition(
+                  $algo['plugin_id']
+                ),
+                $flag->getAlgorithms(),
+              ),
+            ),
+          ),
+        ),
+      ],
       $libraries['feature_flags']['dependencies'] ?? [],
     );
   }
