@@ -46,3 +46,10 @@ function feature_flags_help(string $route_name, RouteMatchInterface $route_match
 function feature_flags_page_attachments(array &$attachments): void {
   \Drupal::service('feature_flags.attachment_builder')->buildAttachments($attachments);
 }
+
+/**
+ * Implements hook_library_info_alter().
+ */
+function feature_flags_library_info_alter(&$libraries, $extension) {
+  \Drupal::service('feature_flags.attachment_builder')->alterLibrariesInfo($libraries, $extension);
+}
