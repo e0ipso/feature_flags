@@ -35,7 +35,6 @@ class UserIdTest extends UnitTestCase {
       'description' => 'Match against specific user IDs',
       'context_key' => 'user_id',
       'js_library' => 'feature_flags/condition.user_id',
-      'js_class' => 'UserIdCondition',
     ];
 
     $this->plugin = new UserId(
