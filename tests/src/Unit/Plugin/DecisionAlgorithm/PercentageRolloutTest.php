@@ -34,7 +34,6 @@ class PercentageRolloutTest extends UnitTestCase {
       'label' => 'Percentage Rollout',
       'description' => 'Distribute users across variants based on configurable percentages.',
       'js_library' => 'feature_flags/algorithm.percentage_rollout',
-      'js_class' => 'PercentageRollout',
     ];
 
     $this->plugin = new PercentageRollout(

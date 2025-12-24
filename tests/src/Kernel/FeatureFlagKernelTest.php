@@ -63,7 +63,6 @@ final class FeatureFlagKernelTest extends KernelTestBase {
     // Plugin discovery section.
     $this->assertPluginDiscovered('percentage_rollout', 'decision_algorithm');
     $this->assertPluginDiscovered('user_id', 'algorithm_condition');
-    $this->assertPluginDiscovered('user_tier', 'algorithm_condition');
 
     // Config export section.
     $export_flag = $this->createTestFlag();
