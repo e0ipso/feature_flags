@@ -12,6 +12,7 @@ use Drupal\KernelTests\KernelTestBase;
 /**
  * Tests feature flag entity and plugin integration.
  *
+ * @runTestsInSeparateProcesses
  * @group feature_flags
  */
 final class FeatureFlagKernelTest extends KernelTestBase {

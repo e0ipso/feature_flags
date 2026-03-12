@@ -55,34 +55,17 @@ final class FeatureFlagAttachmentBuilder {
     }
     // There is no very good way to detect at runtime what the dependencies
     // should be. Drupal makes it hard to enforce loading order for scripts.
-    // Since feature flags can have configurable algorithms and each algorithm
-    // can have their own JavaScript libraries, we need to ensure that the
-    // algorithm libraries are available for JavaScript when we initialize the
-    // feature flag manager. This is why we have to bite the bullet here and
-    // include all the algorithm libraries inside each request that the feature
-    // flags are going to be used. This is an ideal but there isn't any other
-    // way around it except for fighting the asset system in Drupal which would
-    // have more severe drawbacks.
-    $libraries['feature_flags']['dependencies'] = array_reduce(
-      $flags,
-      fn ($deps, FeatureFlag $flag) => [
-        ...$deps,
-        ...array_unique(
-          array_filter(
-            array_map(
-              fn (array $def) => $def['js_library'] ?? NULL,
-              array_map(
-                fn (array $algo) => $this->algorithmPluginManager->getDefinition(
-                  $algo['plugin_id']
-                ),
-                $flag->getAlgorithms(),
-              ),
-            ),
-          ),
-        ),
-      ],
-      $libraries['feature_flags']['dependencies'] ?? [],
-    );
+    // Since feature flags can have configurable algorithms and conditions,
+    // each with their own JavaScript libraries, we need to ensure that all
+    // plugin libraries are available when we initialize the feature flag
+    // manager. This is why we have to bite the bullet here and include all
+    // the plugin libraries inside each request that feature flags are going
+    // to be used.
+    $libraries['feature_flags']['dependencies'] = array_unique([
+      ...$libraries['feature_flags']['dependencies'] ?? [],
+      ...$this->collectAlgorithmLibraries($flags),
+      ...$this->collectConditionLibraries($flags),
+    ]);
   }
 
   /**
@@ -253,6 +236,50 @@ final class FeatureFlagAttachmentBuilder {
       ]);
       return NULL;
     }
+  }
+
+  /**
+   * Collects JS libraries for all algorithm plugins across enabled flags.
+   *
+   * @param \Drupal\feature_flags\Entity\FeatureFlag[] $flags
+   *   The enabled feature flags.
+   *
+   * @return string[]
+   *   Library names.
+   */
+  private function collectAlgorithmLibraries(array $flags): array {
+    return array_filter(array_map(
+      fn (array $algorithm) => $this->algorithmPluginManager
+        ->getDefinition($algorithm['plugin_id'], FALSE)['js_library'] ?? NULL,
+      array_merge(...array_map(
+        fn (FeatureFlag $flag) => $flag->getAlgorithms(),
+        $flags,
+      )),
+    ));
+  }
+
+  /**
+   * Collects JS libraries for all condition plugins across enabled flags.
+   *
+   * @param \Drupal\feature_flags\Entity\FeatureFlag[] $flags
+   *   The enabled feature flags.
+   *
+   * @return string[]
+   *   Library names.
+   */
+  private function collectConditionLibraries(array $flags): array {
+    $conditions = array_merge(...array_map(
+      fn (array $algorithm) => $algorithm['conditions'] ?? [],
+      array_merge(...array_map(
+        fn (FeatureFlag $flag) => $flag->getAlgorithms(),
+        $flags,
+      )),
+    ));
+    return array_filter(array_map(
+      fn (array $condition) => $this->conditionPluginManager
+        ->getDefinition($condition['plugin_id'], FALSE)['js_library'] ?? NULL,
+      $conditions,
+    ));
   }
 
   /**
