@@ -248,14 +248,18 @@ final class FeatureFlagAttachmentBuilder {
    *   Library names.
    */
   private function collectAlgorithmLibraries(array $flags): array {
-    return array_filter(array_map(
-      fn (array $algorithm) => $this->algorithmPluginManager
-        ->getDefinition($algorithm['plugin_id'], FALSE)['js_library'] ?? NULL,
-      array_merge(...array_map(
-        fn (FeatureFlag $flag) => $flag->getAlgorithms(),
-        $flags,
-      )),
-    ));
+    $libraries = [];
+    foreach ($flags as $flag) {
+      foreach ($flag->getAlgorithms() as $algorithm) {
+        $definition = $this->algorithmPluginManager
+          ->getDefinition($algorithm['plugin_id'], FALSE);
+        $library = $definition['js_library'] ?? NULL;
+        if ($library) {
+          $libraries[] = $library;
+        }
+      }
+    }
+    return $libraries;
   }
 
   /**
@@ -268,18 +272,20 @@ final class FeatureFlagAttachmentBuilder {
    *   Library names.
    */
   private function collectConditionLibraries(array $flags): array {
-    $conditions = array_merge(...array_map(
-      fn (array $algorithm) => $algorithm['conditions'] ?? [],
-      array_merge(...array_map(
-        fn (FeatureFlag $flag) => $flag->getAlgorithms(),
-        $flags,
-      )),
-    ));
-    return array_filter(array_map(
-      fn (array $condition) => $this->conditionPluginManager
-        ->getDefinition($condition['plugin_id'], FALSE)['js_library'] ?? NULL,
-      $conditions,
-    ));
+    $libraries = [];
+    foreach ($flags as $flag) {
+      foreach ($flag->getAlgorithms() as $algorithm) {
+        foreach ($algorithm['conditions'] ?? [] as $condition) {
+          $definition = $this->conditionPluginManager
+            ->getDefinition($condition['plugin_id'], FALSE);
+          $library = $definition['js_library'] ?? NULL;
+          if ($library) {
+            $libraries[] = $library;
+          }
+        }
+      }
+    }
+    return $libraries;
   }
 
   /**
