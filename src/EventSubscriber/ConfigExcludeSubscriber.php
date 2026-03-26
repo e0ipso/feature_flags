@@ -6,6 +6,7 @@ namespace Drupal\feature_flags\EventSubscriber;
 
 use Drupal\Core\Config\ConfigEvents;
 use Drupal\Core\Config\ConfigFactoryInterface;
+use Drupal\Core\Config\StorageInterface;
 use Drupal\Core\Config\StorageTransformEvent;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
@@ -22,9 +23,12 @@ final class ConfigExcludeSubscriber implements EventSubscriberInterface {
    *
    * @param \Drupal\Core\Config\ConfigFactoryInterface $configFactory
    *   The config factory.
+   * @param \Drupal\Core\Config\StorageInterface $activeStorage
+   *   The active storage.
    */
   public function __construct(
-    private readonly ConfigFactoryInterface $configFactory,
+    protected ConfigFactoryInterface $configFactory,
+    protected StorageInterface $activeStorage,
   ) {}
 
   /**
@@ -32,6 +36,7 @@ final class ConfigExcludeSubscriber implements EventSubscriberInterface {
    */
   public static function getSubscribedEvents(): array {
     $events[ConfigEvents::STORAGE_TRANSFORM_EXPORT][] = ['onConfigExport'];
+    $events[ConfigEvents::STORAGE_TRANSFORM_IMPORT][] = ['onConfigImport'];
     return $events;
   }
 
@@ -62,6 +67,39 @@ final class ConfigExcludeSubscriber implements EventSubscriberInterface {
     foreach ($config_names as $config_name) {
       $storage->delete($config_name);
     }
+  }
+
+  /**
+   * Avoids deleting existing feature flags when the setting is enabled.
+   *
+   * @param \Drupal\Core\Config\StorageTransformEvent $event
+   *   The config storage transform event.
+   */
+  public function onConfigImport(StorageTransformEvent $event): void {
+    // Check if exclusion is enabled.
+    $config = $this->configFactory->get('feature_flags.settings');
+    $exclude = $config->get('exclude_from_config_export') ?? FALSE;
+
+    if (!$exclude) {
+      // Exclusion disabled, don't modify import.
+      return;
+    }
+
+    // Get the storage being exported.
+    $transformation_storage = $event->getStorage();
+
+    // Get all feature flag config names.
+    $prefix = 'feature_flags.feature_flag.';
+    $config_names = $this->activeStorage->listAll($prefix);
+
+    // Put back feature flags into the import to cancel deletion diff.
+    array_map(
+      fn(string $config_name) => $transformation_storage->write(
+        $config_name,
+        $this->activeStorage->read($config_name),
+      ),
+      $config_names,
+    );
   }
 
 }

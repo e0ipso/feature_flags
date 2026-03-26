@@ -20,6 +20,6 @@ services:
 
   feature_flags.config_exclude_subscriber:
     class: Drupal\feature_flags\EventSubscriber\ConfigExcludeSubscriber
-    arguments: ['@config.factory']
+    arguments: ['@config.factory', '@config.storage.active']
     tags:
       - { name: event_subscriber }
