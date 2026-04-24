@@ -111,15 +111,15 @@ final class FeatureFlagKernelTest extends KernelTestBase {
    *   The plugin type: 'decision_algorithm' or 'algorithm_condition'.
    */
   protected function assertPluginDiscovered(string $plugin_id, string $plugin_type): void {
-    $service_name = match ($plugin_type) {
-      'decision_algorithm' => 'plugin.manager.feature_flags.decision_algorithm',
-      'algorithm_condition' => 'plugin.manager.feature_flags.algorithm_condition',
-      default => throw new \InvalidArgumentException("Unknown plugin type: {$plugin_type}"),
-    };
-
-    $expected_interface = match ($plugin_type) {
-      'decision_algorithm' => DecisionAlgorithmInterface::class,
-      'algorithm_condition' => AlgorithmConditionInterface::class,
+    [$service_name, $expected_interface] = match ($plugin_type) {
+      'decision_algorithm' => [
+        'plugin.manager.feature_flags.decision_algorithm',
+        DecisionAlgorithmInterface::class,
+      ],
+      'algorithm_condition' => [
+        'plugin.manager.feature_flags.algorithm_condition',
+        AlgorithmConditionInterface::class,
+      ],
       default => throw new \InvalidArgumentException("Unknown plugin type: {$plugin_type}"),
     };
 
